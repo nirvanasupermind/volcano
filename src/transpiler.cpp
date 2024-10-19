@@ -17,8 +17,8 @@ namespace tachyon {
 
     void Transpiler::visit(const std::shared_ptr<Node>& node) {
         switch (node->get_type()) {
-        case NodeType::NUMBER:
-            visit_number_node(std::static_pointer_cast<NumberNode>(node));
+        case NodeType::FLOAT:
+            visit_number_node(std::static_pointer_cast<FloatNode>(node));
             break;
         case NodeType::BOOL:
             visit_bool_node(std::static_pointer_cast<BoolNode>(node));
@@ -97,7 +97,7 @@ namespace tachyon {
             break;
         }
     }
-    void Transpiler::visit_number_node(const std::shared_ptr<NumberNode>& node) {
+    void Transpiler::visit_number_node(const std::shared_ptr<FloatNode>& node) {
         float x = std::stof(node->tok.val);
         uint64_t temp = 0ULL;
         std::memcpy(&temp, &x, sizeof(x));

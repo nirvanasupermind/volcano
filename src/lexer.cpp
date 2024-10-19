@@ -30,7 +30,7 @@ namespace tachyon {
                 advance();
             }
             else if (isdigit(current_char)) {
-                tokens.push_back(make_number());
+                tokens.push_back(make_float());
             }
             else if (current_char == '\"') {
                 tokens.push_back(make_string());
@@ -258,7 +258,7 @@ namespace tachyon {
         return tokens;
     }
 
-    Token Lexer::make_number() {
+    Token Lexer::make_float() {
         std::string num_str = "";
         int dot_count = 0;
         while (current_char != '\0' && (isdigit(current_char) || current_char == '.')) {
@@ -272,7 +272,7 @@ namespace tachyon {
             advance();
         }
 
-        return Token(line, TokenType::NUMBER, num_str);
+        return Token(line, TokenType::FLOAT, num_str);
     }
 
     Token Lexer::make_string() {

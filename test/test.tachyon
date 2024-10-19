@@ -1,4 +1,2 @@
-var x = [1, 2, 3, 4, 5];
-print(x.accumulate(1, lambda (x, y) {
-    return x * y;
-}));
+var a = Double.fromString("1e+105");
+print(a);

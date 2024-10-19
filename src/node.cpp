@@ -4,15 +4,15 @@
 #include "node.h"
 
 namespace tachyon {
-    NumberNode::NumberNode(const Token& tok) {
+    FloatNode::FloatNode(const Token& tok) {
         this->tok = tok;
     }
 
-    NodeType NumberNode::get_type() const {
-        return NodeType::NUMBER;
+    NodeType FloatNode::get_type() const {
+        return NodeType::FLOAT;
     }
 
-    std::string NumberNode::to_string() const {
+    std::string FloatNode::to_string() const {
         return "(NumberNode " + tok.to_string() + ")";
     }
 

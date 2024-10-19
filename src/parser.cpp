@@ -46,9 +46,9 @@ namespace tachyon {
             advance();
             return inner_expr;
         }
-        else if (tok.type == TokenType::NUMBER) {
+        else if (tok.type == TokenType::FLOAT) {
             advance();
-            return std::make_shared<NumberNode>(NumberNode(tok));
+            return std::make_shared<FloatNode>(FloatNode(tok));
         }
         else if (tok.type == TokenType::KEYWORD && (tok.val == "true" || tok.val == "false")) {
             advance();

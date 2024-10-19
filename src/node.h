@@ -8,7 +8,7 @@
 
 namespace tachyon {
     enum class NodeType {
-        NUMBER,
+        FLOAT,
         BOOL,
         NULL_,
         STRING,
@@ -41,10 +41,10 @@ namespace tachyon {
         virtual std::string to_string() const = 0;
     };
 
-    class NumberNode: public Node {
+    class FloatNode: public Node {
     public:
         Token tok;
-        NumberNode(const Token& tok);
+        FloatNode(const Token& tok);
         NodeType get_type() const;
         std::string to_string() const;
     };

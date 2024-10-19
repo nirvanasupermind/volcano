@@ -5,7 +5,7 @@
 
 namespace tachyon {
     enum class TokenType {
-        NUMBER,
+        FLOAT,
         STRING,
         IDENTIFIER,
         KEYWORD,
