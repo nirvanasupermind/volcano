@@ -10,7 +10,14 @@
     
 int main(){
 tachyon_stl_setup();
-(*(func_ptr*)(unpack_object(print)->other_data))({(*(func_ptr*)(unpack_object(unpack_object(Map)->get("createEmpty"))->other_data))({Map})});
+uint64_t f = create_object(new std::unordered_map<std::string, uint64_t>({}), new func_ptr([=] (const std::vector<uint64_t>& _args) {
+uint64_t x= _args.at(0);
+{
+return (*(func_ptr*)(unpack_object(unpack_object(x)->get("mul"))->other_data))({x,x});
+}
+return 1ULL;
+}));
+(*(func_ptr*)(unpack_object(print)->other_data))({(*(func_ptr*)(unpack_object(f)->other_data))({(*(func_ptr*)(unpack_object(unpack_object(Double)->get("fromFloat"))->other_data))({Double,4383047681ULL})})});
 
 free_all_objects();
 return 0;

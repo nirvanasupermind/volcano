@@ -1,1 +1,5 @@
-print(Map.createEmpty());
+def f(x) {
+    return x.mul(x);
+}
+
+print(f(Double.fromFloat(13)));
