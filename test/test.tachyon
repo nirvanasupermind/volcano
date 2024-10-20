@@ -1,2 +1,1 @@
-var a = Double.fromString("1e+105");
-print(a);
+print(Map.createEmpty());
