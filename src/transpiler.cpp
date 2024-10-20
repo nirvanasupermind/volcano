@@ -165,7 +165,7 @@ namespace tachyon {
     void Transpiler::visit_call_expr_node(const std::shared_ptr<CallExprNode>& node) {
         code << "(*(func_ptr*)(unpack_object(";
         visit(node->callee);
-        code << ")->other_data))({";
+        code << ")->hidden_data))({";
         if (node->callee->get_type() == NodeType::OBJECT_PROP) {
             std::shared_ptr<ObjectPropNode> obj_prop_node = std::static_pointer_cast<ObjectPropNode>(node->callee);
             if (node->args.size() == 0) {
