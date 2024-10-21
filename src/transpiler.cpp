@@ -45,7 +45,7 @@ namespace tachyon {
             visit_call_expr_node(std::static_pointer_cast<CallExprNode>(node));
             break;
         case NodeType::OBJECT_PROP:
-            visit_object_prop_node(std::static_pointer_cast<ObjectPropNode>(node));
+            visit_object_prop_node(std::static_pointer_cast<ObjectMemberNode>(node));
             break;
         case NodeType::UNARY_OP:
             visit_unary_op_node(std::static_pointer_cast<UnaryOpNode>(node));
@@ -167,7 +167,7 @@ namespace tachyon {
         visit(node->callee);
         code << ")->hidden_data))({";
         if (node->callee->get_type() == NodeType::OBJECT_PROP) {
-            std::shared_ptr<ObjectPropNode> obj_prop_node = std::static_pointer_cast<ObjectPropNode>(node->callee);
+            std::shared_ptr<ObjectMemberNode> obj_prop_node = std::static_pointer_cast<ObjectMemberNode>(node->callee);
             if (node->args.size() == 0) {
                 visit(obj_prop_node->obj);
                 code << "})";
@@ -205,7 +205,7 @@ namespace tachyon {
     }
     }
 
-    void Transpiler::visit_object_prop_node(const std::shared_ptr<ObjectPropNode>& node) {
+    void Transpiler::visit_object_prop_node(const std::shared_ptr<ObjectMemberNode>& node) {
         code << "unpack_object(";
         visit(node->obj);
         code << ")->get(\"" << node->prop.val << "\")";
@@ -214,7 +214,7 @@ namespace tachyon {
     void Transpiler::visit_unary_op_node(const std::shared_ptr<UnaryOpNode>& node) {
         if (node->op_tok.type == TokenType::INC) {
             if (node->right_node->get_type() == NodeType::OBJECT_PROP) {
-                std::shared_ptr<ObjectPropNode> obj_prop_node = std::static_pointer_cast<ObjectPropNode>(node->right_node);
+                std::shared_ptr<ObjectMemberNode> obj_prop_node = std::static_pointer_cast<ObjectMemberNode>(node->right_node);
                 code << "(*(unpack_object(";
                 visit(obj_prop_node->obj);
                 code << ")->props))[\"" << obj_prop_node->prop.val << "\"] =";
@@ -229,7 +229,7 @@ namespace tachyon {
         }
         else if (node->op_tok.type == TokenType::DEC) {
             if (node->right_node->get_type() == NodeType::OBJECT_PROP) {
-                std::shared_ptr<ObjectPropNode> obj_prop_node = std::static_pointer_cast<ObjectPropNode>(node->right_node);
+                std::shared_ptr<ObjectMemberNode> obj_prop_node = std::static_pointer_cast<ObjectMemberNode>(node->right_node);
                 code << "(*(unpack_object(";
                 visit(obj_prop_node->obj);
                 code << ")->props))[\"" << obj_prop_node->prop.val << "\"] =";
@@ -254,7 +254,7 @@ namespace tachyon {
     void Transpiler::visit_bin_op_node(const std::shared_ptr<BinOpNode>& node) {
         if (node->op_tok.type == TokenType::EQ) {
             if (node->left_node->get_type() == NodeType::OBJECT_PROP) {
-                std::shared_ptr<ObjectPropNode> obj_prop_node = std::static_pointer_cast<ObjectPropNode>(node->left_node);
+                std::shared_ptr<ObjectMemberNode> obj_prop_node = std::static_pointer_cast<ObjectMemberNode>(node->left_node);
                 code << "(*(unpack_object(";
                 visit(obj_prop_node->obj);
                 code << ")->props))[\"" << obj_prop_node->prop.val << "\"] =";
@@ -332,7 +332,7 @@ namespace tachyon {
 
     void Transpiler::visit_in_place_bin_op_node(const std::shared_ptr<BinOpNode>& node, const std::string& op) {
         if (node->left_node->get_type() == NodeType::OBJECT_PROP) {
-            std::shared_ptr<ObjectPropNode> obj_prop_node = std::static_pointer_cast<ObjectPropNode>(node->left_node);
+            std::shared_ptr<ObjectMemberNode> obj_prop_node = std::static_pointer_cast<ObjectMemberNode>(node->left_node);
             code << "(*(unpack_object(";
             visit(obj_prop_node->obj);
             code << ")->props))[\"" << obj_prop_node->prop.val << "\"] =";

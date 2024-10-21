@@ -213,7 +213,7 @@ namespace tachyon {
                 if (current_tok.type != TokenType::IDENTIFIER) {
                     raise_error();
                 }
-                result = std::make_shared<ObjectPropNode>(ObjectPropNode(result, current_tok));
+                result = std::make_shared<ObjectMemberNode>(ObjectMemberNode(result, current_tok));
                 advance();
             }
             else if (current_tok.type == TokenType::INC || current_tok.type == TokenType::DEC) {

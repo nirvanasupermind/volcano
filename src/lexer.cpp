@@ -87,7 +87,7 @@ namespace tachyon {
                     advance();
                 }
                 else if(current_char == '/') {
-                    while(current_char != '\n') {
+                    while(current_char != '\n' && current_char != '\0') {
                         advance();
                     }
                 }

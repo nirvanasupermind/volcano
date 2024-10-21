@@ -116,11 +116,11 @@ namespace tachyon {
         std::string to_string() const;
     };
 
-    class ObjectPropNode: public Node {
+    class ObjectMemberNode: public Node {
     public:
         std::shared_ptr<Node> obj;
         Token prop;
-        ObjectPropNode(const std::shared_ptr<Node>& obj, const Token& prop);
+        ObjectMemberNode(const std::shared_ptr<Node>& obj, const Token& prop);
         NodeType get_type() const;
         std::string to_string() const;
     };
