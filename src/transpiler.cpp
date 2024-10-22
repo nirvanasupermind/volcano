@@ -16,16 +16,19 @@ namespace tachyon {
     }
 
     void Transpiler::visit(const std::shared_ptr<Node>& node) {
+        if(node->jit_val() != 0) {
+            code << node->jit_val() << "ULL";
+        } else {
         switch (node->get_type()) {
-        case NodeType::FLOAT:
-            visit_number_node(std::static_pointer_cast<FloatNode>(node));
-            break;
-        case NodeType::BOOL:
-            visit_bool_node(std::static_pointer_cast<BoolNode>(node));
-            break;
-        case NodeType::NULL_:
-            visit_null_node(std::static_pointer_cast<NullNode>(node));
-            break;
+        // case NodeType::FLOAT:
+        //     visit_number_node(std::static_pointer_cast<FloatNode>(node));
+        //     break;
+        // case NodeType::BOOL:
+        //     visit_bool_node(std::static_pointer_cast<BoolNode>(node));
+        //     break;
+        // case NodeType::NULL_:
+        //     visit_null_node(std::static_pointer_cast<NullNode>(node));
+        //     break;
         case NodeType::STRING:
             visit_string_node(std::static_pointer_cast<StringNode>(node));
             break;
@@ -96,25 +99,24 @@ namespace tachyon {
             std::cout << "UNKNOWN NODE: " << node->to_string() << '\n';
             break;
         }
-    }
-    void Transpiler::visit_number_node(const std::shared_ptr<FloatNode>& node) {
-        float x = std::stof(node->tok.val);
-        uint64_t temp = 0ULL;
-        std::memcpy(&temp, &x, sizeof(x));
-        code << (temp << 2) + 1 << "ULL";
-    }
-
-    void Transpiler::visit_bool_node(const std::shared_ptr<BoolNode>& node) {
-        if(node->tok.val == "false") {
-            code << "2ULL";
-        } else {
-            code << "10ULL";
         }
     }
+    // void Transpiler::visit_number_node(const std::shared_ptr<FloatNode>& node) {
+    //     float x = std::stof(node->tok.val);;
+    //     code << (*(uint64_t*)(&x) << 2) + 1 << "ULL";
+    // }
 
-    void Transpiler::visit_null_node(const std::shared_ptr<NullNode>& node) {
-        code << "6ULL";
-    }
+    // void Transpiler::visit_bool_node(const std::shared_ptr<BoolNode>& node) {
+    //     if(node->tok.val == "false") {
+    //         code << "2ULL";
+    //     } else {
+    //         code << "10ULL";
+    //     }
+    // }
+
+    // void Transpiler::visit_null_node(const std::shared_ptr<NullNode>& node) {
+    //     code << "6ULL";
+    // }
 
     void Transpiler::visit_string_node(const std::shared_ptr<StringNode>& node) {
         code << "create_object(new std::unordered_map<std::string, uint64_t>({{\"prototype\",String}}),new std::string(\"" + node->tok.val << "\"))";
@@ -235,7 +237,7 @@ namespace tachyon {
             }
             code << "pack_number(unpack_number(";
             visit(node->right_node);
-            code << ") + 1.0)";
+            code << ") + 1.0f)";
         }
         else if (node->op_tok.type == TokenType::DEC) {
             if (node->right_node->get_type() == NodeType::OBJECT_PROP) {
@@ -250,7 +252,7 @@ namespace tachyon {
             }
             code << "pack_number(unpack_number(";
             visit(node->right_node);
-            code << ") + 1.0)";
+            code << ") + 1.0f)";
         }
         else {
             code << "pack_number(";
@@ -431,14 +433,14 @@ namespace tachyon {
     }
 
     void Transpiler::visit_for_stmt_node(const std::shared_ptr<ForStmtNode>& node) {
+        code << "for(";
         visit(node->init);
-        code << "\nwhile((";
+        code << "(";
         visit(node->cond);
-        code << ") != 2ULL) {\n";
-        visit(node->body);
-        code << "\n";
+        code << ") != 2ULL;";
         visit(node->update);
-        code << ";\n}";
+        code << ")";
+        visit(node->body);
     }
 
     void Transpiler::visit_return_stmt_node(const std::shared_ptr<ReturnStmtNode>& node) {

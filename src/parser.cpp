@@ -33,7 +33,7 @@ namespace tachyon {
 
     std::shared_ptr<Node> Parser::factor() {
         Token tok = current_tok;
-        if (tok.type == TokenType::PLUS || tok.type == TokenType::MINUS || tok.type == TokenType::NOT) {
+        if (tok.type == TokenType::PLUS || tok.type == TokenType::MINUS || tok.type == TokenType::NOT || tok.type == TokenType::LOGICAL_NOT) {
             advance();
             return std::make_shared<UnaryOpNode>(UnaryOpNode(tok, expr()));
         }

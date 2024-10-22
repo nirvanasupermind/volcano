@@ -1,2 +1,1 @@
-var x = Object.clone();
-print(x.prototype == Object);
+print((1 + 2) * 3);

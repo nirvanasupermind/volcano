@@ -20,6 +20,7 @@ namespace tachyon {
         XOR,
         LSH,
         RSH,
+        LOGICAL_NOT,
         LOGICAL_AND,
         LOGICAL_OR,
         EE,

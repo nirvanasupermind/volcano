@@ -4,7 +4,7 @@
 int main() {
     auto start = std::chrono::system_clock::now();
     for (int i = 0; i < 10000000; i++) {
-        double x = 2.0 + 2.0;
+        float x = 2.0f + 2.0f;
     }
 
     auto end = std::chrono::system_clock::now();

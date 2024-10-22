@@ -10,17 +10,14 @@
 
 using func_ptr = std::function<uint64_t(const std::vector<uint64_t>&)>;
 
+
 uint64_t pack_number(float x) {
-    uint64_t temp = 0ULL;
-    std::memcpy(&temp, &x, sizeof(x));
-    return (temp << 2) + 1;
+    return (*(uint64_t*)(&x) << 2) + 1;
 }
 
 float unpack_number(uint64_t x) {
-    uint64_t y = x >> 2;
-    float temp;
-    std::memcpy(&temp, &y, sizeof(temp));
-    return temp;
+    uint64_t temp = x >> 2;
+    return *(float*)(&temp);
 }
 
 class TachyonObject {

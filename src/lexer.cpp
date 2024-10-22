@@ -161,10 +161,13 @@ namespace tachyon {
                 }
             }
             else if (current_char == '!') {
+                int old_line = line;
                 advance();
                 if (current_char == '=') {
                     tokens.push_back(Token(line, TokenType::NE, "!="));
                     advance();
+                } else {
+                    tokens.push_back(Token(old_line, TokenType::LOGICAL_NOT, "!"));
                 }
             }
             else if (current_char == '<') {

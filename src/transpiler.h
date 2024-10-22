@@ -13,9 +13,9 @@ namespace tachyon {
         std::ostringstream code;
         Transpiler();
         void visit(const std::shared_ptr<Node>& node);
-        void visit_number_node(const std::shared_ptr<FloatNode>& node);
-        void visit_bool_node(const std::shared_ptr<BoolNode>& node);
-        void visit_null_node(const std::shared_ptr<NullNode>& node);
+        // void visit_number_node(const std::shared_ptr<FloatNode>& node);
+        // void visit_bool_node(const std::shared_ptr<BoolNode>& node);
+        // void visit_null_node(const std::shared_ptr<NullNode>& node);
         void visit_string_node(const std::shared_ptr<StringNode>& node);
         void visit_vector_node(const std::shared_ptr<VectorNode>& node);
         void visit_unordered_map_node(const std::shared_ptr<UnorderedMapNode>& node);
