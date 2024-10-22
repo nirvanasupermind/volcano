@@ -128,7 +128,7 @@ uint64_t String = create_object(new std::unordered_map<std::string, uint64_t>({ 
 uint64_t Vector = create_object(new std::unordered_map<std::string, uint64_t>({ {"prototype", Object} }));
 uint64_t UnorderedMap = create_object(new std::unordered_map<std::string, uint64_t>({ {"prototype", Object} }));
 uint64_t Function = create_object(new std::unordered_map<std::string, uint64_t>({ {"prototype", Object} }));
-uint64_t Date = create_object(new std::unordered_map<std::string, uint64_t>({ {"prototype", Object} }));
+// uint64_t Date = create_object(new std::unordered_map<std::string, uint64_t>({ {"prototype", Object} }));
 uint64_t ThreadID = create_object(new std::unordered_map<std::string, uint64_t>({ {"prototype", Object} }));
 uint64_t Thread = create_object(new std::unordered_map<std::string, uint64_t>({ {"prototype", Object} }));
 uint64_t ThisThread = create_object(new std::unordered_map<std::string, uint64_t>({ {"prototype", Object} }));
@@ -137,7 +137,7 @@ uint64_t Error = create_object(new std::unordered_map<std::string, uint64_t>({ {
 void tachyon_stl_setup() {
     unpack_object(Object)->set("clone", create_object(new std::unordered_map<std::string, uint64_t>({ {"prototype",Function} }),
         new func_ptr([](const std::vector<uint64_t>& _args) {
-            return create_object(new std::unordered_map<std::string, uint64_t>({ {"prototype", _args.at(1)} }));
+            return create_object(new std::unordered_map<std::string, uint64_t>({ {"prototype", _args.at(0)} }));
             })));
 
     // unpack_object(Object)->set("getKey", create_object(new std::unordered_map<std::string, uint64_t>({ {"prototype",Function} }),
@@ -1175,13 +1175,6 @@ void tachyon_stl_setup() {
             return create_object(new std::unordered_map<std::string, uint64_t>({ {"prototype",String} }), new std::string(result));
             })));
 
-    unpack_object(Date)->set("fromUnixTime", create_object(new std::unordered_map<std::string, uint64_t>({}),
-        new func_ptr([](const std::vector<uint64_t>& _args) {
-            double unix_time = *(double*)(unpack_object(_args.at(1))->hidden_data);
-            return create_object(new
-                std::unordered_map<std::string, uint64_t>({ {"prototype",Date} }), new double(unix_time));
-            })));
-
     unpack_object(ThreadID)->set("toString", create_object(new std::unordered_map<std::string, uint64_t>({ {"prototype",Function} }),
         new func_ptr([](const std::vector<uint64_t>& _args) {
             uint64_t self = _args.at(0);
@@ -1307,9 +1300,7 @@ void tachyon_stl_setup() {
             std::unordered_map<std::string, uint64_t> self_unordered_map = *(std::unordered_map<std::string, uint64_t>*)(unpack_object(self)->hidden_data);
             return (self_unordered_map.count(string_repr(key)) ? 10ULL : 2ULL);
             })));
-
-
-
+            
     unpack_object(UnorderedMap)->set("toString", create_object(new std::unordered_map<std::string, uint64_t>({}),
         new func_ptr([](const std::vector<uint64_t>& _args) {
             uint64_t self = _args.at(0);
