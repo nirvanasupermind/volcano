@@ -42,7 +42,7 @@ namespace tachyon {
     }
 
     std::string BoolNode::to_string() const {
-        return "(BooleanNode " + tok.to_string() + ")";
+        return "(BoolNode " + tok.to_string() + ")";
     }
 
     uint64_t BoolNode::jit_val() const {

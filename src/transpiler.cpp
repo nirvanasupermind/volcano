@@ -410,26 +410,32 @@ namespace tachyon {
     }
 
     void Transpiler::visit_if_stmt_node(const std::shared_ptr<IfStmtNode>& node) {
-        code << "if((";
-        visit(node->cond);
-        code << ") != 2ULL)";
-        visit(node->body);
+        if(node->cond->jit_val() != 2) {
+            code << "if((";
+            visit(node->cond);
+            code << ") != 2ULL)";
+            visit(node->body);
+        }
     }
 
     void Transpiler::visit_if_else_stmt_node(const std::shared_ptr<IfElseStmtNode>& node) {
-        code << "if((";
-        visit(node->cond);
-        code << ") != 2ULL)";
-        visit(node->if_body);
-        code << "else";
+        if(node->cond->jit_val() != 2) {
+            code << "if((";
+            visit(node->cond);
+            code << ") != 2ULL)";
+            visit(node->if_body);
+            code << "else";
+        }
         visit(node->else_body);
     }
 
     void Transpiler::visit_while_stmt_node(const std::shared_ptr<WhileStmtNode>& node) {
-        code << "while((";
-        visit(node->cond);
-        code << ") != 2ULL)";
-        visit(node->body);
+        if(node->cond->jit_val() != 2) {
+            code << "while((";
+            visit(node->cond);
+            code << ") != 2ULL)";
+            visit(node->body);
+        }
     }
 
     void Transpiler::visit_for_stmt_node(const std::shared_ptr<ForStmtNode>& node) {
