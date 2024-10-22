@@ -70,19 +70,19 @@ namespace tachyon {
         return result;
     }
 
-    ObjectNode::ObjectNode(const std::vector<Token>& keys, const std::vector<std::shared_ptr<Node> >& vals) {
+    UnorderedMapNode::UnorderedMapNode(const std::vector<std::shared_ptr<Node> >& keys, const std::vector<std::shared_ptr<Node> >& vals) {
         this->keys = keys;
         this->vals = vals;
     }
 
-    NodeType ObjectNode::get_type() const {
-        return NodeType::OBJECT;
+    NodeType UnorderedMapNode::get_type() const {
+        return NodeType::UNORDERED_MAP;
     }
 
-    std::string ObjectNode::to_string() const {
-        std::string result = "(ObjectNode (";
+    std::string UnorderedMapNode::to_string() const {
+        std::string result = "(UnorderedMap (";
         for(int i = 0; i < keys.size(); i++) {
-            result += keys.at(i).to_string() + " ";
+            result += keys.at(i)->to_string() + " ";
         }
         result = result.substr(0, result.size() - 1);
         result += ") (";

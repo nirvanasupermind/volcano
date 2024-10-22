@@ -32,8 +32,8 @@ namespace tachyon {
         case NodeType::VECTOR:
             visit_vector_node(std::static_pointer_cast<VectorNode>(node));
             break;
-        case NodeType::OBJECT:
-            visit_object_node(std::static_pointer_cast<ObjectNode>(node));
+        case NodeType::UNORDERED_MAP:
+            visit_unordered_map_node(std::static_pointer_cast<UnorderedMapNode>(node));
             break;;
         case NodeType::IDENTIFIER:
             visit_identifier_node(std::static_pointer_cast<IdentifierNode>(node));
@@ -45,7 +45,7 @@ namespace tachyon {
             visit_call_expr_node(std::static_pointer_cast<CallExprNode>(node));
             break;
         case NodeType::OBJECT_PROP:
-            visit_object_prop_node(std::static_pointer_cast<ObjectMemberNode>(node));
+            visit_object_member_node(std::static_pointer_cast<ObjectMemberNode>(node));
             break;
         case NodeType::UNARY_OP:
             visit_unary_op_node(std::static_pointer_cast<UnaryOpNode>(node));
@@ -139,14 +139,24 @@ namespace tachyon {
         }
     }
 
-    void Transpiler::visit_object_node(const std::shared_ptr<ObjectNode>& node) {
-        code << "create_object(new std::unordered_map<std::string, uint64_t>({";
+    void Transpiler::visit_unordered_map_node(const std::shared_ptr<UnorderedMapNode>& node) {
+        code << "create_object(new std::unordered_map<std::string, uint64_t>({{\"prototype\",UnorderedMap}})," << "new std::unordered_map<std::string, uint64_t>({";
         if (node->keys.size() == 0) {
             code << "}))";
         }
         else {
             for (int i = 0; i < node->keys.size(); i++) {
-                code << "{\"" << node->keys.at(i).val << "\",";
+                code << "{";
+                if(node->keys.at(i)->get_type() == NodeType::STRING) {
+                    code << "\"" << std::static_pointer_cast<StringNode>(node->keys.at(i))->tok.val << "\"";
+                } else {
+                    code << "*(std::string*)(unpack_object(";
+                    visit(node->keys.at(i));
+                    code << ")->hidden_data)";
+                }
+
+                code << ",";
+
                 visit(node->vals.at(i));
                 if (i == node->keys.size() - 1) {
                     code << "}}))";
@@ -205,7 +215,7 @@ namespace tachyon {
     }
     }
 
-    void Transpiler::visit_object_prop_node(const std::shared_ptr<ObjectMemberNode>& node) {
+    void Transpiler::visit_object_member_node(const std::shared_ptr<ObjectMemberNode>& node) {
         code << "unpack_object(";
         visit(node->obj);
         code << ")->get(\"" << node->prop.val << "\")";

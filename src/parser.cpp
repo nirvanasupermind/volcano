@@ -70,7 +70,7 @@ namespace tachyon {
             return vector_expr();
         }
         else if (tok.type == TokenType::LCURLY) {
-            return object_expr();
+            return unordered_map_expr();
         }
         else if (tok.type == TokenType::KEYWORD && tok.val == "lambda") {
             return lambda_expr();
@@ -107,23 +107,19 @@ namespace tachyon {
         return std::make_shared<VectorNode>(VectorNode(elements));
     }
 
-    std::shared_ptr<Node> Parser::object_expr() {
+    std::shared_ptr<Node> Parser::unordered_map_expr() {
         if (current_tok.type != TokenType::LCURLY) {
             raise_error();
         }
         advance();
-        std::vector<Token> keys;
+        std::vector<std::shared_ptr<Node> > keys;
         std::vector<std::shared_ptr<Node> > vals;
         if (current_tok.type == TokenType::RCURLY) {
             advance();
         }
         else {
             while (true) {
-                if (current_tok.type != TokenType::IDENTIFIER) {
-                    raise_error();
-                }
-                keys.push_back(current_tok);
-                advance();
+                keys.push_back(expr());
                 if (current_tok.type != TokenType::COLON) {
                     raise_error();
                 }
@@ -141,7 +137,7 @@ namespace tachyon {
                 }
             }
         }
-        return std::make_shared<ObjectNode>(ObjectNode(keys, vals));
+        return std::make_shared<UnorderedMapNode>(UnorderedMapNode(keys, vals));
     }
 
     std::shared_ptr<Node> Parser::lambda_expr() {

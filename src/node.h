@@ -13,7 +13,7 @@ namespace tachyon {
         NULL_,
         STRING,
         VECTOR,
-        OBJECT,
+        UNORDERED_MAP,
         IDENTIFIER,
         LAMBDA_EXPR,
         CALL_EXPR,
@@ -80,11 +80,11 @@ namespace tachyon {
         std::string to_string() const;
     };
 
-    class ObjectNode: public Node {
+    class UnorderedMapNode: public Node {
     public:
-        std::vector<Token> keys;
+        std::vector<std::shared_ptr<Node> > keys;
         std::vector<std::shared_ptr<Node> > vals;
-        ObjectNode(const std::vector<Token>& keys, const std::vector<std::shared_ptr<Node> >& vals);
+        UnorderedMapNode(const std::vector<std::shared_ptr<Node> >& keys, const std::vector<std::shared_ptr<Node> >& vals);
         NodeType get_type() const;
         std::string to_string() const;
     };
