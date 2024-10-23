@@ -15,7 +15,7 @@ namespace tachyon {
         VECTOR,
         UNORDERED_MAP,
         IDENTIFIER,
-        LAMBDA_EXPR,
+        ANON_FUNC_EXPR,
         CALL_EXPR,
         OBJECT_PROP,
         UNARY_OP,
@@ -42,7 +42,7 @@ namespace tachyon {
     public:
         virtual NodeType get_type() const = 0;
         virtual std::string to_string() const = 0;
-        virtual uint64_t jit_val() const;
+        virtual uint64_t get_val() const;
     };
 
     class FloatNode: public Node {
@@ -51,7 +51,7 @@ namespace tachyon {
         FloatNode(const Token& tok);
         NodeType get_type() const;
         std::string to_string() const;
-        uint64_t jit_val() const;
+        uint64_t get_val() const;
     };
 
     class BoolNode: public Node {
@@ -60,7 +60,7 @@ namespace tachyon {
         BoolNode(const Token& tok);
         NodeType get_type() const;
         std::string to_string() const;
-        uint64_t jit_val() const;
+        uint64_t get_val() const;
     };
 
     class NullNode: public Node {
@@ -68,7 +68,7 @@ namespace tachyon {
         NullNode();
         NodeType get_type() const;
         std::string to_string() const;
-        uint64_t jit_val() const;
+        uint64_t get_val() const;
     };
 
     class StringNode: public Node {
@@ -104,11 +104,11 @@ namespace tachyon {
         std::string to_string() const;
     };
 
-    class LambdaExprNode: public Node {
+    class AnonFuncExprNode: public Node {
     public:
         std::vector<Token> arg_names;
         std::shared_ptr<Node> body;
-        LambdaExprNode(const std::vector<Token>& arg_names, const std::shared_ptr<Node>& body);
+        AnonFuncExprNode(const std::vector<Token>& arg_names, const std::shared_ptr<Node>& body);
         NodeType get_type() const;
         std::string to_string() const;
     };
@@ -138,7 +138,7 @@ namespace tachyon {
         UnaryOpNode(const Token& op_tok, const std::shared_ptr<Node>& right_node);
         NodeType get_type() const;
         std::string to_string() const;
-        uint64_t jit_val() const;
+        uint64_t get_val() const;
     };
 
     class BinOpNode: public Node {
@@ -149,7 +149,7 @@ namespace tachyon {
         BinOpNode(const std::shared_ptr<Node>& left_node, const Token& op_tok, const std::shared_ptr<Node>& right_node);
         NodeType get_type() const;
         std::string to_string() const;
-        uint64_t jit_val() const;
+        uint64_t get_val() const;
     };
 
     class VarDefStmtNode: public Node {

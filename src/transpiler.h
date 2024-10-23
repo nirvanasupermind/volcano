@@ -25,7 +25,7 @@ namespace tachyon {
         void visit_unary_op_node(const std::shared_ptr<UnaryOpNode>& node);
         void visit_bin_op_node(const std::shared_ptr<BinOpNode>& node);
         void visit_in_place_bin_op_node(const std::shared_ptr<BinOpNode>& node, const std::string& op);
-        void visit_lambda_expr_node(const std::shared_ptr<LambdaExprNode>& node);
+        void visit_anon_func_expr_node(const std::shared_ptr<AnonFuncExprNode>& node);
         void visit_expr_stmt_node(const std::shared_ptr<ExprStmtNode>& node);
         void visit_var_def_stmt_node(const std::shared_ptr<VarDefStmtNode>& node);
         void visit_const_def_stmt_node(const std::shared_ptr<ConstDefStmtNode>& node);

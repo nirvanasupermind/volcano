@@ -13,7 +13,7 @@ namespace tachyon {
         return *(float*)(&temp);
     }
 
-    uint64_t Node::jit_val() const {
+    uint64_t Node::get_val() const {
         return 0ULL;
     }
     
@@ -29,7 +29,7 @@ namespace tachyon {
         return "(FloatNode " + tok.to_string() + ")";
     }
 
-    uint64_t FloatNode::jit_val() const {
+    uint64_t FloatNode::get_val() const {
         return pack_float(std::stof(tok.val));
     }
 
@@ -45,7 +45,7 @@ namespace tachyon {
         return "(BoolNode " + tok.to_string() + ")";
     }
 
-    uint64_t BoolNode::jit_val() const {
+    uint64_t BoolNode::get_val() const {
         return (tok.val == "true") ? 10 : 2;
     }
 
@@ -61,7 +61,7 @@ namespace tachyon {
         return "(NullNode)";
     }
 
-    uint64_t NullNode::jit_val() const {
+    uint64_t NullNode::get_val() const {
         return 6;
     }
 
@@ -131,16 +131,16 @@ namespace tachyon {
         return "(IdentifierNode " + tok.to_string() + ")";
     }
 
-    LambdaExprNode::LambdaExprNode(const std::vector<Token>& arg_names, const std::shared_ptr<Node>& body) {
+    AnonFuncExprNode::AnonFuncExprNode(const std::vector<Token>& arg_names, const std::shared_ptr<Node>& body) {
         this->arg_names = arg_names;
         this->body = body;
     }
 
-    NodeType LambdaExprNode::get_type() const {
-        return NodeType::LAMBDA_EXPR;
+    NodeType AnonFuncExprNode::get_type() const {
+        return NodeType::ANON_FUNC_EXPR;
     }
 
-    std::string LambdaExprNode::to_string() const {
+    std::string AnonFuncExprNode::to_string() const {
         std::string result = "(LambdaExprNode ";
             for(int i = 0; i < arg_names.size(); i++) {
             result += arg_names.at(i).to_string() + " ";
@@ -181,8 +181,8 @@ namespace tachyon {
         return "(UnaryOpNode " + this->op_tok.to_string() + " " + this->right_node->to_string() + ")";
     }
 
-    uint64_t UnaryOpNode::jit_val() const {
-        uint64_t right = right_node->jit_val();
+    uint64_t UnaryOpNode::get_val() const {
+        uint64_t right = right_node->get_val();
         if(right == 0) {
             return 0;
         } else if(op_tok.type == TokenType::PLUS) {
@@ -212,9 +212,9 @@ namespace tachyon {
         return "(BinOpNode " + this->op_tok.to_string() + " " + this->left_node->to_string() + " " + this->right_node->to_string() + ")";
     }
 
-    uint64_t BinOpNode::jit_val() const {
-        uint64_t left = left_node->jit_val();
-        uint64_t right = right_node->jit_val();
+    uint64_t BinOpNode::get_val() const {
+        uint64_t left = left_node->get_val();
+        uint64_t right = right_node->get_val();
 
         if(left == 0 || right == 0) {
             return 0;
@@ -233,10 +233,30 @@ namespace tachyon {
             return pack_float(std::fmod(unpack_float(left), unpack_float(right)));
         case TokenType::AND:
             return pack_float((int32_t)(unpack_float(left)) & (int32_t)(unpack_float(right)));
-        case TokenType::LT:
-            return (unpack_float(left) < unpack_float(right)) ? 10 : 2;
+        case TokenType::OR:
+            return pack_float((int32_t)(unpack_float(left)) | (int32_t)(unpack_float(right)));
+        case TokenType::XOR:
+            return pack_float((int32_t)(unpack_float(left)) ^ (int32_t)(unpack_float(right)));
+        case TokenType::LSH:
+            return pack_float((int32_t)(unpack_float(left)) << (int32_t)(unpack_float(right)));
+        case TokenType::RSH:
+            return pack_float((int32_t)(unpack_float(left)) >> (int32_t)(unpack_float(right)));
+        case TokenType::LOGICAL_AND:
+            return ((left != 2) && (right != 2)) ? 10 : 2;
+       case TokenType::LOGICAL_OR:
+            return ((left != 2) || (right != 2)) ? 10 : 2;
         case TokenType::EQ:
             return (left == right) ? 10 : 2;
+        case TokenType::NE:
+            return (left != right) ? 10 : 2;
+        case TokenType::LT:
+            return (unpack_float(left) < unpack_float(right)) ? 10 : 2;
+        case TokenType::LE:
+            return (unpack_float(left) <= unpack_float(right)) ? 10 : 2;
+        case TokenType::GT:
+            return (unpack_float(left) > unpack_float(right)) ? 10 : 2;
+        case TokenType::GE:
+            return (unpack_float(left) >= unpack_float(right)) ? 10 : 2;
         default:
             return 0;
         }

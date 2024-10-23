@@ -72,8 +72,8 @@ namespace tachyon {
         else if (tok.type == TokenType::LCURLY) {
             return unordered_map_expr();
         }
-        else if (tok.type == TokenType::KEYWORD && tok.val == "lambda") {
-            return lambda_expr();
+        else if (tok.type == TokenType::KEYWORD && tok.val == "afunc") {
+            return anon_func_expr();
         }
         else {
             raise_error();
@@ -140,8 +140,8 @@ namespace tachyon {
         return std::make_shared<UnorderedMapNode>(UnorderedMapNode(keys, vals));
     }
 
-    std::shared_ptr<Node> Parser::lambda_expr() {
-        if (!(current_tok.type == TokenType::KEYWORD && current_tok.val == "lambda")) {
+    std::shared_ptr<Node> Parser::anon_func_expr() {
+        if (!(current_tok.type == TokenType::KEYWORD && current_tok.val == "afunc")) {
             raise_error();
         }
         advance();
@@ -174,7 +174,7 @@ namespace tachyon {
         }
 
         std::shared_ptr<Node> body = simple_block_stmt();
-        return std::make_shared<LambdaExprNode>(LambdaExprNode(arg_names, body));
+        return std::make_shared<AnonFuncExprNode>(AnonFuncExprNode(arg_names, body));
     }
 
     std::shared_ptr<Node> Parser::postfix_expr() {
@@ -443,7 +443,7 @@ namespace tachyon {
     }
 
     std::shared_ptr<Node> Parser::func_def_stmt() {
-        if (!(current_tok.type == TokenType::KEYWORD && current_tok.val == "def")) {
+        if (!(current_tok.type == TokenType::KEYWORD && current_tok.val == "func")) {
             raise_error();
         }
 
@@ -548,7 +548,7 @@ namespace tachyon {
         else if (current_tok.type == TokenType::KEYWORD && current_tok.val == "return") {
             return return_stmt();
         }
-        else if (current_tok.type == TokenType::KEYWORD && current_tok.val == "def") {
+        else if (current_tok.type == TokenType::KEYWORD && current_tok.val == "func") {
             return func_def_stmt();
         }
         else if (current_tok.type == TokenType::KEYWORD && current_tok.val == "try") {

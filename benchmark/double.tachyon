@@ -1,3 +1,4 @@
-for(var i = 0; i < 10000000; i++) {
-var x = Double.fromFloat(2).add(Double.fromFloat(2));
+var x = Double.fromFloat(0);
+for(var i = 0; i < 1000000; i++) {
+    x.inc();
 }
