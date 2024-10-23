@@ -119,11 +119,11 @@ namespace tachyon {
     // }
 
     void Transpiler::visit_string_node(const std::shared_ptr<StringNode>& node) {
-        code << "create_object(new std::unordered_map<std::string, uint64_t>({{\"prototype\",String}}),new std::string(\"" + node->tok.val << "\"))";
+        code << "create_object(new std::map<std::string, uint64_t>({{\"prototype\",String}}),new std::string(\"" + node->tok.val << "\"))";
     }
 
     void Transpiler::visit_vector_node(const std::shared_ptr<VectorNode>& node) {
-        code << "create_object(new std::unordered_map<std::string, uint64_t>({{\"prototype\",Vector}}), new std::vector<uint64_t>({";
+        code << "create_object(new std::map<std::string, uint64_t>({{\"prototype\",Vector}}), new std::vector<uint64_t>({";
         if (node->elements.size() == 0) {
             code << "}))";
         }
@@ -142,7 +142,7 @@ namespace tachyon {
     }
 
     void Transpiler::visit_unordered_map_node(const std::shared_ptr<UnorderedMapNode>& node) {
-        code << "create_object(new std::unordered_map<std::string, uint64_t>({{\"prototype\",UnorderedMap}})," << "new std::unordered_map<std::string, uint64_t>({";
+        code << "create_object(new std::map<std::string, uint64_t>({{\"prototype\",UnorderedMap}})," << "new std::map<std::string, uint64_t>({";
         if (node->keys.size() == 0) {
             code << "}))";
         }
@@ -378,7 +378,7 @@ namespace tachyon {
 
 
     void Transpiler::visit_lambda_expr_node(const std::shared_ptr<LambdaExprNode>& node) {
-        code << "create_object(new std::unordered_map<std::string, uint64_t>({}), new func_ptr([=] (const std::vector<uint64_t>& _args) -> uint64_t {\n";
+        code << "create_object(new std::map<std::string, uint64_t>({}), new func_ptr([=] (const std::vector<uint64_t>& _args) -> uint64_t {\n";
         for (int i = 0; i < node->arg_names.size(); i++) {
             code << "uint64_t " << node->arg_names.at(i).val << "= _args.at(" << i << ");\n";
         }
@@ -457,7 +457,7 @@ namespace tachyon {
 
     void Transpiler::visit_func_def_stmt_node(const std::shared_ptr<FuncDefStmtNode>& node) {
         code << "uint64_t " << node->name_tok.val << " = ";
-        code << "create_object(new std::unordered_map<std::string, uint64_t>({}), new func_ptr([=] (const std::vector<uint64_t>& _args) {\n";
+        code << "create_object(new std::map<std::string, uint64_t>({}), new func_ptr([=] (const std::vector<uint64_t>& _args) {\n";
         for (int i = 0; i < node->arg_names.size(); i++) {
             code << "uint64_t " << node->arg_names.at(i).val << "= _args.at(" << i << ");\n";
         }
@@ -469,8 +469,8 @@ namespace tachyon {
         code << "try {\n";
         visit(node->try_body);
         code << "\n} catch(const std::exception& _err) {\n";
-        code << "uint64_t msg = create_object(new std::unordered_map<std::string, uint64_t>({{\"prototype\",String}}), new std::string(_err.what()));\n";
-        code << "uint64_t " << node->error.val << "= create_object(new std::unordered_map<std::string, uint64_t>({{\"prototype\",Error},{\"msg\",msg}}));\n";
+        code << "uint64_t msg = create_object(new std::map<std::string, uint64_t>({{\"prototype\",String}}), new std::string(_err.what()));\n";
+        code << "uint64_t " << node->error.val << "= create_object(new std::map<std::string, uint64_t>({{\"prototype\",Error},{\"msg\",msg}}));\n";
         visit(node->catch_body);
         code << "\n}";
     }

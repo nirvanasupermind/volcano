@@ -24,6 +24,9 @@ class TachyonObject {
 public:
     std::unordered_map<std::string, uint64_t>* props;
     void* hidden_data = nullptr;
+    std::string previous_key;
+    uint64_t previous_val;
+
     TachyonObject(std::unordered_map<std::string, uint64_t>* props) {
         this->props = props;
     }
@@ -36,12 +39,20 @@ public:
         free(hidden_data);
     }
     uint64_t get(const std::string& key) {
-        if (props->count(key)) {
-            return props->at(key);
+        if(key == previous_key) {
+            return previous_val;
+        } else  if (props->count(key)) {
+            uint64_t val = props->at(key);
+            previous_key = key;
+            previous_val = val;
+            return val;
         }
         else {
             uint64_t prototype = props->at("prototype");
-            return (*(TachyonObject**)(&prototype))->get(key);
+            uint64_t val = (*(TachyonObject**)(&prototype))->get(key);
+            previous_key = key;
+            previous_val = val;
+            return val;
         }
     }
     void set(const std::string& key, uint64_t val) {
@@ -161,6 +172,15 @@ void tachyon_stl_setup() {
             uint64_t arg = _args.at(1);
             std::string arg_str = *(std::string*)(unpack_object(arg)->hidden_data);
             return create_object(new std::unordered_map<std::string, uint64_t>({ {"prototype",Double} }), new double(std::stod(arg_str)));
+            })));
+
+
+    unpack_object(Double)->set("inc", create_object(new std::unordered_map<std::string, uint64_t>({ {"prototype",Function} }),
+        new func_ptr([](const std::vector<uint64_t>& _args) {
+            uint64_t self = _args.at(0);
+            double* self_double = (double*)(unpack_object(self)->hidden_data);
+            self_double++;
+            return 6ULL;
             })));
 
     unpack_object(Double)->set("neg", create_object(new std::unordered_map<std::string, uint64_t>({ {"prototype",Function} }),
@@ -1172,6 +1192,50 @@ void tachyon_stl_setup() {
             return create_object(new std::unordered_map<std::string, uint64_t>({ {"prototype",String} }), new std::string(result));
             })));
 
+    unpack_object(UnorderedMap)->set("at", create_object(new std::unordered_map<std::string, uint64_t>({ {"prototype",Function} }),
+        new func_ptr([](const std::vector<uint64_t>& _args) {
+            uint64_t self = _args.at(0);
+            uint64_t key = _args.at(1);
+            std::unordered_map<std::string, uint64_t>* self_unordered_map = (std::unordered_map<std::string, uint64_t>*)(unpack_object(self)->hidden_data);
+            return self_unordered_map->at(string_repr(key));
+            })));
+
+    unpack_object(UnorderedMap)->set("set", create_object(new std::unordered_map<std::string, uint64_t>({ {"prototype",Function} }),
+        new func_ptr([](const std::vector<uint64_t>& _args) {
+            uint64_t self = _args.at(0);
+            uint64_t key = _args.at(1);
+            uint64_t val = _args.at(2);
+            std::unordered_map<std::string, uint64_t>* self_unordered_map = (std::unordered_map<std::string, uint64_t>*)(unpack_object(self)->hidden_data);
+            (*self_unordered_map)[string_repr(key)] = val;
+            return 6ULL;
+            })));
+
+    unpack_object(UnorderedMap)->set("has", create_object(new std::unordered_map<std::string, uint64_t>({ {"prototype",Function} }),
+        new func_ptr([](const std::vector<uint64_t>& _args) {
+            uint64_t self = _args.at(0);
+            uint64_t key = _args.at(1);
+            std::unordered_map<std::string, uint64_t> self_unordered_map = *(std::unordered_map<std::string, uint64_t>*)(unpack_object(self)->hidden_data);
+            return (self_unordered_map.count(string_repr(key)) ? 10ULL : 2ULL);
+            })));
+            
+    unpack_object(UnorderedMap)->set("toString", create_object(new std::unordered_map<std::string, uint64_t>({}),
+        new func_ptr([](const std::vector<uint64_t>& _args) {
+            uint64_t self = _args.at(0);
+            std::unordered_map<std::string, uint64_t> self_unordered_map = *(std::unordered_map<std::string, uint64_t>*)(unpack_object(self)->hidden_data);
+            std::string result = "{";
+            for(auto kv: self_unordered_map) {
+                result += kv.first + ":" + string_repr(kv.second) + ",";
+            }
+            if(result != "{") {
+                result = result.substr(0, result.size() - 1);
+            }
+            
+            result += "}";
+
+
+            return create_object(new std::unordered_map<std::string, uint64_t>({ {"prototype",String} }), new std::string(result));
+            })));
+            
     unpack_object(ThreadID)->set("toString", create_object(new std::unordered_map<std::string, uint64_t>({ {"prototype",Function} }),
         new func_ptr([](const std::vector<uint64_t>& _args) {
             uint64_t self = _args.at(0);
@@ -1272,49 +1336,7 @@ void tachyon_stl_setup() {
     //         return create_object(new std::unordered_map<std::string, uint64_t>({{"prototype",UnorderedMap}}), new std::unordered_map<std::string, uint64_t>({}));
     //         })));
 
-    unpack_object(UnorderedMap)->set("at", create_object(new std::unordered_map<std::string, uint64_t>({ {"prototype",Function} }),
-        new func_ptr([](const std::vector<uint64_t>& _args) {
-            uint64_t self = _args.at(0);
-            uint64_t key = _args.at(1);
-            std::unordered_map<std::string, uint64_t>* self_unordered_map = (std::unordered_map<std::string, uint64_t>*)(unpack_object(self)->hidden_data);
-            return self_unordered_map->at(string_repr(key));
-            })));
 
-    unpack_object(UnorderedMap)->set("set", create_object(new std::unordered_map<std::string, uint64_t>({ {"prototype",Function} }),
-        new func_ptr([](const std::vector<uint64_t>& _args) {
-            uint64_t self = _args.at(0);
-            uint64_t key = _args.at(1);
-            uint64_t val = _args.at(2);
-            std::unordered_map<std::string, uint64_t>* self_unordered_map = (std::unordered_map<std::string, uint64_t>*)(unpack_object(self)->hidden_data);
-            (*self_unordered_map)[string_repr(key)] = val;
-            return 6ULL;
-            })));
-
-    unpack_object(UnorderedMap)->set("has", create_object(new std::unordered_map<std::string, uint64_t>({ {"prototype",Function} }),
-        new func_ptr([](const std::vector<uint64_t>& _args) {
-            uint64_t self = _args.at(0);
-            uint64_t key = _args.at(1);
-            std::unordered_map<std::string, uint64_t> self_unordered_map = *(std::unordered_map<std::string, uint64_t>*)(unpack_object(self)->hidden_data);
-            return (self_unordered_map.count(string_repr(key)) ? 10ULL : 2ULL);
-            })));
-            
-    unpack_object(UnorderedMap)->set("toString", create_object(new std::unordered_map<std::string, uint64_t>({}),
-        new func_ptr([](const std::vector<uint64_t>& _args) {
-            uint64_t self = _args.at(0);
-            std::unordered_map<std::string, uint64_t> self_unordered_map = *(std::unordered_map<std::string, uint64_t>*)(unpack_object(self)->hidden_data);
-            std::string result = "{";
-            for(auto kv: self_unordered_map) {
-                result += kv.first + ":" + string_repr(kv.second) + ",";
-            }
-            if(result != "{") {
-                result = result.substr(0, result.size() - 1);
-            }
-            
-            result += "}";
-
-
-            return create_object(new std::unordered_map<std::string, uint64_t>({ {"prototype",String} }), new std::string(result));
-            })));
 
     // unpack_object(Complex)->set("fromComponents", create_object(new std::unordered_map<std::string, uint64_t>({}),
     //     new func_ptr([](const std::vector<uint64_t>& _args) {
