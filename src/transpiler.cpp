@@ -27,8 +27,8 @@ namespace tachyon {
             case NodeType::VECTOR:
                 visit_vector_node(std::static_pointer_cast<VectorNode>(node));
                 break;
-            case NodeType::UNORDERED_MAP:
-                visit_unordered_map_node(std::static_pointer_cast<UnorderedMapNode>(node));
+            case NodeType::MAP:
+                visit_map_node(std::static_pointer_cast<MapNode>(node));
                 break;;
             case NodeType::IDENTIFIER:
                 visit_identifier_node(std::static_pointer_cast<IdentifierNode>(node));
@@ -111,11 +111,11 @@ namespace tachyon {
     // }
 
     void Transpiler::visit_string_node(const std::shared_ptr<StringNode>& node) {
-        code << "create_object({{\"proto\",String}},new std::string(\"" + node->tok.val << "\"))";
+        code << "create_object({},String,new std::string(\"" + node->tok.val << "\"))";
     }
 
     void Transpiler::visit_vector_node(const std::shared_ptr<VectorNode>& node) {
-        code << "create_object({{\"proto\",Vector}}, new std::vector<uint64_t>({";
+        code << "create_object({},Vector, new std::vector<uint64_t>({";
         if (node->elements.size() == 0) {
             code << "}))";
         }
@@ -133,8 +133,8 @@ namespace tachyon {
         }
     }
 
-    void Transpiler::visit_unordered_map_node(const std::shared_ptr<UnorderedMapNode>& node) {
-        code << "create_object({{\"proto\",UnorderedMap}}," << "new std::unordered_map<std::string, uint64_t>({";
+    void Transpiler::visit_map_node(const std::shared_ptr<MapNode>& node) {
+        code << "create_object({},Map," << "new std::unordered_map<std::string, uint64_t>({";
         if (node->keys.size() == 0) {
             code << "}))";
         }
@@ -224,14 +224,14 @@ namespace tachyon {
                 code << "unpack_object(";
                 visit(obj_prop_node->obj);
                 code << ")->set(\"" << obj_prop_node->prop.val << "\", ";
-                code << "pack_number(unpack_number(";
+                code << "pack_float(unpack_float(";
                 visit(node->right_node);
                 code << ") + 1.0f))";
             }
         else {
             visit(node->right_node);
             code << " = ";
-            code << "pack_number(unpack_number(";
+            code << "pack_float(unpack_float(";
             visit(node->right_node);
             code << ") + 1.0f)";
         }
@@ -242,22 +242,22 @@ namespace tachyon {
                 code << "unpack_object(";
                 visit(obj_prop_node->obj);
                 code << ")->set(\"" << obj_prop_node->prop.val << "\", ";
-                code << "pack_number(unpack_number(";
+                code << "pack_float(unpack_float(";
                 visit(node->right_node);
                 code << ") - 1.0f))";
             }
         else {
             visit(node->right_node);
             code << " = ";
-            code << "pack_number(unpack_number(";
+            code << "pack_float(unpack_float(";
             visit(node->right_node);
             code << ") - 1.0f)";
         }
         }
         else {
-            code << "pack_number(";
+            code << "pack_float(";
             code << node->op_tok.val;
-            code << "unpack_number(";
+            code << "unpack_float(";
             visit(node->right_node);
             code << "))";
         }
@@ -311,9 +311,9 @@ void Transpiler::visit_bin_op_node(const std::shared_ptr<BinOpNode>& node) {
     }
     else if (node->op_tok.type == TokenType::AND || node->op_tok.type == TokenType::OR || node->op_tok.type == TokenType::XOR
         || node->op_tok.type == TokenType::LSH || node->op_tok.type == TokenType::RSH) {
-        code << "pack_number((float)((int32_t)unpack_number(";
+        code << "pack_float((float)((int32_t)unpack_float(";
         visit(node->left_node);
-        code << ")" << node->op_tok.val << "(int32_t)unpack_number(";
+        code << ")" << node->op_tok.val << "(int32_t)unpack_float(";
         visit(node->right_node);
         code << ")))";
     }
@@ -326,18 +326,18 @@ void Transpiler::visit_bin_op_node(const std::shared_ptr<BinOpNode>& node) {
     }
     else if (node->op_tok.type == TokenType::LT || node->op_tok.type == TokenType::LE
         || node->op_tok.type == TokenType::GT || node->op_tok.type == TokenType::GE) {
-        code << "(unpack_number(";
+        code << "(unpack_float(";
         visit(node->left_node);
         code << ")";
         code << node->op_tok.val;
-        code << "unpack_number(";
+        code << "unpack_float(";
         visit(node->right_node);
         code << ") ? 10ULL : 2ULL)";
     }
     else {
-        code << "pack_number(unpack_number(";
+        code << "pack_float(unpack_float(";
         visit(node->left_node);
-        code << ")" << node->op_tok.val << "unpack_number(";
+        code << ")" << node->op_tok.val << "unpack_float(";
         visit(node->right_node);
         code << "))";
     }
@@ -355,23 +355,23 @@ void Transpiler::visit_in_place_bin_op_node(const std::shared_ptr<BinOpNode>& no
         code << "=";
     }
     if (op == "&" || op == "|" || op == "^" || op == "<<" || op == ">>") {
-        code << "pack_number((float)((int32_t)unpack_number(";
+        code << "pack_float((float)((int32_t)unpack_float(";
         visit(node->left_node);
-        code << ") " << op << " (int32_t)unpack_number(";
+        code << ") " << op << " (int32_t)unpack_float(";
         visit(node->right_node);
         code << ")))";
     }
     else if (op == "%") {
-        code << "pack_number(std::fmod(unpack_number(";
+        code << "pack_float(std::fmod(unpack_float(";
         visit(node->left_node);
-        code << "), unpack_number(";
+        code << "), unpack_float(";
         visit(node->right_node);
         code << ")))";
     }
     else {
-        code << "pack_number(unpack_number(";
+        code << "pack_float(unpack_float(";
         visit(node->left_node);
-        code << ") " << op << " unpack_number(";
+        code << ") " << op << " unpack_float(";
         visit(node->right_node);
         code << "))";
     }
@@ -379,7 +379,7 @@ void Transpiler::visit_in_place_bin_op_node(const std::shared_ptr<BinOpNode>& no
 
 
 void Transpiler::visit_anon_func_expr_node(const std::shared_ptr<AnonFuncExprNode>& node) {
-    code << "create_object({}, new func_ptr([=] (const std::vector<uint64_t>& _args) -> uint64_t {\n";
+    code << "create_object({}, Function, new func_ptr([=] (const std::vector<uint64_t>& _args) -> uint64_t {\n";
     for (int i = 0; i < node->arg_names.size(); i++) {
         code << "uint64_t " << node->arg_names.at(i).val << "= _args.at(" << i << ");\n";
     }
@@ -458,7 +458,7 @@ void Transpiler::visit_return_stmt_node(const std::shared_ptr<ReturnStmtNode>& n
 
 void Transpiler::visit_func_def_stmt_node(const std::shared_ptr<FuncDefStmtNode>& node) {
     code << "uint64_t " << node->name_tok.val << " = ";
-    code << "create_object({}, new func_ptr([=] (const std::vector<uint64_t>& _args) {\n";
+    code << "create_object({}, Function, new func_ptr([=] (const std::vector<uint64_t>& _args) {\n";
     for (int i = 0; i < node->arg_names.size(); i++) {
         code << "uint64_t " << node->arg_names.at(i).val << "= _args.at(" << i << ");\n";
     }
@@ -470,7 +470,7 @@ void Transpiler::visit_try_catch_stmt_node(const std::shared_ptr<TryCatchStmtNod
     code << "try {\n";
     visit(node->try_body);
     code << "\n} catch(const std::exception& _err) {\n";
-    code << "uint64_t msg = create_object({{\"proto\",String}}, new std::string(_err.what()));\n";
+    code << "uint64_t msg = create_object({},String, new std::string(_err.what()));\n";
     code << "uint64_t " << node->error.val << "= create_object({{\"proto\",Error},{\"msg\",msg}});\n";
     visit(node->catch_body);
     code << "\n}";

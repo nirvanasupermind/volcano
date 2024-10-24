@@ -20,7 +20,7 @@ namespace tachyon {
         std::shared_ptr<Node> parse();
         std::shared_ptr<Node> factor();
         std::shared_ptr<Node> vector_expr();
-        std::shared_ptr<Node> unordered_map_expr();
+        std::shared_ptr<Node> map_expr();
         std::shared_ptr<Node> anon_func_expr();
         std::shared_ptr<Node> postfix_expr();
         std::shared_ptr<Node> multiplicative_expr();

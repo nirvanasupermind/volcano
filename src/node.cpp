@@ -95,17 +95,17 @@ namespace tachyon {
         return result;
     }
 
-    UnorderedMapNode::UnorderedMapNode(const std::vector<std::shared_ptr<Node> >& keys, const std::vector<std::shared_ptr<Node> >& vals) {
+    MapNode::MapNode(const std::vector<std::shared_ptr<Node> >& keys, const std::vector<std::shared_ptr<Node> >& vals) {
         this->keys = keys;
         this->vals = vals;
     }
 
-    NodeType UnorderedMapNode::get_type() const {
-        return NodeType::UNORDERED_MAP;
+    NodeType MapNode::get_type() const {
+        return NodeType::MAP;
     }
 
-    std::string UnorderedMapNode::to_string() const {
-        std::string result = "(UnorderedMap (";
+    std::string MapNode::to_string() const {
+        std::string result = "(Map (";
         for(int i = 0; i < keys.size(); i++) {
             result += keys.at(i)->to_string() + " ";
         }
