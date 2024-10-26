@@ -33,7 +33,7 @@ namespace tachyon {
 
     std::shared_ptr<Node> Parser::factor() {
         Token tok = current_tok;
-        if (tok.type == TokenType::PLUS || tok.type == TokenType::MINUS || tok.type == TokenType::NOT || tok.type == TokenType::LOGICAL_NOT) {
+        if (tok.type == TokenType::PLUS || tok.type == TokenType::MINUS || tok.type == TokenType::NOT) {
             advance();
             return std::make_shared<UnaryOpNode>(UnaryOpNode(tok, expr()));
         }
@@ -46,18 +46,18 @@ namespace tachyon {
             advance();
             return inner_expr;
         }
-        else if (tok.type == TokenType::FLOAT) {
+        else if (tok.type == TokenType::NUMBER) {
             advance();
-            return std::make_shared<FloatNode>(FloatNode(tok));
+            return std::make_shared<NumberNode>(NumberNode(tok));
         }
-        else if (tok.type == TokenType::KEYWORD && (tok.val == "true" || tok.val == "false")) {
-            advance();
-            return std::make_shared<BoolNode>(BoolNode(tok));
-        }
-        else if (tok.type == TokenType::KEYWORD && tok.val == "null") {
-            advance();
-            return std::make_shared<NullNode>(NullNode());
-        }
+        // else if (tok.type == TokenType::KEYWORD && (tok.val == "true" || tok.val == "false")) {
+        //     advance();
+        //     return std::make_shared<BoolNode>(BoolNode(tok));
+        // }
+        // else if (tok.type == TokenType::KEYWORD && tok.val == "null") {
+        //     advance();
+        //     return std::make_shared<NullNode>(NullNode());
+        // }
         else if (tok.type == TokenType::STRING) {
             advance();
             return std::make_shared<StringNode>(StringNode(tok));
@@ -257,14 +257,13 @@ namespace tachyon {
         return bin_op([this]() {return this->xor_expr(); }, { TokenType::OR });
     }
 
+    // std::shared_ptr<Node> Parser::logical_and_expr() {
+    //     return bin_op([this]() {return this->or_expr(); }, { TokenType::LOGICAL_AND });
+    // }
 
-    std::shared_ptr<Node> Parser::logical_and_expr() {
-        return bin_op([this]() {return this->or_expr(); }, { TokenType::LOGICAL_AND });
-    }
-
-    std::shared_ptr<Node> Parser::logical_or_expr() {
-        return bin_op([this]() {return this->logical_or_expr(); }, { TokenType::LOGICAL_OR });
-    }
+    // std::shared_ptr<Node> Parser::logical_or_expr() {
+    //     return bin_op([this]() {return this->logical_or_expr(); }, { TokenType::LOGICAL_OR });
+    // }
 
     std::shared_ptr<Node> Parser::assign_expr() {
         return bin_op([this]() {return this->or_expr(); }, { TokenType::EQ, TokenType::PLUS_EQ, TokenType::MINUS_EQ,
@@ -485,6 +484,19 @@ namespace tachyon {
     }
 
 
+    std::shared_ptr<Node> Parser::throw_stmt() {
+        if (!(current_tok.type == TokenType::KEYWORD && current_tok.val == "throw")) {
+            raise_error();
+        }
+        advance();
+
+        std::shared_ptr<Node> res = expr();
+        if (current_tok.type != TokenType::SEMICOLON) {
+            raise_error();
+        }
+        advance();
+        return std::make_shared<ThrowStmtNode>(ThrowStmtNode(res));
+    }
     std::shared_ptr<Node> Parser::try_catch_stmt() {
         if (!(current_tok.type == TokenType::KEYWORD && current_tok.val == "try")) {
             raise_error();
@@ -550,6 +562,9 @@ namespace tachyon {
         }
         else if (current_tok.type == TokenType::KEYWORD && current_tok.val == "func") {
             return func_def_stmt();
+        }
+        else if (current_tok.type == TokenType::KEYWORD && current_tok.val == "throw") {
+            return throw_stmt();
         }
         else if (current_tok.type == TokenType::KEYWORD && current_tok.val == "try") {
             return try_catch_stmt();

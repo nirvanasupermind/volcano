@@ -4,65 +4,24 @@
 #include "node.h"
 
 namespace tachyon {
-    uint64_t pack_float(float x) {
-        return (*(uint64_t*)(&x) << 2) + 1;
-    }
-
-    float unpack_float(uint64_t x) {
-        uint64_t temp = x >> 2;
-        return *(float*)(&temp);
-    }
-
-    uint64_t Node::get_val() const {
-        return 0ULL;
+    double Node::get_double() const {
+        return NAN;
     }
     
-    FloatNode::FloatNode(const Token& tok) {
+    NumberNode::NumberNode(const Token& tok) {
         this->tok = tok;
     }
 
-    NodeType FloatNode::get_type() const {
-        return NodeType::FLOAT;
+    NodeType NumberNode::get_type() const {
+        return NodeType::NUMBER;
     }
 
-    std::string FloatNode::to_string() const {
-        return "(FloatNode " + tok.to_string() + ")";
+    std::string NumberNode::to_string() const {
+        return "(Numbernode " + tok.to_string() + ")";
     }
 
-    uint64_t FloatNode::get_val() const {
-        return pack_float(std::stof(tok.val));
-    }
-
-    BoolNode::BoolNode(const Token& tok) {
-        this->tok = tok;
-    }
-
-    NodeType BoolNode::get_type() const {
-        return NodeType::BOOL;
-    }
-
-    std::string BoolNode::to_string() const {
-        return "(BoolNode " + tok.to_string() + ")";
-    }
-
-    uint64_t BoolNode::get_val() const {
-        return (tok.val == "true") ? 10 : 2;
-    }
-
-    NullNode::NullNode() {
-
-    }
-
-    NodeType NullNode::get_type() const {
-        return NodeType::NULL_;
-    }
-
-    std::string NullNode::to_string() const {
-        return "(NullNode)";
-    }
-
-    uint64_t NullNode::get_val() const {
-        return 6;
+    double NumberNode::get_double() const {
+        return std::stod(tok.val);
     }
 
    StringNode::StringNode(const Token& tok) {
@@ -181,20 +140,18 @@ namespace tachyon {
         return "(UnaryOpNode " + this->op_tok.to_string() + " " + this->right_node->to_string() + ")";
     }
 
-    uint64_t UnaryOpNode::get_val() const {
-        uint64_t right = right_node->get_val();
-        if(right == 0) {
-            return 0;
+    double UnaryOpNode::get_double() const {
+        uint64_t right = right_node->get_double();
+        if(std::isnan(right)) {
+            return NAN;
         } else if(op_tok.type == TokenType::PLUS) {
             return right;
         } else if(op_tok.type == TokenType::MINUS) {
-            return pack_float(-unpack_float(right));
+            return -right;
         } else if(op_tok.type == TokenType::NOT) {
-            return pack_float(~(int32_t)(unpack_float(right)));
-        } else if(op_tok.type == TokenType::LOGICAL_NOT) {
-            return (right == 10) ? 2 : 10;
+            return ~(int32_t)right;
         } else {
-            return 0;
+            return NAN;
         }
     }
 
@@ -212,53 +169,49 @@ namespace tachyon {
         return "(BinOpNode " + this->op_tok.to_string() + " " + this->left_node->to_string() + " " + this->right_node->to_string() + ")";
     }
 
-    uint64_t BinOpNode::get_val() const {
-        uint64_t left = left_node->get_val();
-        uint64_t right = right_node->get_val();
+    double BinOpNode::get_double() const {
+        double left = left_node->get_double();
+        double right = right_node->get_double();
 
-        if(left == 0 || right == 0) {
+        if(std::isnan(left) || std::isnan(right)) {
             return 0;
         }
         
         switch(op_tok.type) {
         case TokenType::PLUS:
-            return pack_float(unpack_float(left) + unpack_float(right));
+            return left + right;
         case TokenType::MINUS:
-            return pack_float(unpack_float(left) - unpack_float(right));
+            return left - right;
         case TokenType::MUL:
-            return pack_float(unpack_float(left) * unpack_float(right));
+            return left * right;
         case TokenType::DIV:
-            return pack_float(unpack_float(left) / unpack_float(right));
+            return left / right;
         case TokenType::MOD:
-            return pack_float(std::fmod(unpack_float(left), unpack_float(right)));
+            return std::fmod(left, right);
         case TokenType::AND:
-            return pack_float((int32_t)(unpack_float(left)) & (int32_t)(unpack_float(right)));
+            return (int32_t)left & (int32_t)right;
         case TokenType::OR:
-            return pack_float((int32_t)(unpack_float(left)) | (int32_t)(unpack_float(right)));
+            return (int32_t)left | (int32_t)right;
         case TokenType::XOR:
-            return pack_float((int32_t)(unpack_float(left)) ^ (int32_t)(unpack_float(right)));
+            return (int32_t)left ^ (int32_t)right;
         case TokenType::LSH:
-            return pack_float((int32_t)(unpack_float(left)) << (int32_t)(unpack_float(right)));
+            return (int32_t)left << (int32_t)right;
         case TokenType::RSH:
-            return pack_float((int32_t)(unpack_float(left)) >> (int32_t)(unpack_float(right)));
-        case TokenType::LOGICAL_AND:
-            return ((left != 2) && (right != 2)) ? 10 : 2;
-       case TokenType::LOGICAL_OR:
-            return ((left != 2) || (right != 2)) ? 10 : 2;
+            return (int32_t)left >> (int32_t)right;
         case TokenType::EQ:
-            return (left == right) ? 10 : 2;
+            return left == right;
         case TokenType::NE:
-            return (left != right) ? 10 : 2;
+            return left != right;
         case TokenType::LT:
-            return (unpack_float(left) < unpack_float(right)) ? 10 : 2;
+            return left < right;
         case TokenType::LE:
-            return (unpack_float(left) <= unpack_float(right)) ? 10 : 2;
+            return left <= right;
         case TokenType::GT:
-            return (unpack_float(left) > unpack_float(right)) ? 10 : 2;
+            return left >= right;
         case TokenType::GE:
-            return (unpack_float(left) >= unpack_float(right)) ? 10 : 2;
+            return left >= right;
         default:
-            return 0;
+            return NAN;
         }
     }
 
@@ -412,6 +365,17 @@ namespace tachyon {
         return result;
     }
 
+    ThrowStmtNode::ThrowStmtNode(const std::shared_ptr<Node>& expr_node) {
+        this->expr_node = expr_node;
+    }
+
+    NodeType ThrowStmtNode::get_type() const {
+        return NodeType::THROW_STMT;
+    }
+
+    std::string ThrowStmtNode::to_string() const {
+        return "(ThrowStmtNode " + expr_node->to_string() + ")";
+    }
 
     ObjectMemberNode::ObjectMemberNode(const std::shared_ptr<Node>& obj, const Token& prop) {
         this->obj = obj;

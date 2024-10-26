@@ -1,17 +1,1 @@
-var Complex = Object.clone(); // complex number
-Complex.fromComponents = afunc(self, real, imag) {
-    // fromComponents
-    var result = Complex.clone();
-    result.real = real;
-    result.imag = imag;
-    return result;
-};
-Complex.add = afunc(self, other) {
-    return Complex.fromComponents(self.real + other.real, self.imag + other.imag);
-};
-
-var a = Complex.fromComponents(1, 1);
-var b = Complex.fromComponents(2, 3);
-var c = a.add(b);
-print(c.real);
-print(c.imag);
+(1+2)*3;

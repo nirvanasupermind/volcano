@@ -31,8 +31,8 @@ namespace tachyon {
         std::shared_ptr<Node> and_expr();
         std::shared_ptr<Node> xor_expr();
         std::shared_ptr<Node> or_expr();
-        std::shared_ptr<Node> logical_and_expr();
-        std::shared_ptr<Node> logical_or_expr();
+        // std::shared_ptr<Node> logical_and_expr();
+        // std::shared_ptr<Node> logical_or_expr();
         std::shared_ptr<Node> assign_expr();
         std::shared_ptr<Node> bin_op(const std::function<std::shared_ptr<Node>()>& func, const std::vector<TokenType>& ops);
         std::shared_ptr<Node> expr();
@@ -46,9 +46,9 @@ namespace tachyon {
         std::shared_ptr<Node> for_stmt();
         std::shared_ptr<Node> return_stmt();
         std::shared_ptr<Node> func_def_stmt();
+        std::shared_ptr<Node> throw_stmt();
         std::shared_ptr<Node> try_catch_stmt();
         std::shared_ptr<Node> include_stmt();
-
         std::shared_ptr<Node> stmt();
         std::shared_ptr<Node> stmt_list(TokenType end);
     };

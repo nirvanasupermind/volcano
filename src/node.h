@@ -8,9 +8,7 @@
 
 namespace tachyon {
     enum class NodeType {
-        FLOAT,
-        BOOL,
-        NULL_,
+        NUMBER,
         STRING,
         VECTOR,
         MAP,
@@ -30,45 +28,26 @@ namespace tachyon {
         FOR_STMT,
         RETURN_STMT,
         FUNC_DEF_STMT,
+        THROW_STMT,
         TRY_CATCH_STMT,
         INCLUDE_STMT,
         STMT_LIST
     };
 
-    uint64_t pack_float(float x);
-    float unpack_float(uint64_t x);
-
     class Node {
     public:
         virtual NodeType get_type() const = 0;
         virtual std::string to_string() const = 0;
-        virtual uint64_t get_val() const;
+        virtual double get_double() const;
     };
 
-    class FloatNode: public Node {
+    class NumberNode: public Node {
     public:
         Token tok;
-        FloatNode(const Token& tok);
+        NumberNode(const Token& tok);
         NodeType get_type() const;
         std::string to_string() const;
-        uint64_t get_val() const;
-    };
-
-    class BoolNode: public Node {
-    public:
-        Token tok;
-        BoolNode(const Token& tok);
-        NodeType get_type() const;
-        std::string to_string() const;
-        uint64_t get_val() const;
-    };
-
-    class NullNode: public Node {
-    public:
-        NullNode();
-        NodeType get_type() const;
-        std::string to_string() const;
-        uint64_t get_val() const;
+        double get_double() const;
     };
 
     class StringNode: public Node {
@@ -138,7 +117,7 @@ namespace tachyon {
         UnaryOpNode(const Token& op_tok, const std::shared_ptr<Node>& right_node);
         NodeType get_type() const;
         std::string to_string() const;
-        uint64_t get_val() const;
+        double get_double() const;
     };
 
     class BinOpNode: public Node {
@@ -149,7 +128,7 @@ namespace tachyon {
         BinOpNode(const std::shared_ptr<Node>& left_node, const Token& op_tok, const std::shared_ptr<Node>& right_node);
         NodeType get_type() const;
         std::string to_string() const;
-        uint64_t get_val() const;
+        double get_double() const;
     };
 
     class VarDefStmtNode: public Node {
@@ -244,6 +223,13 @@ namespace tachyon {
         std::string to_string() const;
     };
 
+    class ThrowStmtNode: public Node {
+    public:
+        std::shared_ptr<Node> expr_node;
+        ThrowStmtNode(const std::shared_ptr<Node>& expr_node);
+        NodeType get_type() const;
+        std::string to_string() const;
+    };
 
     class TryCatchStmtNode: public Node {
     public:

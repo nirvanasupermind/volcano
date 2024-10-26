@@ -13,9 +13,6 @@ namespace tachyon {
         std::ostringstream code;
         Transpiler();
         void visit(const std::shared_ptr<Node>& node);
-        // void visit_number_node(const std::shared_ptr<FloatNode>& node);
-        // void visit_bool_node(const std::shared_ptr<BoolNode>& node);
-        // void visit_null_node(const std::shared_ptr<NullNode>& node);
         void visit_string_node(const std::shared_ptr<StringNode>& node);
         void visit_vector_node(const std::shared_ptr<VectorNode>& node);
         void visit_map_node(const std::shared_ptr<MapNode>& node);
@@ -36,6 +33,7 @@ namespace tachyon {
         void visit_for_stmt_node(const std::shared_ptr<ForStmtNode>& node);
         void visit_return_stmt_node(const std::shared_ptr<ReturnStmtNode>& node);
         void visit_func_def_stmt_node(const std::shared_ptr<FuncDefStmtNode>& node);
+        void visit_throw_stmt_node(const std::shared_ptr<ThrowStmtNode>& node);
         void visit_try_catch_stmt_node(const std::shared_ptr<TryCatchStmtNode>& node);
         void visit_include_stmt_node(const std::shared_ptr<IncludeStmtNode>& node);
         void visit_stmt_list_node(const std::shared_ptr<StmtListNode>& node);

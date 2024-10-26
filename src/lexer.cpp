@@ -117,9 +117,9 @@ namespace tachyon {
                     tokens.push_back(Token(line, TokenType::AND_EQ, "&="));
                     advance();
                 }
-                else if(current_char == '&') {
-                    tokens.push_back(Token(line, TokenType::LOGICAL_AND, "&="));
-                }
+                // else if(current_char == '&') {
+                //     tokens.push_back(Token(line, TokenType::LOGICAL_AND, "&&"));
+                // }
                 else {
                     tokens.push_back(Token(old_line, TokenType::AND, "&"));
                 }
@@ -131,9 +131,9 @@ namespace tachyon {
                     tokens.push_back(Token(line, TokenType::OR_EQ, "|="));
                     advance();
                 }
-                else if(current_char == '|') {
-                    tokens.push_back(Token(line, TokenType::LOGICAL_OR, "|="));
-                }
+                // else if(current_char == '|') {
+                //     tokens.push_back(Token(line, TokenType::LOGICAL_OR, "||"));
+                // }
                 else {
                     tokens.push_back(Token(old_line, TokenType::OR, "|"));
                 }
@@ -161,14 +161,15 @@ namespace tachyon {
                 }
             }
             else if (current_char == '!') {
-                int old_line = line;
+                // int old_line = line;
                 advance();
                 if (current_char == '=') {
                     tokens.push_back(Token(line, TokenType::NE, "!="));
                     advance();
-                } else {
-                    tokens.push_back(Token(old_line, TokenType::LOGICAL_NOT, "!"));
                 }
+                // else {
+                //     tokens.push_back(Token(old_line, TokenType::LOGICAL_NOT, "!"));
+                // }
             }
             else if (current_char == '<') {
                 int old_line = line;
@@ -275,7 +276,7 @@ namespace tachyon {
             advance();
         }
 
-        return Token(line, TokenType::FLOAT, num_str);
+        return Token(line, TokenType::NUMBER, num_str);
     }
 
     Token Lexer::make_string() {
@@ -301,7 +302,8 @@ namespace tachyon {
             identifier_str == "var" || identifier_str == "const" || identifier_str == "block" 
             || identifier_str == "if" || identifier_str == "else" || identifier_str == "while"
             || identifier_str == "for" || identifier_str == "return" || identifier_str == "func" || identifier_str == "afunc"
-            || identifier_str == "try" || identifier_str == "catch" || identifier_str == "include") {
+            || identifier_str == "throw"
+            || identifier_str == "try" || identifier_str == "catch" || identifier_str == "include" ) {
             return Token(line, TokenType::KEYWORD, identifier_str);
         }
         else {
