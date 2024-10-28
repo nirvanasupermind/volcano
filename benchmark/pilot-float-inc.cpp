@@ -3,9 +3,11 @@
 
 int main() {
     auto start = std::chrono::system_clock::now();
- 
-    TachyonVal x = TachyonVal(0.0);
-    for(TachyonVal i = TachyonVal(0.0); i.num < TachyonVal(1000000.0).num; i.num++) {
+
+    tachyon_internal::Val x = tachyon_internal::Val(0.0f);
+    for (tachyon_internal::Val i = tachyon_internal::Val(0.0f);
+        tachyon_internal::Val(i.num < tachyon_internal::Val(1000000.0f).num).num;
+        i.num++) {
         x.num++;
     }
 
