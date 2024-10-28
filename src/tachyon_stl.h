@@ -2,6 +2,7 @@
 #include <vector>
 #include <unordered_map>
 #include <utility>
+#include <iostream>
 
 namespace tachyon_internal {
     class Object;
@@ -62,8 +63,9 @@ namespace tachyon_internal {
             throw std::runtime_error("key not found: " + key);
         }
 
-        void set(const std::string& key, Val val) {
+        Val set(const std::string& key, const Val& val) {
             props[key] = val;
+            return val;
         }
 
         bool has(const std::string& key) {
@@ -97,11 +99,20 @@ namespace tachyon_internal {
     using func_type = std::function<Val(const std::vector<Val>&)>;
 }
 
+// Standard library code starts here
+
 tachyon_internal::Val Object = tachyon_internal::make_obj();
 tachyon_internal::Val String = tachyon_internal::make_obj({}, Object.obj);
 tachyon_internal::Val Vector = tachyon_internal::make_obj({}, Object.obj);
 tachyon_internal::Val Map = tachyon_internal::make_obj({}, Object.obj);
 tachyon_internal::Val Function = tachyon_internal::make_obj({}, Object.obj);
+tachyon_internal::Val print =  tachyon_internal::make_obj({}, Function.obj, new tachyon_internal::func_type([](const std::vector<tachyon_internal::Val>& _args) -> tachyon_internal::Val {
+        std::cout << _args.at(0).num << '\n';
+    }));
 
 void tachyon_stl_setup() {
+    Object.obj->set("clone", tachyon_internal::make_obj({}, Function.obj, new tachyon_internal::func_type([=](const std::vector<tachyon_internal::Val>& _args) -> tachyon_internal::Val {
+        return tachyon_internal::make_obj({}, _args.at(0).obj);
+    })));
 }
+

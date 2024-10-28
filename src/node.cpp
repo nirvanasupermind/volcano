@@ -174,7 +174,7 @@ namespace tachyon {
         double right = right_node->get_double();
 
         if(std::isnan(left) || std::isnan(right)) {
-            return 0;
+            return NAN;
         }
         
         switch(op_tok.type) {
@@ -377,16 +377,16 @@ namespace tachyon {
         return "(ThrowStmtNode " + expr_node->to_string() + ")";
     }
 
-    ObjectMemberNode::ObjectMemberNode(const std::shared_ptr<Node>& obj, const Token& prop) {
+    ObjectPropNode::ObjectPropNode(const std::shared_ptr<Node>& obj, const Token& prop) {
         this->obj = obj;
         this->prop = prop;
     }
 
-    NodeType ObjectMemberNode::get_type() const {
+    NodeType ObjectPropNode::get_type() const {
         return NodeType::OBJECT_PROP;
     }
 
-    std::string ObjectMemberNode::to_string() const {
+    std::string ObjectPropNode::to_string() const {
         return "(ObjectPropNode  " + obj->to_string() + " " + prop.to_string() + ")";
     }
 
@@ -423,7 +423,7 @@ namespace tachyon {
     NodeType StmtListNode::get_type() const {
         return NodeType::STMT_LIST;
     }
-
+    
     std::string StmtListNode::to_string() const {
         std::string result = "(StmtListNode ";
         for(int i = 0; i < stmts.size(); i++) {

@@ -30,15 +30,24 @@ namespace tachyon {
                 break;
             case NodeType::MAP:
                 visit_map_node(std::static_pointer_cast<MapNode>(node));
-                break;;
+                break;
             case NodeType::ANON_FUNC_EXPR:
                 visit_anon_func_expr_node(std::static_pointer_cast<AnonFuncExprNode>(node));
                 break;
             case NodeType::IDENTIFIER:
                 visit_identifier_node(std::static_pointer_cast<IdentifierNode>(node));
                 break;
+            case NodeType::CALL_EXPR:
+                visit_call_expr_node(std::static_pointer_cast<CallExprNode>(node));
+                break;
+            case NodeType::OBJECT_PROP:
+                visit_object_prop_node(std::static_pointer_cast<ObjectPropNode>(node));
+                break;
             case NodeType::UNARY_OP:
                 visit_unary_op_node(std::static_pointer_cast<UnaryOpNode>(node));
+                break;
+            case NodeType::BIN_OP:
+                visit_bin_op_node(std::static_pointer_cast<BinOpNode>(node));
                 break;
             case NodeType::EXPR_STMT:
                 visit_expr_stmt_node(std::static_pointer_cast<ExprStmtNode>(node));
@@ -60,6 +69,15 @@ namespace tachyon {
                 break;
             case NodeType::WHILE_STMT:
                 visit_while_stmt_node(std::static_pointer_cast<WhileStmtNode>(node));
+                break;
+            case NodeType::FOR_STMT:
+                visit_for_stmt_node(std::static_pointer_cast<ForStmtNode>(node));
+                break;
+            case NodeType::RETURN_STMT:
+                visit_return_stmt_node(std::static_pointer_cast<ReturnStmtNode>(node));
+                break;
+            case NodeType::FUNC_DEF_STMT:
+                visit_func_def_stmt_node(std::static_pointer_cast<FuncDefStmtNode>(node));
                 break;
             case NodeType::INCLUDE_STMT:
                 visit_include_stmt_node(std::static_pointer_cast<IncludeStmtNode>(node));
@@ -130,13 +148,29 @@ namespace tachyon {
         code << node->tok.val;
     }
 
-    // void Transpiler::visit_call_expr_node(const std::shared_ptr<CallExprNode>& node) {
-    //     code << "(" << node->callee << ".other_data)({";
-    //     for (int i = 0; i < node->args.size(); i++) {
-    //         visit(node->args.at(i));
-    //     }
-    //     code << "})"
-    // }
+    void Transpiler::visit_call_expr_node(const std::shared_ptr<CallExprNode>& node) {
+        code << "(*(tachyon_internal::func_type*)((";
+        visit(node->callee);
+        code << ").obj->hidden_data))({";
+        if(node->callee->get_type() == NodeType::OBJECT_PROP) {
+            visit(std::static_pointer_cast<ObjectPropNode>(node->callee)->obj);
+            if(!node->args.empty()) {
+                code << ",";
+            }
+        }
+        for (int i = 0; i < node->args.size(); i++) {
+            visit(node->args.at(i));
+            if(i != node->args.size() - 1) {
+                code << ",";
+            }
+        }
+        code << "})";
+    }
+
+    void Transpiler::visit_object_prop_node(const std::shared_ptr<ObjectPropNode>& node) {
+        visit(node->obj);
+        code << ".obj->get(\"" << node->prop.val << "\")";
+    }
 
     void Transpiler::visit_unary_op_node(const std::shared_ptr<UnaryOpNode>& node) {
         if (node->op_tok.type == TokenType::PLUS) {
@@ -162,19 +196,39 @@ namespace tachyon {
 
     void Transpiler::visit_bin_op_node(const std::shared_ptr<BinOpNode>& node) {
         if (node->op_tok.type == TokenType::EQ) {
-            visit(node->left_node);
-            code << "=";
-            visit(node->right_node);
+            if (node->left_node->get_type() == NodeType::OBJECT_PROP) {
+                std::shared_ptr<ObjectPropNode> temp = std::static_pointer_cast<ObjectPropNode>(node->left_node);
+                code << "(";
+                visit(temp->obj);
+                code << ").obj->set(\"" << temp->prop.val << "\",";
+                visit(node->right_node);
+                code << ")";
+            }
+            else {
+                visit(node->left_node);
+                code << "=";
+                visit(node->right_node);
+            }
         }
         else if (node->op_tok.type == TokenType::PLUS_EQ || node->op_tok.type == TokenType::MINUS_EQ || node->op_tok.type == TokenType::MUL_EQ
             || node->op_tok.type == TokenType::DIV_EQ || node->op_tok.type == TokenType::MOD_EQ) {
-            code << "(";
-            visit(node->left_node);
-            code << ").num";
-            code << node->op_tok.val;
-            code << "(";
-            visit(node->right_node);
-            code << ").num";
+            if (node->left_node->get_type() == NodeType::OBJECT_PROP) {
+                std::shared_ptr<ObjectPropNode> temp = std::static_pointer_cast<ObjectPropNode>(node->left_node);
+                code << "(";
+                visit(temp->obj);
+                code << ").obj->set(\"" << temp->prop.val << "\",";
+                visit(node->left_node);
+                code << node->op_tok.val;
+                visit(node->right_node);
+                code << ")";
+            }
+            else {
+                code << node->op_tok.val;
+                code << node->op_tok.val;
+                code << "(";
+                visit(node->right_node);
+                code << ").num";
+            }
         }
         else if (node->op_tok.type == TokenType::AND_EQ || node->op_tok.type == TokenType::OR_EQ || node->op_tok.type == TokenType::XOR_EQ
             || node->op_tok.type == TokenType::LSH_EQ || node->op_tok.type == TokenType::RSH_EQ) {
@@ -257,6 +311,34 @@ namespace tachyon {
         visit(node->body);
     }
 
+    void Transpiler::visit_for_stmt_node(const std::shared_ptr<ForStmtNode>& node) {
+        code << "for(";
+        visit(node->init);
+        code << "(";
+        visit(node->cond);
+        code << ").num";
+        code << ";";
+        visit(node->update);
+        code << ") {";
+        visit(node->body);
+        code << "}";
+    }
+
+
+    void Transpiler::visit_return_stmt_node(const std::shared_ptr<ReturnStmtNode>& node) {
+        code << "return ";
+        visit(node->expr_node);
+        code << ";";
+    }
+
+    void Transpiler::visit_func_def_stmt_node(const std::shared_ptr<FuncDefStmtNode>& node) {
+        code << "tachyon_internal::Val " << node->name_tok.val << " = tachyon_internal::make_obj({},Function.obj,new tachyon_internal::func_type([=](const std::vector<tachyon_internal::Val>& _args) -> tachyon_internal::Val {\n";
+        for (int i = 0; i < node->arg_names.size(); i++) {
+            code << "tachyon_internal::Val " << node->arg_names.at(i).val << "= _args.at(" << i << ");\n";
+        }
+        visit(node->body);
+        code << "}))";
+    }
 
     void Transpiler::visit_include_stmt_node(const std::shared_ptr<IncludeStmtNode>& node) {
         std::string filename = node->path.val;
