@@ -1,26 +1,27 @@
 #include <string>
 #include <vector>
+#include <unordered_map>
 #include <utility>
 
 namespace tachyon_internal {
     class Object;
     class Val {
     public:
-        bool is_object;
+        bool is_obj;
         union {
             float num;
             Object* obj;
         };
         Val() {
-            this->is_object = false;
+            this->is_obj = false;
             this->num = 0.0f;
         }
         Val(double num) {
-            this->is_object = false;
+            this->is_obj = false;
             this->num = num;
         }
         Val(Object* obj) {
-            this->is_object = true;
+            this->is_obj = true;
             this->obj = obj;
         }
         // virtual ~Val() = default;
@@ -28,19 +29,25 @@ namespace tachyon_internal {
 
     class Object {
     public:
-        std::vector<std::pair<std::string, Val>> props;
+        std::unordered_map<std::string, Val> props;
         Object* proto;
         void* hidden_data = nullptr;
 
-        Object(const std::vector<std::pair<std::string, Val>>& props = {}, Object* proto = nullptr, void* hidden_data = nullptr) {
+        Object(const std::unordered_map<std::string, Val>& props = {}, Object* proto = nullptr, void* hidden_data = nullptr) {
             this->props = props;
             this->proto = proto;
             this->hidden_data = hidden_data;
         }
 
         ~Object() {
-            free(proto);
-            free(hidden_data);
+            if (proto != nullptr) {
+                free(proto);
+                proto = nullptr;
+            }
+            if (hidden_data != nullptr) {
+                free(hidden_data);
+                hidden_data = nullptr;
+            }
         }
 
         Val get(const std::string& key) {
@@ -58,13 +65,7 @@ namespace tachyon_internal {
         }
 
         void set(const std::string& key, Val val) {
-            for (auto& prop : props) {
-                if (prop.first == key) {
-                    prop.second = val;
-                    return;
-                }
-            }
-            props.push_back({ key, val });
+            props[key] = val;
         }
 
         bool has(const std::string& key) {
@@ -84,18 +85,18 @@ namespace tachyon_internal {
 
     std::vector<Object*> obj_pool;
 
-    Val make_obj_val(const std::vector<std::pair<std::string, Val>>& props = {}, Object* proto = nullptr, void* hidden_data = nullptr) {
+    Val make_obj_val(const std::unordered_map<std::string, Val>& props = {}, Object* proto = nullptr, void* hidden_data = nullptr) {
         Object* obj = new Object(props, proto, hidden_data);
         obj_pool.push_back(obj);
         return Val(obj);
     }
 
     void free_all_objs() {
-        for(int i = 0; i < obj_pool.size(); i++) {
+        for (int i = 0; i < obj_pool.size(); i++) {
             free(obj_pool.at(i));
+            obj_pool.at(i) = nullptr;
         }
     }
-    
 
     using func_type = std::function<Val(const std::vector<Val>&)>;
 }

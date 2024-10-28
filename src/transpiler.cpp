@@ -43,6 +43,24 @@ namespace tachyon {
             case NodeType::EXPR_STMT:
                 visit_expr_stmt_node(std::static_pointer_cast<ExprStmtNode>(node));
                 break;
+            case NodeType::VAR_DEF_STMT:
+                visit_var_def_stmt_node(std::static_pointer_cast<VarDefStmtNode>(node));
+                break;
+            case NodeType::CONST_DEF_STMT:
+                visit_const_def_stmt_node(std::static_pointer_cast<ConstDefStmtNode>(node));
+                break;
+            case NodeType::BLOCK_STMT:
+                visit_block_stmt_node(std::static_pointer_cast<BlockStmtNode>(node));
+                break;
+            case NodeType::IF_STMT:
+                visit_if_stmt_node(std::static_pointer_cast<IfStmtNode>(node));
+                break;
+            case NodeType::IF_ELSE_STMT:
+                visit_if_else_stmt_node(std::static_pointer_cast<IfElseStmtNode>(node));
+                break;
+            case NodeType::WHILE_STMT:
+                visit_while_stmt_node(std::static_pointer_cast<WhileStmtNode>(node));
+                break;
             case NodeType::INCLUDE_STMT:
                 visit_include_stmt_node(std::static_pointer_cast<IncludeStmtNode>(node));
                 break;
@@ -57,11 +75,11 @@ namespace tachyon {
     }
 
     void Transpiler::visit_string_node(const std::shared_ptr<StringNode>& node) {
-        code << "tachyon_internal::Object({},String,new std::string(\"" << node->tok.val << "\"))";
+        code << "tachyon_internal::make_obj({},String.obj,new std::string(\"" << node->tok.val << "\"))";
     }
 
     void Transpiler::visit_vector_node(const std::shared_ptr<VectorNode>& node) {
-        code << "tachyon_internal::Object({},Vector,new std::vector<tachyon_internal::Val>({";
+        code << "tachyon_internal::make_obj({},Vector.obj,new std::vector<tachyon_internal::Val>({";
         if (node->elements.empty()) {
             code << "}))";
         }
@@ -79,7 +97,7 @@ namespace tachyon {
     }
 
     void Transpiler::visit_map_node(const std::shared_ptr<MapNode>& node) {
-        code << "tachyon_internal::Object({},Map,new std::unordered_map<std::string, tachyon_internal::Val>({";
+        code << "tachyon_internal::make_objObject({},Map.obj,new std::unordered_map<std::string, tachyon_internal::Val>({";
         if (node->keys.empty()) {
             code << "}))";
         }
@@ -100,7 +118,7 @@ namespace tachyon {
     }
 
     void Transpiler::visit_anon_func_expr_node(const std::shared_ptr<AnonFuncExprNode>& node) {
-        code << "tachyon_internal::Object({},Function,new tachyon_internal::func_type([=](const std::vector<tachyon_internal::Val>& _args) -> tachyon_internal::Val {\n";
+        code << "tachyon_internal::make_obj({},Function.obj,new tachyon_internal::func_type([=](const std::vector<tachyon_internal::Val>& _args) -> tachyon_internal::Val {\n";
         for (int i = 0; i < node->arg_names.size(); i++) {
             code << "tachyon_internal::Val " << node->arg_names.at(i).val << "= _args.at(" << i << ");\n";
         }
@@ -108,13 +126,12 @@ namespace tachyon {
         code << "}))";
     }
 
-
     void Transpiler::visit_identifier_node(const std::shared_ptr<IdentifierNode>& node) {
         code << node->tok.val;
     }
 
     // void Transpiler::visit_call_expr_node(const std::shared_ptr<CallExprNode>& node) {
-    //     code << "*(to" << node->callee << "({";
+    //     code << "(" << node->callee << ".other_data)({";
     //     for (int i = 0; i < node->args.size(); i++) {
     //         visit(node->args.at(i));
     //     }
@@ -198,6 +215,48 @@ namespace tachyon {
         visit(node->expr_node);
         code << ";";
     }
+
+    void Transpiler::visit_var_def_stmt_node(const std::shared_ptr<VarDefStmtNode>& node) {
+        code << "tachyon_internal::Val " << node->name_tok.val << "=";
+        visit(node->val);
+        code << ";";
+    }
+
+    void Transpiler::visit_const_def_stmt_node(const std::shared_ptr<ConstDefStmtNode>& node) {
+        code << "const tachyon_internal::Val " << node->name_tok.val << "=";
+        visit(node->val);
+        code << ";";
+    }
+
+    void Transpiler::visit_block_stmt_node(const std::shared_ptr<BlockStmtNode>& node) {
+        code << "{\n";
+        visit(node->stmt_list_node);
+        code << "}";
+    }
+
+    void Transpiler::visit_if_stmt_node(const std::shared_ptr<IfStmtNode>& node) {
+        code << "if((";
+        visit(node->cond);
+        code << ").num)";
+        visit(node->body);
+    }
+
+    void Transpiler::visit_if_else_stmt_node(const std::shared_ptr<IfElseStmtNode>& node) {
+        code << "if((";
+        visit(node->cond);
+        code << ").num)";
+        visit(node->if_body);
+        code << "else";
+        visit(node->else_body);
+    }
+
+    void Transpiler::visit_while_stmt_node(const std::shared_ptr<WhileStmtNode>& node) {
+        code << "while((";
+        visit(node->cond);
+        code << ").num)";
+        visit(node->body);
+    }
+
 
     void Transpiler::visit_include_stmt_node(const std::shared_ptr<IncludeStmtNode>& node) {
         std::string filename = node->path.val;

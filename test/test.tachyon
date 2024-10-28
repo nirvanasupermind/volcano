@@ -1,1 +1,8 @@
-{"abc":123};
+var x = 5;
+if(2 < 3) {
+    var y = 6;
+}
+block {
+    var z = 7;
+}
+var w = afunc() {};
