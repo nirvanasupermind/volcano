@@ -136,12 +136,12 @@ namespace tachyon {
     }
 
     void Transpiler::visit_anon_func_expr_node(const std::shared_ptr<AnonFuncExprNode>& node) {
-        code << "tachyon_internal::make_obj({},Function.obj,new tachyon_internal::func_type([=](const std::vector<tachyon_internal::Val>& _args) -> tachyon_internal::Val {\n";
+        code << "tachyon_internal::make_func([=](const std::vector<tachyon_internal::Val>& _args) -> tachyon_internal::Val {\n";
         for (int i = 0; i < node->arg_names.size(); i++) {
             code << "tachyon_internal::Val " << node->arg_names.at(i).val << "= _args.at(" << i << ");\n";
         }
         visit(node->body);
-        code << "}))";
+        code << "})";
     }
 
     void Transpiler::visit_identifier_node(const std::shared_ptr<IdentifierNode>& node) {
@@ -149,9 +149,9 @@ namespace tachyon {
     }
 
     void Transpiler::visit_call_expr_node(const std::shared_ptr<CallExprNode>& node) {
-        code << "(*(tachyon_internal::func_type*)((";
+        code << "(*(";
         visit(node->callee);
-        code << ").obj->hidden_data))({";
+        code << ".func))({";
         if(node->callee->get_type() == NodeType::OBJECT_PROP) {
             visit(std::static_pointer_cast<ObjectPropNode>(node->callee)->obj);
             if(!node->args.empty()) {
@@ -332,12 +332,12 @@ namespace tachyon {
     }
 
     void Transpiler::visit_func_def_stmt_node(const std::shared_ptr<FuncDefStmtNode>& node) {
-        code << "tachyon_internal::Val " << node->name_tok.val << " = tachyon_internal::make_obj({},Function.obj,new tachyon_internal::func_type([=](const std::vector<tachyon_internal::Val>& _args) -> tachyon_internal::Val {\n";
+        code << "tachyon_internal::Val " << node->name_tok.val << " = tachyon_internal::make_func([=](const std::vector<tachyon_internal::Val>& _args) -> tachyon_internal::Val {\n";
         for (int i = 0; i < node->arg_names.size(); i++) {
             code << "tachyon_internal::Val " << node->arg_names.at(i).val << "= _args.at(" << i << ");\n";
         }
         visit(node->body);
-        code << "}))";
+        code << "})";
     }
 
     void Transpiler::visit_include_stmt_node(const std::shared_ptr<IncludeStmtNode>& node) {
