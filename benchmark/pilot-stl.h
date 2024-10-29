@@ -1,3 +1,4 @@
+#include <list>
 #include <vector>
 #include <string>
 #include <cstdint>
@@ -16,6 +17,7 @@ constexpr uint64_t PTR_MASK = 0x1ffffffffffff;
 namespace tachyon_internal {
     std::vector<TACHYON_OBJ*> all_objs;
     std::vector<TACHYON_FUNC*> all_funcs;
+    int idx = 0;
 
     inline double make_obj(TACHYON_OBJ* obj) {
         all_objs.push_back(obj);
@@ -50,35 +52,30 @@ namespace tachyon_internal {
         all_funcs.clear();
     }
 
-    inline double get_prop(TACHYON_OBJ* obj, const std::string& key) {
-        for(std::pair<std::string, double> pair: (*obj)) {
-            if(pair.first == key) {
-                return pair.second;
-            }
-        }
-        for(std::pair<std::string, double> pair: (*obj)) {
-            if(pair.first == "proto") {
-                return get_prop(decode_obj(pair.second), key);
-            }
-        }
 
+    inline double get_prop(TACHYON_OBJ* obj, const std::string& key) {
+        for (auto& pair : *obj) {
+            if (pair.first == key) return pair.second;
+        }
+        for (auto& pair : *obj) {
+            if (pair.first == "proto") return get_prop(decode_obj(pair.second), key);
+        }
         throw std::runtime_error("Key not found: " + key);
     }
 
     inline void set_prop(TACHYON_OBJ* obj, const std::string& key, double val) {
-        for(int i = 0; i < obj->size(); i++) {
-            std::pair<std::string, double> pair = obj->at(i);
-            if(pair.first == key) {
-                (*obj)[i] = {pair.first, val};
+        for (size_t i = 0; i < obj->size(); ++i) {
+            if ((*obj)[i].first == key) {
+                (*obj)[i].second = val;
                 return;
             }
         }
-
-        (*obj).push_back({key, val});
+        obj->emplace_back(key, val);
     }
 }
 
 // Tachyon standard library setup function
 void tachyon_stl_setup() {
+    // tachyon_internal::all_objs.reserve(1000000);
     // Initialize any required standard library components here
 }
