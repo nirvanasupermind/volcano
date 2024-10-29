@@ -5,9 +5,11 @@ int main() {
     tachyon_stl_setup();
     auto start = std::chrono::system_clock::now();
 
-    double x = 0.0;
+    double Wrapper = tachyon_internal::make_obj({}, tachyon_internal::decode_obj(Object));
+    double x =  tachyon_internal::make_obj({}, tachyon_internal::decode_obj(Wrapper));
+    tachyon_internal::decode_obj(x)->set("val", 0.0);
     for (double i = 0.0; i < 1000000.0; i++) {
-        x++;
+        tachyon_internal::decode_obj(x)->set("val", tachyon_internal::decode_obj(x)->get("val") + 1.0);
     }
 
     auto end = std::chrono::system_clock::now();

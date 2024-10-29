@@ -1,0 +1,8 @@
+var start = System.time();
+var Wrapper = {};
+var x = {val: 0, proto: Wrapper};
+for(var i = 0; i < 1000000; i = i + 1) {
+    x.val = x.val + 1;
+}
+var end = System.time();
+System.print(end - start);
