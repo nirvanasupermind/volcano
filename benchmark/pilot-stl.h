@@ -1,107 +1,84 @@
-#include <string>
 #include <vector>
-#include <unordered_map>
+#include <string>
+#include <cstdint>
+#include <functional>
 #include <utility>
 
+#define TACHYON_OBJ std::vector<std::pair<std::string, double> >
+#define TACHYON_FUNC std::function<double(const std::vector<double>&)>
+
+// Using constexpr for tag values to reduce potential branching
+constexpr uint64_t OBJ_TAG = 0x7ffc000000000000;
+constexpr uint64_t FUNC_TAG = 0x7ffe000000000000;
+constexpr uint64_t PTR_MASK = 0x1ffffffffffff;
+
+// Namespace to encapsulate internals for Tachyon
 namespace tachyon_internal {
-    using func_type = std::function<double(const std::vector<double>&)>;
-    class Object {
-    public:
-        std::unordered_map<std::string, double> props;
-        Object* proto;
-        void* hidden_data = nullptr;
+    std::vector<TACHYON_OBJ*> all_objs;
+    std::vector<TACHYON_FUNC*> all_funcs;
 
-        Object(const std::unordered_map<std::string, double>& props = {}, Object* proto = nullptr, void* hidden_data = nullptr) {
-            this->props = props;
-            this->proto = proto;
-            this->hidden_data = hidden_data;
-        }
-
-        ~Object() {
-            if (proto != nullptr) {
-                free(proto);
-                proto = nullptr;
-            }
-            if (hidden_data != nullptr) {
-                free(hidden_data);
-                hidden_data = nullptr;
-            }
-        }
-
-        double get(const std::string& key) {
-            for (auto& prop : props) {
-                if (prop.first == key) {
-                    return prop.second;
-                }
-            }
-
-            if (proto != nullptr) {
-                return proto->get(key);
-            }
-
-            throw std::runtime_error("key not found: " + key);
-        }
-
-        void set(const std::string& key, double val) {
-            props[key] = val;
-        }
-
-        bool has(const std::string& key) {
-            for (auto& prop : props) {
-                if (prop.first == key) {
-                    return true;
-                }
-            }
-
-            if (proto != nullptr) {
-                return proto->has(key);
-            }
-
-            return false;
-        }
-    };
-
-    std::vector<Object*> all_objs;
-    std::vector<func_type*> all_funcs;
-
-    double make_obj(const std::unordered_map<std::string, double>& props = {}, Object* proto = nullptr, void* hidden_data = nullptr) {
-        // NaN-boxing
-        // Object/function pointers are stored by packing the pointer address into the unused bits of a floating-point NaN value
-        Object* obj = new Object(props, proto, hidden_data);
+    inline double make_obj(TACHYON_OBJ* obj) {
         all_objs.push_back(obj);
-        uint64_t u = (uint64_t)obj | 0x7ffc000000000000;
-        return *(double*)(&u);
+        uint64_t u = reinterpret_cast<uint64_t>(obj) | OBJ_TAG;
+        return *reinterpret_cast<double*>(&u);
     }
 
-    double make_func(func_type* func) {
+    inline double make_func(TACHYON_FUNC* func) {
         all_funcs.push_back(func);
-        uint64_t u = (uint64_t)func | 0x7ffc000000000000;
-        return *(double*)(&func);
-    }    
-
-    Object* decode_obj(double d) {
-        uint64_t pointer_addr = (*(uint64_t*)(&d)) & 0x1ffffffffffff;
-        return (Object*)pointer_addr;
+        uint64_t u = reinterpret_cast<uint64_t>(func) | FUNC_TAG;
+        return *reinterpret_cast<double*>(&u);
     }
 
-    func_type* decode_func(double d) {
-        uint64_t pointer_addr = (*(uint64_t*)(&d)) & 0x1ffffffffffff;
-        return (func_type*)pointer_addr;
+    inline TACHYON_OBJ* decode_obj(double d) {
+        uint64_t ptr = reinterpret_cast<uint64_t&>(d) & PTR_MASK;
+        return reinterpret_cast<TACHYON_OBJ*>(ptr);
     }
 
-    void free_all() {
-        for(int i = 0; i < all_objs.size(); i++) {
-            free(all_objs.at(i));
+    inline TACHYON_FUNC* decode_func(double d) {
+        uint64_t ptr = reinterpret_cast<uint64_t&>(d) & PTR_MASK;
+        return reinterpret_cast<TACHYON_FUNC*>(ptr);
+    }
+
+    inline void free_all() {
+        for (auto* obj : all_objs) {
+            delete obj;
+        }
+        all_objs.clear();
+        for (auto* func : all_funcs) {
+            delete func;
+        }
+        all_funcs.clear();
+    }
+
+    inline double get_prop(TACHYON_OBJ* obj, const std::string& key) {
+        for(std::pair<std::string, double> pair: (*obj)) {
+            if(pair.first == key) {
+                return pair.second;
+            }
+        }
+        for(std::pair<std::string, double> pair: (*obj)) {
+            if(pair.first == "proto") {
+                return get_prop(decode_obj(pair.second), key);
+            }
         }
 
-        for(int i = 0; i < all_funcs.size(); i++) {
-            free(all_funcs.at(i));
-        }
+        throw std::runtime_error("Key not found: " + key);
     }
 
+    inline void set_prop(TACHYON_OBJ* obj, const std::string& key, double val) {
+        for(int i = 0; i < obj->size(); i++) {
+            std::pair<std::string, double> pair = obj->at(i);
+            if(pair.first == key) {
+                (*obj)[i] = {pair.first, val};
+                return;
+            }
+        }
+
+        (*obj).push_back({key, val});
+    }
 }
 
-double Object = tachyon_internal::make_obj();
-
+// Tachyon standard library setup function
 void tachyon_stl_setup() {
+    // Initialize any required standard library components here
 }

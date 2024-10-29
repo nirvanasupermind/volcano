@@ -86,11 +86,11 @@ namespace tachyon_internal {
         }
     };
 
-    using func_type = std::function<Val(const std::vector<Val>&)>;
+    using TACHYON_FUNC = std::function<Val(const std::vector<Val>&)>;
 
     std::vector<Object*> obj_pool;
 
-    std::vector<func_type*> func_pool;
+    std::vector<TACHYON_FUNC*> func_pool;
 
     Val make_obj(const std::unordered_map<std::string, Val>& props = {}, Object* proto = nullptr, void* hidden_data = nullptr) {
         Object* obj = new Object(props, proto, hidden_data);
@@ -98,8 +98,8 @@ namespace tachyon_internal {
         return Val(obj);
     }
 
-    Val make_func(const func_type& func) {
-        func_type* func_ptr = new func_type(func);
+    Val make_func(const TACHYON_FUNC& func) {
+        TACHYON_FUNC* func_ptr = new func_type(func);
         func_pool.push_back(func_ptr);
         return Val(func_ptr);
     }

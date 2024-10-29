@@ -6,7 +6,7 @@ int main() {
     auto start = std::chrono::system_clock::now();
 
     for (double i = 0.0; i < 1000000.0; i++) {
-        tachyon_internal::make_obj({}, tachyon_internal::decode_obj(Object));
+        tachyon_internal::make_obj(new TACHYON_OBJ({}));
     }
 
     auto end = std::chrono::system_clock::now();
