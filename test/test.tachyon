@@ -1,1 +1,1 @@
-print({"a": 2}.a);
+print({toString: afunc() { return "hi"; }});

@@ -16,6 +16,7 @@ namespace tachyon {
         ANON_FUNC_EXPR,
         CALL_EXPR,
         OBJECT_PROP,
+        INDEX_EXPR,
         UNARY_OP,
         BIN_OP,
         VAR_DEF_STMT,
@@ -68,9 +69,9 @@ namespace tachyon {
 
     class ObjectNode: public Node {
     public:
-        std::vector<std::shared_ptr<Node> > keys;
+        std::vector<Token> keys;
         std::vector<std::shared_ptr<Node> > vals;
-        ObjectNode(const std::vector<std::shared_ptr<Node> >& keys, const std::vector<std::shared_ptr<Node> >& vals);
+        ObjectNode(const std::vector<Token>& keys, const std::vector<std::shared_ptr<Node> >& vals);
         NodeType get_type() const;
         std::string to_string() const;
     };
@@ -110,6 +111,15 @@ namespace tachyon {
         std::string to_string() const;
     };
 
+    class IndexExprNode: public Node {
+    public:
+        std::shared_ptr<Node> obj;
+        std::shared_ptr<Node> idx;        
+        IndexExprNode(const std::shared_ptr<Node>& obj, const std::shared_ptr<Node>& idx);
+        NodeType get_type() const;
+        std::string to_string() const;
+    };
+
     class UnaryOpNode: public Node {
     public:
         Token op_tok;
@@ -139,7 +149,6 @@ namespace tachyon {
         NodeType get_type() const;
         std::string to_string() const;
     };
-
 
     class ConstDefStmtNode: public Node {
     public:

@@ -113,14 +113,18 @@ namespace tachyon {
             raise_error();
         }
         advance();
-        std::vector<std::shared_ptr<Node> > keys;
+        std::vector<Token> keys;
         std::vector<std::shared_ptr<Node> > vals;
         if (current_tok.type == TokenType::RCURLY) {
             advance();
         }
         else {
             while (true) {
-                keys.push_back(expr());
+                if (current_tok.type != TokenType::IDENTIFIER) {
+                    raise_error();
+                }
+                keys.push_back(current_tok);
+                advance();
                 if (current_tok.type != TokenType::COLON) {
                     raise_error();
                 }
@@ -212,6 +216,15 @@ namespace tachyon {
                 }
                 result = std::make_shared<ObjectPropNode>(ObjectPropNode(result, current_tok));
                 advance();
+            }
+            else if (current_tok.type == TokenType::LSQUARE) {
+                advance();
+                std::shared_ptr<Node> idx_node = expr();
+                if (current_tok.type != TokenType::RSQUARE) {
+                    raise_error();
+                }
+                advance();
+                result = std::make_shared<IndexExprNode>(IndexExprNode(result, idx_node));
             }
             else if (current_tok.type == TokenType::INC || current_tok.type == TokenType::DEC) {
                 result = std::make_shared<UnaryOpNode>(UnaryOpNode(current_tok, result));

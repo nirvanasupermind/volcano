@@ -89,14 +89,15 @@ namespace tachyon_internal {
         return false;
     }
 
-    inline void set_prop(TACHYON_OBJ* obj, const std::string& key, double val) {
+    inline double set_prop(TACHYON_OBJ* obj, const std::string& key, double val) {
         for (size_t i = 0; i < obj->size(); ++i) {
             if ((*obj)[i].first == key) {
                 (*obj)[i].second = val;
-                return;
+                return val;
             }
         }
         obj->emplace_back(key, val);
+        return val;
     }
 
     bool is_obj(double d) {
@@ -111,10 +112,19 @@ namespace tachyon_internal {
 }
 
 double String = tachyon_internal::make_obj(new TACHYON_OBJ({}));
+double Vector = tachyon_internal::make_obj(new TACHYON_OBJ({}));
+double Map = tachyon_internal::make_obj(new TACHYON_OBJ({}));
+
 double print = tachyon_internal::make_func(new TACHYON_FUNC([](const std::vector<double>& _args) -> double {
         double x = _args.at(0);
         if(tachyon_internal::is_obj(x)) {
-            std::cout << tachyon_internal::decode_obj(x) << '\n';
+            TACHYON_OBJ* obj = tachyon_internal::decode_obj(x);
+            if(tachyon_internal::has_prop(obj, "toString")) {
+                double temp = (*tachyon_internal::decode_func(tachyon_internal::get_prop(obj, "toString")))({x});
+                std::cout << *(std::string*)tachyon_internal::decode_void_ptr(tachyon_internal::get_prop(tachyon_internal::decode_obj(temp), "_voidPtr")) << '\n';
+            } else {
+                std::cout << obj << '\n';
+            }
         } else if(tachyon_internal::is_func(x)) {
             std::cout << tachyon_internal::decode_func(x) << '\n';
         } else {
