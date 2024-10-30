@@ -81,6 +81,7 @@
         "numeric": "cpp",
         "random": "cpp",
         "algorithm": "cpp",
-        "list": "cpp"
+        "list": "cpp",
+        "utility": "cpp"
     }
 }

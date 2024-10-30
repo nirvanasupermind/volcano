@@ -11,7 +11,7 @@ namespace tachyon {
         NUMBER,
         STRING,
         VECTOR,
-        MAP,
+        OBJECT,
         IDENTIFIER,
         ANON_FUNC_EXPR,
         CALL_EXPR,
@@ -66,11 +66,11 @@ namespace tachyon {
         std::string to_string() const;
     };
 
-    class MapNode: public Node {
+    class ObjectNode: public Node {
     public:
         std::vector<std::shared_ptr<Node> > keys;
         std::vector<std::shared_ptr<Node> > vals;
-        MapNode(const std::vector<std::shared_ptr<Node> >& keys, const std::vector<std::shared_ptr<Node> >& vals);
+        ObjectNode(const std::vector<std::shared_ptr<Node> >& keys, const std::vector<std::shared_ptr<Node> >& vals);
         NodeType get_type() const;
         std::string to_string() const;
     };

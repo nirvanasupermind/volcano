@@ -19,21 +19,14 @@ void transpile(const std::string& filename, const std::string& text, bool i) {
     std::shared_ptr<tachyon::Node> tree = parser.parse();
     tachyon::Transpiler transpiler;
     transpiler.visit(tree);
-    std::string initial_code = R"V0G0N(
-#include <iostream>
-#include <map>
-#include <string>
-#include <vector>
-#include <functional>
-#include <sstream>
-#include <random>
+    std::string includes = R"V0G0N(
 #include "/usr/local/include/tachyon_stl.h"
     )V0G0N";
 
     std::string filename_noext = filename.substr(0, filename.size() - 8);
     std::ofstream out_file;
     out_file.open(filename_noext + ".cpp");
-    out_file << initial_code << "\nint main(){\ntachyon_stl_setup();\n" << transpiler.code.str() << "\ntachyon_internal::free_all();\nreturn 0;\n}";
+    out_file << includes << "\nint main(){\ntachyon_stl_setup();\n" << transpiler.code.str() << "\ntachyon_internal::free_all();\nreturn 0;\n}";
     out_file.close();
 
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)

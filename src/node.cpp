@@ -54,16 +54,16 @@ namespace tachyon {
         return result;
     }
 
-    MapNode::MapNode(const std::vector<std::shared_ptr<Node> >& keys, const std::vector<std::shared_ptr<Node> >& vals) {
+    ObjectNode::ObjectNode(const std::vector<std::shared_ptr<Node> >& keys, const std::vector<std::shared_ptr<Node> >& vals) {
         this->keys = keys;
         this->vals = vals;
     }
 
-    NodeType MapNode::get_type() const {
-        return NodeType::MAP;
+    NodeType ObjectNode::get_type() const {
+        return NodeType::OBJECT;
     }
 
-    std::string MapNode::to_string() const {
+    std::string ObjectNode::to_string() const {
         std::string result = "(Map (";
         for(int i = 0; i < keys.size(); i++) {
             result += keys.at(i)->to_string() + " ";

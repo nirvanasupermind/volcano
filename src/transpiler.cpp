@@ -18,7 +18,7 @@ namespace tachyon {
     void Transpiler::visit(const std::shared_ptr<Node>& node) {
         double d = node->get_double();
         if (!std::isnan(d)) {
-            code << "tachyon_internal::Val(" << d << ")";
+            code << d;
         }
         else {
             switch (node->get_type()) {
@@ -28,8 +28,8 @@ namespace tachyon {
             case NodeType::VECTOR:
                 visit_vector_node(std::static_pointer_cast<VectorNode>(node));
                 break;
-            case NodeType::MAP:
-                visit_map_node(std::static_pointer_cast<MapNode>(node));
+            case NodeType::OBJECT:
+                visit_object_node(std::static_pointer_cast<ObjectNode>(node));
                 break;
             case NodeType::ANON_FUNC_EXPR:
                 visit_anon_func_expr_node(std::static_pointer_cast<AnonFuncExprNode>(node));
@@ -93,55 +93,46 @@ namespace tachyon {
     }
 
     void Transpiler::visit_string_node(const std::shared_ptr<StringNode>& node) {
-        code << "tachyon_internal::make_obj({},String.obj,new std::string(\"" << node->tok.val << "\"))";
+        code << "tachyon_internal::make_obj(new TACHYON_OBJ({{\"proto\",String},{\"_voidPtr\",tachyon_internal::make_void_ptr(new std::string(\"" << node->tok.val << "\"))}}))";
     }
 
     void Transpiler::visit_vector_node(const std::shared_ptr<VectorNode>& node) {
-        code << "tachyon_internal::make_obj({},Vector.obj,new std::vector<tachyon_internal::Val>({";
-        if (node->elements.empty()) {
-            code << "}))";
-        }
-        else {
-            for (int i = 0; i < node->elements.size(); i++) {
-                visit(node->elements.at(i));
-                if (i == node->elements.size() - 1) {
-                    code << "}))";
-                }
-                else {
-                    code << ",";
-                }
+        code << "tachyon_internal::make_obj(new TACHYON_OBJ({{\"proto\",Vector},{\"_voidPtr\",tachyon_internal::make_void_ptr(new std::vector<double>(";
+        for (int i = 0; i < node->elements.size(); i++) {
+            visit(node->elements.at(i));
+            if (i != node->elements.size() - 1) {
+                code << ",";
             }
         }
+        code << "}))}}))";
     }
 
-    void Transpiler::visit_map_node(const std::shared_ptr<MapNode>& node) {
-        code << "tachyon_internal::make_objObject({},Map.obj,new std::unordered_map<std::string, tachyon_internal::Val>({";
-        if (node->keys.empty()) {
-            code << "}))";
-        }
-        else {
+    void Transpiler::visit_object_node(const std::shared_ptr<ObjectNode>& node) {
+        code << "tachyon_internal::make_obj(new TACHYON_OBJ({";
             for (int i = 0; i < node->keys.size(); i++) {
-                code << "{*(std::string*)(tachyon_internal::to_object(";
-                visit(node->keys.at(i));
-                code << ")).hidden_data,";
-                visit(node->vals.at(i));
-                if (i == node->keys.size() - 1) {
-                    code << "}}))";
+                code << "{";
+                if(node->keys.at(i)->get_type() == NodeType::STRING) {
+                    code << "\"" << std::static_pointer_cast<StringNode>(node->keys.at(i))->tok.val << "\",";
+                } else {
+                    code << "*(std::string*)tachyon_internal::decode_void_ptr(tachyon_internal::get_prop(tachyon_internal::decode_obj(";
+                    visit(node->keys.at(i));
+                    code << ", \"_voidPtr\")),";
                 }
-                else {
+                visit(node->vals.at(i));
+                if (i != node->keys.size() - 1) {
                     code << "},";
                 }
             }
-        }
+        code << "}}))";
     }
 
     void Transpiler::visit_anon_func_expr_node(const std::shared_ptr<AnonFuncExprNode>& node) {
-        code << "tachyon_internal::make_func([=](const std::vector<tachyon_internal::Val>& _args) -> tachyon_internal::Val {\n";
+        code << "tachyon_internal::make_func(new func([=](const std::vector<double>& _args) -> double {\n";
         for (int i = 0; i < node->arg_names.size(); i++) {
-            code << "tachyon_internal::Val " << node->arg_names.at(i).val << "= _args.at(" << i << ");\n";
+            code << "double " << node->arg_names.at(i).val << "= _args.at(" << i << ");\n";
         }
         visit(node->body);
-        code << "})";
+        code << "}))";
     }
 
     void Transpiler::visit_identifier_node(const std::shared_ptr<IdentifierNode>& node) {
@@ -149,9 +140,9 @@ namespace tachyon {
     }
 
     void Transpiler::visit_call_expr_node(const std::shared_ptr<CallExprNode>& node) {
-        code << "(*(";
+        code << "(*tachyon_internal::decode_func(";
         visit(node->callee);
-        code << ".func))({";
+        code << "))({";
         if(node->callee->get_type() == NodeType::OBJECT_PROP) {
             visit(std::static_pointer_cast<ObjectPropNode>(node->callee)->obj);
             if(!node->args.empty()) {
@@ -168,8 +159,9 @@ namespace tachyon {
     }
 
     void Transpiler::visit_object_prop_node(const std::shared_ptr<ObjectPropNode>& node) {
+        code << "tachyon_internal::get_prop(tachyon_internal::decode_obj(";
         visit(node->obj);
-        code << ".obj->get(\"" << node->prop.val << "\")";
+        code << "),\"" << node->prop.val << "\")";
     }
 
     void Transpiler::visit_unary_op_node(const std::shared_ptr<UnaryOpNode>& node) {
@@ -177,20 +169,18 @@ namespace tachyon {
             visit(node->right_node);
         }
         else if (node->op_tok.type == TokenType::MINUS) {
-            code << "tachyon_internal::Val(";
             code << "-(";
+            visit(node->right_node);
+            code << ")";
+        }
+        else if (node->op_tok.type == TokenType::NOT) {
+            code << "(double)(~(int32_t)(";
             visit(node->right_node);
             code << "))";
         }
-        else if (node->op_tok.type == TokenType::NOT) {
-            code << "tachyon_internal::Val(";
-            code << "~(int32_t)(";
-            visit(node->right_node);
-            code << ").num)";
-        }
         else if (node->op_tok.type == TokenType::INC || node->op_tok.type == TokenType::DEC) {
             visit(node->right_node);
-            code << ".num" << node->op_tok.val;
+            code << node->op_tok.val;
         }
     }
 
@@ -198,11 +188,11 @@ namespace tachyon {
         if (node->op_tok.type == TokenType::EQ) {
             if (node->left_node->get_type() == NodeType::OBJECT_PROP) {
                 std::shared_ptr<ObjectPropNode> temp = std::static_pointer_cast<ObjectPropNode>(node->left_node);
-                code << "(";
+                code << "tachyon_internal::set_prop(tachyon_internal::decode_obj(";
                 visit(temp->obj);
-                code << ").obj->set(\"" << temp->prop.val << "\",";
+                code << "),\"";
                 visit(node->right_node);
-                code << ")";
+                code << "\")";
             }
             else {
                 visit(node->left_node);
@@ -214,54 +204,52 @@ namespace tachyon {
             || node->op_tok.type == TokenType::DIV_EQ || node->op_tok.type == TokenType::MOD_EQ) {
             if (node->left_node->get_type() == NodeType::OBJECT_PROP) {
                 std::shared_ptr<ObjectPropNode> temp = std::static_pointer_cast<ObjectPropNode>(node->left_node);
-                code << "(";
+                code << "tachyon_internal::set_prop(tachyon_internal::decode_obj(";
                 visit(temp->obj);
-                code << ").obj->set(\"" << temp->prop.val << "\",";
-                visit(node->left_node);
-                code << node->op_tok.val;
+                code << "),\"" << temp->prop.val << "\",tachyon_internal::get_prop(\"" << temp->prop.val << "\")";
+                code << node->op_tok.val.at(0);
+                code << "(";
                 visit(node->right_node);
-                code << ")";
+                code << "))";
             }
             else {
                 code << node->op_tok.val;
                 code << node->op_tok.val;
                 code << "(";
                 visit(node->right_node);
-                code << ").num";
+                code << ")";
             }
         }
         else if (node->op_tok.type == TokenType::AND_EQ || node->op_tok.type == TokenType::OR_EQ || node->op_tok.type == TokenType::XOR_EQ
             || node->op_tok.type == TokenType::LSH_EQ || node->op_tok.type == TokenType::RSH_EQ) {
-            code << "(";
             visit(node->left_node);
-            code << ").num";
             code << "=";
-            code << "(int32_t)(";
+            code << "(double)((int32_t)(";
             visit(node->left_node);
-            code << ").num";
+            code << ")";
             code << node->op_tok.val.at(0);
             code << "(int32_t)(";
             visit(node->right_node);
-            code << ").num";
+            code << "))";
         }
         else if (node->op_tok.type == TokenType::AND || node->op_tok.type == TokenType::OR || node->op_tok.type == TokenType::XOR
             || node->op_tok.type == TokenType::LSH || node->op_tok.type == TokenType::RSH) {
-            code << "tachyon_internal::Val((int32_t)(";
+            code << "(double)((int32_t)(";
             visit(node->left_node);
-            code << ").num";
+            code << ")";
             code << node->op_tok.val;
             code << "(int32_t)(";
             visit(node->right_node);
-            code << ").num)";
+            code << "))";
         }
         else {
-            code << "tachyon_internal::Val((";
+            code << "(";
             visit(node->left_node);
-            code << ").num";
+            code << ")";
             code << node->op_tok.val;
             code << "(";
             visit(node->right_node);
-            code << ").num)";
+            code << ")";
         }
     }
 
@@ -271,13 +259,13 @@ namespace tachyon {
     }
 
     void Transpiler::visit_var_def_stmt_node(const std::shared_ptr<VarDefStmtNode>& node) {
-        code << "tachyon_internal::Val " << node->name_tok.val << "=";
+        code << "double " << node->name_tok.val << "=";
         visit(node->val);
         code << ";";
     }
 
     void Transpiler::visit_const_def_stmt_node(const std::shared_ptr<ConstDefStmtNode>& node) {
-        code << "const tachyon_internal::Val " << node->name_tok.val << "=";
+        code << "const double " << node->name_tok.val << "=";
         visit(node->val);
         code << ";";
     }
@@ -289,25 +277,25 @@ namespace tachyon {
     }
 
     void Transpiler::visit_if_stmt_node(const std::shared_ptr<IfStmtNode>& node) {
-        code << "if((";
+        code << "if(";
         visit(node->cond);
-        code << ").num)";
+        code << ")";
         visit(node->body);
     }
 
     void Transpiler::visit_if_else_stmt_node(const std::shared_ptr<IfElseStmtNode>& node) {
-        code << "if((";
+        code << "if(";
         visit(node->cond);
-        code << ").num)";
+        code << ")";
         visit(node->if_body);
         code << "else";
         visit(node->else_body);
     }
 
     void Transpiler::visit_while_stmt_node(const std::shared_ptr<WhileStmtNode>& node) {
-        code << "while((";
+        code << "while(";
         visit(node->cond);
-        code << ").num)";
+        code << ")";
         visit(node->body);
     }
 
@@ -316,7 +304,7 @@ namespace tachyon {
         visit(node->init);
         code << "(";
         visit(node->cond);
-        code << ").num";
+        code << ")";
         code << ";";
         visit(node->update);
         code << ") {";
@@ -332,12 +320,12 @@ namespace tachyon {
     }
 
     void Transpiler::visit_func_def_stmt_node(const std::shared_ptr<FuncDefStmtNode>& node) {
-        code << "tachyon_internal::Val " << node->name_tok.val << " = tachyon_internal::make_func([=](const std::vector<tachyon_internal::Val>& _args) -> tachyon_internal::Val {\n";
+        code << "double " << node->name_tok.val << "= tachyon_internal::make_func(new func([=](const std::vector<double>& _args) -> double {\n";
         for (int i = 0; i < node->arg_names.size(); i++) {
-            code << "tachyon_internal::Val " << node->arg_names.at(i).val << "= _args.at(" << i << ");\n";
+            code << "double " << node->arg_names.at(i).val << "= _args.at(" << i << ");\n";
         }
         visit(node->body);
-        code << "})";
+        code << "}));";
     }
 
     void Transpiler::visit_include_stmt_node(const std::shared_ptr<IncludeStmtNode>& node) {
