@@ -136,4 +136,8 @@ double print = tachyon_internal::make_func(new TACHYON_FUNC([](const std::vector
 void tachyon_stl_setup() {
     // tachyon_internal::all_objs.reserve(1000000);
     // Initialize any required standard library components here
+    // Initialize any required standard library components here
+    tachyon_internal::set_prop(tachyon_internal::decode_obj(String), "toString", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
+        return _args.at(0);
+    })));
 }

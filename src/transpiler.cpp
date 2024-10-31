@@ -82,6 +82,12 @@ namespace tachyon {
             case NodeType::FUNC_DEF_STMT:
                 visit_func_def_stmt_node(std::static_pointer_cast<FuncDefStmtNode>(node));
                 break;
+            case NodeType::THROW_STMT:
+                visit_throw_stmt_node(std::static_pointer_cast<ThrowStmtNode>(node));
+                break;
+            case NodeType::TRY_CATCH_STMT:
+                visit_try_catch_stmt_node(std::static_pointer_cast<TryCatchStmtNode>(node));
+                break;
             case NodeType::INCLUDE_STMT:
                 visit_include_stmt_node(std::static_pointer_cast<IncludeStmtNode>(node));
                 break;
@@ -358,6 +364,21 @@ namespace tachyon {
         }
         visit(node->body);
         code << "}));";
+    }
+
+    void Transpiler::visit_throw_stmt_node(const std::shared_ptr<ThrowStmtNode>& node) {
+        code << "throw std::runtime_error(*(std::string*)tachyon_internal::decode_void_ptr(tachyon_internal::get_prop(tachyon_internal::decode_obj(";
+        visit(node->expr_node);
+        code << "), \"_voidPtr\")));";
+    }
+
+    void Transpiler::visit_try_catch_stmt_node(const std::shared_ptr<TryCatchStmtNode>& node) {
+        code << "try";
+        visit(node->try_body);
+        code << "catch(const std::exception& _err) {\ndouble " << node->error.val 
+        << "=tachyon_internal::make_obj(new TACHYON_OBJ({{\"proto\",String},{\"_voidPtr\",tachyon_internal::make_void_ptr(new std::string(_err.what()))}}));\n";
+        visit(node->catch_body);
+        code << "\n}";
     }
 
     void Transpiler::visit_include_stmt_node(const std::shared_ptr<IncludeStmtNode>& node) {

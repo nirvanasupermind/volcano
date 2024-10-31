@@ -1,7 +1,6 @@
-if(2 == 2) {
-    print("Hello world!");
-} elif(2 == 3) {
-    print("maybe hello");
-} else {
-    print("Bye bye world!");
+try {
+    {}.b;
+} catch(e) {
+    print("THE ERROR WAS:");
+    print(e);
 }

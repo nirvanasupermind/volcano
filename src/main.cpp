@@ -31,13 +31,13 @@ void transpile(const std::string& filename, const std::string& text, bool i) {
 
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
     // Windows
-    system(("clang++ " + filename_noext + ".cpp -o " + filename_noext + ".exe-std=c++11").c_str());
+    system(("clang++ " + filename_noext + ".cpp -o " + filename_noext + ".exe-std=c++11 -O3").c_str());
     if (!i) {
         system(("del " + filename_noext + ".cpp").c_str());
     }
 #else
     // Linux and Mac
-    system(("clang++ " + filename_noext + ".cpp -o " + filename_noext + " -std=c++11").c_str());
+    system(("clang++ " + filename_noext + ".cpp -o " + filename_noext + " -std=c++11 -O3").c_str());
     if (!i) {
         system(("rm -rf " + filename_noext + ".cpp").c_str());
     }

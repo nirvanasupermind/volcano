@@ -3,12 +3,14 @@
     
 int main(){
 tachyon_stl_setup();
-if(1){
-(*tachyon_internal::decode_func(print))({tachyon_internal::make_obj(new TACHYON_OBJ({{"proto",String},{"_voidPtr",tachyon_internal::make_void_ptr(new std::string("Hello world!"))}}))});
-}else if(0){
-(*tachyon_internal::decode_func(print))({tachyon_internal::make_obj(new TACHYON_OBJ({{"proto",String},{"_voidPtr",tachyon_internal::make_void_ptr(new std::string("maybe hello"))}}))});
-}else{
-(*tachyon_internal::decode_func(print))({tachyon_internal::make_obj(new TACHYON_OBJ({{"proto",String},{"_voidPtr",tachyon_internal::make_void_ptr(new std::string("Bye bye world!"))}}))});
+try{
+tachyon_internal::get_prop(tachyon_internal::decode_obj(tachyon_internal::make_obj(new TACHYON_OBJ({}))),"b");
+}catch(const std::exception& _err) {
+double e=tachyon_internal::make_obj(new TACHYON_OBJ({{"proto",String},{"_voidPtr",tachyon_internal::make_void_ptr(new std::string(_err.what()))}}));
+{
+(*tachyon_internal::decode_func(print))({tachyon_internal::make_obj(new TACHYON_OBJ({{"proto",String},{"_voidPtr",tachyon_internal::make_void_ptr(new std::string("THE ERROR WAS:"))}}))});
+(*tachyon_internal::decode_func(print))({e});
+}
 }
 
 tachyon_internal::free_all();
