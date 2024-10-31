@@ -13,7 +13,7 @@
 #define FUNC_TAG 0x7ffe000000000000
 #define OBJ_TAG 0x7fff000000000000
 #define PTR_MASK 0x1ffffffffffff
-#define TYPECHECK_MASK 0xfffe000000000000
+#define TYPECHECK_MASK 0xffff000000000000
 
 // Namespace to encapsulate internals for Tachyon
 namespace tachyon_internal {
@@ -107,22 +107,25 @@ namespace tachyon_internal {
     }
 
     inline bool is_str(double d) {
-        uint64_t u = reinterpret_cast<uint64_t&>(d);
+        uint64_t u = *(uint64_t*)(&d);
         return (u & TYPECHECK_MASK) == STR_TAG;
     }
 
     inline bool is_vec(double d) {
-        uint64_t u = reinterpret_cast<uint64_t&>(d);
+        uint64_t u = *(uint64_t*)(&d);
         return (u & TYPECHECK_MASK) == VEC_TAG;
     }
 
     inline bool is_func(double d) {
-        uint64_t u = reinterpret_cast<uint64_t&>(d);
+        uint64_t u = *(uint64_t*)(&d);
         return (u & TYPECHECK_MASK) == FUNC_TAG;
     }
 
     inline bool is_obj(double d) {
-        uint64_t u = reinterpret_cast<uint64_t&>(d);
+        uint64_t u = *(uint64_t*)(&d);
+        std::cout << (u & TYPECHECK_MASK) << '\n';
+        std::cout << OBJ_TAG<< '\n';
+
         return (u & TYPECHECK_MASK) == OBJ_TAG;
     }
 

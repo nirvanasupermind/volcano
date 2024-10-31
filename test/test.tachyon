@@ -7,5 +7,5 @@ var Complex = {
 var a = {"proto": Complex, "real": 1, "imag": 1};
 var b = {"proto": Complex, "real": 2, "imag": 3};
 var c = a.add(b);
-print(c.real);
-print(c.imag);
+print(c["real"]);
+print(c["imag"]);
