@@ -21,45 +21,45 @@ namespace tachyon_internal {
 
     inline double make_str(std::string* str) {
         all_ptrs.push_back(str);
-        uint64_t u = reinterpret_cast<uint64_t>(str) | STR_TAG;
-        return *reinterpret_cast<double*>(&u);
+        uint64_t u = ((uint64_t)str) | STR_TAG;
+        return *(double*)(&u);
     }
 
     inline double make_vec(std::vector<double>* vec) {
         all_ptrs.push_back(vec);
-        uint64_t u = reinterpret_cast<uint64_t>(vec) | VEC_TAG;
-        return *reinterpret_cast<double*>(&u);
+        uint64_t u = ((uint64_t)vec) | VEC_TAG;
+        return *(double*)(&u);
     }
 
     inline double make_func(TACHYON_FUNC* func) {
         all_ptrs.push_back(func);
-        uint64_t u = reinterpret_cast<uint64_t>(func) | FUNC_TAG;
-        return *reinterpret_cast<double*>(&u);
+        uint64_t u = ((uint64_t)func) | FUNC_TAG;
+        return *(double*)(&u);
     }
 
     inline double make_obj(TACHYON_OBJ* obj) {
         all_ptrs.push_back(obj);
-        uint64_t u = reinterpret_cast<uint64_t>(obj) | OBJ_TAG;
-        return *reinterpret_cast<double*>(&u);
+        uint64_t u = ((uint64_t)obj) | FUNC_TAG;
+        return *(double*)(&u);
     }
 
     inline std::string* decode_str(double d) {
-        uint64_t ptr = reinterpret_cast<uint64_t&>(d) & PTR_MASK;
+        uint64_t ptr = (*(uint64_t*)(&d)) & PTR_MASK;
         return (std::string*)(ptr);
     }
 
     inline std::vector<double>* decode_vec(double d) {
-        uint64_t ptr = reinterpret_cast<uint64_t&>(d) & PTR_MASK;
+        uint64_t ptr = (*(uint64_t*)(&d)) & PTR_MASK;
         return (std::vector<double>*)(ptr);
     }
 
     inline TACHYON_FUNC* decode_func(double d) {
-        uint64_t ptr = reinterpret_cast<uint64_t&>(d) & PTR_MASK;
+        uint64_t ptr = (*(uint64_t*)(&d)) & PTR_MASK;
         return (TACHYON_FUNC*)(ptr);
     }
 
     inline TACHYON_OBJ* decode_obj(double d) {
-        uint64_t ptr = reinterpret_cast<uint64_t&>(d) & PTR_MASK;
+        uint64_t ptr = (*(uint64_t*)(&d)) & PTR_MASK;
         return (TACHYON_OBJ*)(ptr);
     }
 
@@ -76,9 +76,12 @@ namespace tachyon_internal {
         for (auto& pair : *obj) {
             if (pair.first == key) return pair.second;
         }
+
         for (auto& pair : *obj) {
             if (pair.first == "proto") return get_prop(decode_obj(pair.second), key);
         }
+
+
         throw std::runtime_error("key not found: " + key);
     }
 
