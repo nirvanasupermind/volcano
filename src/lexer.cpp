@@ -300,7 +300,7 @@ namespace tachyon {
         
         if (identifier_str == "true" || identifier_str == "false" || identifier_str == "null" ||
             identifier_str == "var" || identifier_str == "const" || identifier_str == "block" 
-            || identifier_str == "if" || identifier_str == "else" || identifier_str == "while"
+            || identifier_str == "if" || identifier_str == "elif" || identifier_str == "else" || identifier_str == "while"
             || identifier_str == "for" || identifier_str == "return" || identifier_str == "func" || identifier_str == "afunc"
             || identifier_str == "throw"
             || identifier_str == "try" || identifier_str == "catch" || identifier_str == "include" ) {

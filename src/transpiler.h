@@ -28,7 +28,6 @@ namespace tachyon {
         void visit_const_def_stmt_node(const std::shared_ptr<ConstDefStmtNode>& node);
         void visit_block_stmt_node(const std::shared_ptr<BlockStmtNode>& node);
         void visit_if_stmt_node(const std::shared_ptr<IfStmtNode>& node);
-        void visit_if_else_stmt_node(const std::shared_ptr<IfElseStmtNode>& node);
         void visit_while_stmt_node(const std::shared_ptr<WhileStmtNode>& node);
         void visit_for_stmt_node(const std::shared_ptr<ForStmtNode>& node);
         void visit_return_stmt_node(const std::shared_ptr<ReturnStmtNode>& node);

@@ -379,24 +379,40 @@ namespace tachyon {
             raise_error();
         }
         advance();
+        std::vector<std::shared_ptr<Node> > conds;
+        std::vector<std::shared_ptr<Node> > bodies;
+        std::shared_ptr<Node> else_body;
         if (!(current_tok.type == TokenType::LPAREN)) {
             raise_error();
         }
         advance();
-        std::shared_ptr<Node> cond = expr();
+        conds.push_back(expr());
         if (!(current_tok.type == TokenType::RPAREN)) {
             raise_error();
         }
         advance();
-        std::shared_ptr<Node> body = simple_block_stmt();
+        bodies.push_back(simple_block_stmt());
+        while (current_tok.type == TokenType::KEYWORD && current_tok.val == "elif") {
+            advance();
+
+            if (!(current_tok.type == TokenType::LPAREN)) {
+                raise_error();
+            }
+            advance();
+            conds.push_back(expr());
+            if (!(current_tok.type == TokenType::RPAREN)) {
+                raise_error();
+            }
+            advance();
+            bodies.push_back(simple_block_stmt());
+        }
+
         if (current_tok.type == TokenType::KEYWORD && current_tok.val == "else") {
             advance();
-            std::shared_ptr<Node> else_body = simple_block_stmt();
-            return std::make_shared<IfElseStmtNode>(IfElseStmtNode(cond, body, else_body));
+            else_body = simple_block_stmt();
         }
-        else {
-            return std::make_shared<IfStmtNode>(IfStmtNode(cond, body));
-        }
+
+        return std::make_shared<IfStmtNode>(IfStmtNode(conds, bodies, else_body));
     }
 
     std::shared_ptr<Node> Parser::while_stmt() {

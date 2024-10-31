@@ -198,7 +198,7 @@ namespace tachyon {
             return (int32_t)left << (int32_t)right;
         case TokenType::RSH:
             return (int32_t)left >> (int32_t)right;
-        case TokenType::EQ:
+        case TokenType::EE:
             return left == right;
         case TokenType::NE:
             return left != right;
@@ -279,9 +279,10 @@ namespace tachyon {
         return "(BlockStmtNode " + stmt_list_node->to_string() + ")";
     }
 
-    IfStmtNode::IfStmtNode(const std::shared_ptr<Node>& cond, const std::shared_ptr<Node>& body) {
-        this->cond = cond;
-        this->body = body;
+    IfStmtNode::IfStmtNode(const std::vector<std::shared_ptr<Node> >& conds, const std::vector<std::shared_ptr<Node> >& bodies, const std::shared_ptr<Node>& else_body) {
+        this->conds = conds;
+        this->bodies = bodies;
+        this->else_body = else_body;
     }
 
     NodeType IfStmtNode::get_type() const {
@@ -289,21 +290,18 @@ namespace tachyon {
     }
 
     std::string IfStmtNode::to_string() const {
-        return "(IfStmtNode " + cond->to_string() + " " + body->to_string() + ")";
-    }
-
-    IfElseStmtNode::IfElseStmtNode(const std::shared_ptr<Node>& cond, const std::shared_ptr<Node>& if_body, const std::shared_ptr<Node>& else_body) {
-        this->cond = cond;
-        this->if_body = if_body;
-        this->else_body = else_body;
-    }
-
-    NodeType IfElseStmtNode::get_type() const {
-        return NodeType::IF_ELSE_STMT;
-    }
-
-    std::string IfElseStmtNode::to_string() const {
-        return "(IfElseStmtNode " + cond->to_string() + " " + if_body->to_string() + " " + else_body->to_string()  + ")";
+        std::string result = "(IfStmtNode (";
+        for(int i = 0; i < conds.size(); i++) {
+            result += conds.at(i)->to_string();
+            result += " ";
+            result += bodies.at(i)->to_string();
+            result += ") ";
+        }
+        if(else_body) {
+            result += else_body->to_string();
+        }
+        result += ")";
+        return result;
     }
 
     WhileStmtNode::WhileStmtNode(const std::shared_ptr<Node>& cond, const std::shared_ptr<Node>& body) {

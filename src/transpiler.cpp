@@ -67,9 +67,9 @@ namespace tachyon {
             case NodeType::IF_STMT:
                 visit_if_stmt_node(std::static_pointer_cast<IfStmtNode>(node));
                 break;
-            case NodeType::IF_ELSE_STMT:
-                visit_if_else_stmt_node(std::static_pointer_cast<IfElseStmtNode>(node));
-                break;
+                // case NodeType::IF_ELSE_STMT:
+                //     visit_if_else_stmt_node(std::static_pointer_cast<IfElseStmtNode>(node));
+                //     break;
             case NodeType::WHILE_STMT:
                 visit_while_stmt_node(std::static_pointer_cast<WhileStmtNode>(node));
                 break;
@@ -112,14 +112,14 @@ namespace tachyon {
 
     void Transpiler::visit_object_node(const std::shared_ptr<ObjectNode>& node) {
         code << "tachyon_internal::make_obj(new TACHYON_OBJ({";
-            for (int i = 0; i < node->keys.size(); i++) {
-                code << "{\"" << node->keys.at(i).val << "\",";
-                visit(node->vals.at(i));
-                if (i != node->keys.size() - 1) {
-                    code << "},";
-                }
+        for (int i = 0; i < node->keys.size(); i++) {
+            code << "{\"" << node->keys.at(i).val << "\",";
+            visit(node->vals.at(i));
+            if (i != node->keys.size() - 1) {
+                code << "},";
             }
-        if(!node->keys.empty()) {
+        }
+        if (!node->keys.empty()) {
             code << "}";
         }
         code << "}))";
@@ -152,15 +152,15 @@ namespace tachyon {
         code << "(*tachyon_internal::decode_func(";
         visit(node->callee);
         code << "))({";
-        if(node->callee->get_type() == NodeType::OBJECT_PROP) {
+        if (node->callee->get_type() == NodeType::OBJECT_PROP) {
             visit(std::static_pointer_cast<ObjectPropNode>(node->callee)->obj);
-            if(!node->args.empty()) {
+            if (!node->args.empty()) {
                 code << ",";
             }
         }
         for (int i = 0; i < node->args.size(); i++) {
             visit(node->args.at(i));
-            if(i != node->args.size() - 1) {
+            if (i != node->args.size() - 1) {
                 code << ",";
             }
         }
@@ -195,7 +195,7 @@ namespace tachyon {
 
     void Transpiler::visit_bin_op_node(const std::shared_ptr<BinOpNode>& node) {
         if (node->op_tok.type == TokenType::EQ) {
-// (*tachyon_internal::decode_func(tachyon_internal::get_prop(tachyon_internal::decode_obj(obj),"set")))({obj,key,val});
+            // (*tachyon_internal::decode_func(tachyon_internal::get_prop(tachyon_internal::decode_obj(obj),"set")))({obj,key,val});
             if (node->left_node->get_type() == NodeType::OBJECT_PROP) {
                 std::shared_ptr<ObjectPropNode> temp = std::static_pointer_cast<ObjectPropNode>(node->left_node);
                 code << "tachyon_internal::set_prop(tachyon_internal::decode_obj(";
@@ -203,7 +203,8 @@ namespace tachyon {
                 code << "),\"" << temp->prop.val << "\",";
                 visit(node->right_node);
                 code << ")";
-            } else if(node->left_node->get_type() == NodeType::INDEX_EXPR) {
+            }
+            else if (node->left_node->get_type() == NodeType::INDEX_EXPR) {
                 std::shared_ptr<IndexExprNode> temp = std::static_pointer_cast<IndexExprNode>(node->left_node);
                 code << " (*tachyon_internal::decode_func(tachyon_internal::get_prop(tachyon_internal::decode_obj(";
                 visit(temp->obj);
@@ -299,19 +300,29 @@ namespace tachyon {
 
     void Transpiler::visit_if_stmt_node(const std::shared_ptr<IfStmtNode>& node) {
         code << "if(";
-        visit(node->cond);
+        visit(node->conds.at(0));
         code << ")";
-        visit(node->body);
+        visit(node->bodies.at(0));
+        for (int i = 1; i < node->conds.size(); i++) {
+            code << "else if(";
+            visit(node->conds.at(i));
+            code << ")";
+            visit(node->bodies.at(i));
+        }
+        if (node->else_body) {
+            code << "else";
+            visit(node->else_body);
+        }
     }
 
-    void Transpiler::visit_if_else_stmt_node(const std::shared_ptr<IfElseStmtNode>& node) {
-        code << "if(";
-        visit(node->cond);
-        code << ")";
-        visit(node->if_body);
-        code << "else";
-        visit(node->else_body);
-    }
+    // void Transpiler::visit_if_else_stmt_node(const std::shared_ptr<IfElseStmtNode>& node) {
+    //     code << "if(";
+    //     visit(node->cond);
+    //     code << ")";
+    //     visit(node->if_body);
+    //     code << "else";
+    //     visit(node->else_body);
+    // }
 
     void Transpiler::visit_while_stmt_node(const std::shared_ptr<WhileStmtNode>& node) {
         code << "while(";

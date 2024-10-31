@@ -24,7 +24,6 @@ namespace tachyon {
         EXPR_STMT,
         BLOCK_STMT,
         IF_STMT,
-        IF_ELSE_STMT,
         WHILE_STMT,
         FOR_STMT,
         RETURN_STMT,
@@ -177,19 +176,10 @@ namespace tachyon {
     
     class IfStmtNode: public Node {
     public:
-        std::shared_ptr<Node> cond;
-        std::shared_ptr<Node> body;
-        IfStmtNode(const std::shared_ptr<Node>& cond, const std::shared_ptr<Node>& body);
-        NodeType get_type() const;
-        std::string to_string() const;
-    };
-
-    class IfElseStmtNode: public Node {
-    public:
-        std::shared_ptr<Node> cond;
-        std::shared_ptr<Node> if_body;
+        std::vector<std::shared_ptr<Node> > conds;
+        std::vector<std::shared_ptr<Node> > bodies;
         std::shared_ptr<Node> else_body;
-        IfElseStmtNode(const std::shared_ptr<Node>& cond, const std::shared_ptr<Node>& if_body,  const std::shared_ptr<Node>& else_body);
+        IfStmtNode(const std::vector<std::shared_ptr<Node> >& conds, const std::vector<std::shared_ptr<Node> >& bodies,  const std::shared_ptr<Node>& else_body);
         NodeType get_type() const;
         std::string to_string() const;
     };

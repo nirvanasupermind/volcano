@@ -113,7 +113,7 @@ namespace tachyon_internal {
 
 double String = tachyon_internal::make_obj(new TACHYON_OBJ({}));
 double Vector = tachyon_internal::make_obj(new TACHYON_OBJ({}));
-double Map = tachyon_internal::make_obj(new TACHYON_OBJ({}));
+double Error = tachyon_internal::make_obj(new TACHYON_OBJ({}));
 
 double print = tachyon_internal::make_func(new TACHYON_FUNC([](const std::vector<double>& _args) -> double {
         double x = _args.at(0);
