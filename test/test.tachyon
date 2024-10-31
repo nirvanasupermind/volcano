@@ -1,6 +1,1 @@
-try {
-    {}.b;
-} catch(e) {
-    print("THE ERROR WAS:");
-    print(e);
-}
+print("Hello world!"[0]);

@@ -54,7 +54,7 @@ namespace tachyon {
         return result;
     }
 
-    ObjectNode::ObjectNode(const std::vector<Token>& keys, const std::vector<std::shared_ptr<Node> >& vals) {
+    ObjectNode::ObjectNode(const std::vector<std::shared_ptr<Node> >& keys, const std::vector<std::shared_ptr<Node> >& vals) {
         this->keys = keys;
         this->vals = vals;
     }
@@ -66,7 +66,7 @@ namespace tachyon {
     std::string ObjectNode::to_string() const {
         std::string result = "(Object (";
         for(int i = 0; i < keys.size(); i++) {
-            result += keys.at(i).to_string() + " ";
+            result += keys.at(i)->to_string() + " ";
         }
         result = result.substr(0, result.size() - 1);
         result += ") (";
@@ -388,17 +388,17 @@ namespace tachyon {
         return "(ObjectPropNode  " + obj->to_string() + " " + prop.to_string() + ")";
     }
 
-    IndexExprNode::IndexExprNode(const std::shared_ptr<Node>& obj, const std::shared_ptr<Node>& idx) {
-        this->obj = obj;
+    SubscriptNode::SubscriptNode(const std::shared_ptr<Node>& obj, const std::shared_ptr<Node>& idx) {
+        this->base = obj;
         this->idx = idx;
     }
 
-    NodeType IndexExprNode::get_type() const {
-        return NodeType::INDEX_EXPR;
+    NodeType SubscriptNode::get_type() const {
+        return NodeType::SUBSCRIPT;
     }
 
-    std::string IndexExprNode::to_string() const {
-        return "(IndexExprNode  " + obj->to_string() + " " + idx->to_string() + ")";
+    std::string SubscriptNode::to_string() const {
+        return "(IndexExprNode  " + base->to_string() + " " + idx->to_string() + ")";
     }
 
     TryCatchStmtNode::TryCatchStmtNode(const std::shared_ptr<Node>& try_body, const Token& error, const std::shared_ptr<Node>& catch_body) {

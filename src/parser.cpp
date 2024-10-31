@@ -113,18 +113,14 @@ namespace tachyon {
             raise_error();
         }
         advance();
-        std::vector<Token> keys;
+        std::vector<std::shared_ptr<Node> > keys;
         std::vector<std::shared_ptr<Node> > vals;
         if (current_tok.type == TokenType::RCURLY) {
             advance();
         }
         else {
             while (true) {
-                if (current_tok.type != TokenType::IDENTIFIER) {
-                    raise_error();
-                }
-                keys.push_back(current_tok);
-                advance();
+                keys.push_back(expr());
                 if (current_tok.type != TokenType::COLON) {
                     raise_error();
                 }
@@ -224,7 +220,7 @@ namespace tachyon {
                     raise_error();
                 }
                 advance();
-                result = std::make_shared<IndexExprNode>(IndexExprNode(result, idx_node));
+                result = std::make_shared<SubscriptNode>(SubscriptNode(result, idx_node));
             }
             else if (current_tok.type == TokenType::INC || current_tok.type == TokenType::DEC) {
                 result = std::make_shared<UnaryOpNode>(UnaryOpNode(current_tok, result));
