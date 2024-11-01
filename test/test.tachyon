@@ -1,3 +1,3 @@
-var x = {"a": 2};
-x["a"]++;
-println(x["a"]);
+println(Math.hypot(3,4));
+println(Math.gamma(5));
+println(StringUtils.back("abc"));

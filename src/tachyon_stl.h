@@ -106,6 +106,24 @@ namespace tachyon_internal {
         return val;
     }
 
+
+    inline double is_eq(double a, double b) {
+        uint64_t a_u = *(uint64_t*)(&a);
+        uint64_t b_u = *(uint64_t*)(&b);
+
+        return a_u == b_u;
+    }
+
+
+
+    inline double is_ne(double a, double b) {
+        uint64_t a_u = *(uint64_t*)(&a);
+        uint64_t b_u = *(uint64_t*)(&b);
+
+        return a_u != b_u;
+    }
+
+
     inline bool is_str(double d) {
         uint64_t u = *(uint64_t*)(&d);
         return (u & TYPECHECK_MASK) == STR_TAG;
@@ -154,6 +172,8 @@ namespace tachyon_internal {
 }
 
 double Math = tachyon_internal::make_obj(new TACHYON_OBJ({}));
+double StringUtils = tachyon_internal::make_obj(new TACHYON_OBJ({}));
+
 double print = tachyon_internal::make_func(new TACHYON_FUNC([](const std::vector<double>& _args) -> double {
         double x = _args.at(0);
         if(tachyon_internal::is_obj(x)) {
@@ -165,7 +185,7 @@ double print = tachyon_internal::make_func(new TACHYON_FUNC([](const std::vector
                 std::cout << obj;
             }
         } else if(tachyon_internal::is_str(x)) {
-            std::cout << *tachyon_internal::decode_str(x) << '\n';
+            std::cout << *tachyon_internal::decode_str(x);
         } else if(tachyon_internal::is_vec(x)) {
             std::vector<double> vec = *tachyon_internal::decode_vec(x);
             std::cout << '[';
@@ -191,6 +211,55 @@ double println = tachyon_internal::make_func(new TACHYON_FUNC([](const std::vect
     
 // Tachyon standard library setup function
 void tachyon_stl_setup() {
+    tachyon_internal::set_prop(tachyon_internal::decode_obj(Math), "abs", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
+        return std::abs(_args.at(1));
+    })));
+
+
+    tachyon_internal::set_prop(tachyon_internal::decode_obj(Math), "exp", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
+        return std::exp(_args.at(1));
+    })));
+
+    tachyon_internal::set_prop(tachyon_internal::decode_obj(Math), "exp2", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
+        return std::exp2(_args.at(1));
+    })));
+
+    tachyon_internal::set_prop(tachyon_internal::decode_obj(Math), "expm1", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
+        return std::expm1(_args.at(1));
+    })));
+
+    tachyon_internal::set_prop(tachyon_internal::decode_obj(Math), "log", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
+        return std::log(_args.at(1));
+    })));
+
+        tachyon_internal::set_prop(tachyon_internal::decode_obj(Math), "log10", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
+        return std::log10(_args.at(1));
+    })));
+
+    tachyon_internal::set_prop(tachyon_internal::decode_obj(Math), "log2", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
+        return std::log2(_args.at(1));
+    })));
+
+    tachyon_internal::set_prop(tachyon_internal::decode_obj(Math), "log1p", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
+        return std::log1p(_args.at(1));
+    })));
+
+    tachyon_internal::set_prop(tachyon_internal::decode_obj(Math), "pow", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
+        return std::pow(_args.at(1), _args.at(2));
+    })));
+
+    tachyon_internal::set_prop(tachyon_internal::decode_obj(Math), "sqrt", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
+        return std::sqrt(_args.at(1));
+    })));
+
+    tachyon_internal::set_prop(tachyon_internal::decode_obj(Math), "cbrt", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
+        return std::cbrt(_args.at(1));
+    })));
+    
+    tachyon_internal::set_prop(tachyon_internal::decode_obj(Math), "hypot", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
+        return std::hypot(_args.at(1), _args.at(2));
+    })));
+
     tachyon_internal::set_prop(tachyon_internal::decode_obj(Math), "cos", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
         return std::cos(_args.at(1));
     })));
@@ -214,6 +283,124 @@ void tachyon_stl_setup() {
     tachyon_internal::set_prop(tachyon_internal::decode_obj(Math), "atan", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
         return std::atan(_args.at(1));
     })));
+
+    tachyon_internal::set_prop(tachyon_internal::decode_obj(Math), "atan2", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
+        return std::atan2(_args.at(1), _args.at(2));
+    })));
+
+    tachyon_internal::set_prop(tachyon_internal::decode_obj(Math), "cosh", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
+        return std::cosh(_args.at(1));
+    })));
+
+    tachyon_internal::set_prop(tachyon_internal::decode_obj(Math), "sinh", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
+        return std::sinh(_args.at(1));
+    })));
+
+    tachyon_internal::set_prop(tachyon_internal::decode_obj(Math), "tanh", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
+        return std::tanh(_args.at(1));
+    })));
+
+    tachyon_internal::set_prop(tachyon_internal::decode_obj(Math), "acosh", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
+        return std::acosh(_args.at(1));
+    })));
+
+    tachyon_internal::set_prop(tachyon_internal::decode_obj(Math), "asinh", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
+        return std::asinh(_args.at(1));
+    })));
+
+    tachyon_internal::set_prop(tachyon_internal::decode_obj(Math), "atanh", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
+        return std::atanh(_args.at(1));
+    })));
+
+    tachyon_internal::set_prop(tachyon_internal::decode_obj(Math), "erf", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
+        return std::erf(_args.at(1));
+    })));
+    
+    tachyon_internal::set_prop(tachyon_internal::decode_obj(Math), "erfc", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
+        return std::erfc(_args.at(1));
+    })));
+    
+
+    tachyon_internal::set_prop(tachyon_internal::decode_obj(Math), "gamma", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
+        return std::tgamma(_args.at(1));
+    })));
+    
+    
+        tachyon_internal::set_prop(tachyon_internal::decode_obj(Math), "lgamma", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
+        return std::lgamma(_args.at(1));
+    })));
+    
+        tachyon_internal::set_prop(tachyon_internal::decode_obj(Math), "ceil", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
+        return std::ceil(_args.at(1));
+    })));
+    
+        tachyon_internal::set_prop(tachyon_internal::decode_obj(Math), "floor", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
+        return std::floor(_args.at(1));
+    })));
+    
+    
+        tachyon_internal::set_prop(tachyon_internal::decode_obj(Math), "gamma", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
+        return std::tgamma(_args.at(1));
+    })));
+    
+
+        tachyon_internal::set_prop(tachyon_internal::decode_obj(Math), "lgamma", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
+        return std::lgamma(_args.at(1));
+    })));
+    
+            tachyon_internal::set_prop(tachyon_internal::decode_obj(Math), "ceil", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
+        return std::ceil(_args.at(1));
+    })));
+    
+                tachyon_internal::set_prop(tachyon_internal::decode_obj(Math), "floor", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
+        return std::floor(_args.at(1));
+    })));
+    
+                    tachyon_internal::set_prop(tachyon_internal::decode_obj(Math), "trunc", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
+        return std::trunc(_args.at(1));
+    })));
+    
+                tachyon_internal::set_prop(tachyon_internal::decode_obj(Math), "round", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
+        return std::round(_args.at(1));
+    })));
+    
+            tachyon_internal::set_prop(tachyon_internal::decode_obj(Math), "isfinite", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
+        return std::isfinite(_args.at(1));
+    })));
+        
+                    tachyon_internal::set_prop(tachyon_internal::decode_obj(Math), "isinf", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
+        return std::isinf(_args.at(1));
+    })));
+    
+                tachyon_internal::set_prop(tachyon_internal::decode_obj(Math), "isnan", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
+        return std::isnan(_args.at(1));
+    })));
+    
+                tachyon_internal::set_prop(tachyon_internal::decode_obj(Math), "ceil", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
+        return std::ceil(_args.at(1));
+    })));
+
+
+    tachyon_internal::set_prop(tachyon_internal::decode_obj(StringUtils), "front", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
+        std::string* a = tachyon_internal::decode_str(_args.at(1));
+        return tachyon_internal::make_str(new std::string(1, a->front()));
+    })));
+
+        tachyon_internal::set_prop(tachyon_internal::decode_obj(StringUtils), "back", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
+        std::string* a = tachyon_internal::decode_str(_args.at(1));
+        return tachyon_internal::make_str(new std::string(1, a->back()));
+    })));
+
+    tachyon_internal::set_prop(tachyon_internal::decode_obj(StringUtils), "empty", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
+        std::string* a = tachyon_internal::decode_str(_args.at(1));
+        return a->empty();
+    })));
+
+    tachyon_internal::set_prop(tachyon_internal::decode_obj(StringUtils), "size", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
+        std::string* a = tachyon_internal::decode_str(_args.at(1));
+        return a->size();
+    })));
+
 
     // tachyon_internal::all_objs.reserve(1000000);
     // Initialize any required standard library components here

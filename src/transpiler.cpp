@@ -19,6 +19,9 @@ namespace tachyon {
         double d = node->get_double();
         if (!std::isnan(d)) {
             code << d;
+            if(d >= -9007199254740991.0 && d <= 9007199254740991.0 && std::fmod(d, 1.0) == 0.0) {
+                code << ".0";
+            }
         }
         else {
             switch (node->get_type()) {
@@ -316,10 +319,32 @@ namespace tachyon {
             visit(node->right_node);
             code << "))";
         }
-        else if (node->op_tok.type == TokenType::EE || node->op_tok.type == TokenType::NE) {
+        else if (node->op_tok.type == TokenType::EE) {
+            code << "tachyon_internal::is_eq((";
             visit(node->left_node);
-            code << node->op_tok.val;
+            code << "),";
+            code << "(";
             visit(node->right_node);
+            code << "))";
+        }
+
+        else if (node->op_tok.type == TokenType::NE) {
+            code << "tachyon_internal::is_ne((";
+            visit(node->left_node);
+            code << "),";
+            code << "(";
+            visit(node->right_node);
+            code << "))";
+        }
+        else if (node->op_tok.type == TokenType::LT || node->op_tok.type == TokenType::LE
+        || node->op_tok.type == TokenType::GT || node->op_tok.type == TokenType::GE) {
+            code << "(double)((";
+            visit(node->left_node);
+            code << ")";
+            code << node->op_tok.val;
+            code << "(";
+            visit(node->right_node);
+            code << "))";
         }
         else if (node->op_tok.type == TokenType::MOD) {
             code << "std::fmod((";
