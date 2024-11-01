@@ -123,8 +123,8 @@ namespace tachyon {
     class UnaryOpNode: public Node {
     public:
         Token op_tok;
-        std::shared_ptr<Node> right_node;
-        UnaryOpNode(const Token& op_tok, const std::shared_ptr<Node>& right_node);
+        std::shared_ptr<Node> operand_node;
+        UnaryOpNode(const Token& op_tok, const std::shared_ptr<Node>& operand_node);
         NodeType get_type() const;
         std::string to_string() const;
         double get_double() const;

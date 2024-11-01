@@ -192,21 +192,44 @@ namespace tachyon {
 
     void Transpiler::visit_unary_op_node(const std::shared_ptr<UnaryOpNode>& node) {
         if (node->op_tok.type == TokenType::PLUS) {
-            visit(node->right_node);
+            visit(node->operand_node);
         }
         else if (node->op_tok.type == TokenType::MINUS) {
             code << "-(";
-            visit(node->right_node);
+            visit(node->operand_node);
             code << ")";
         }
         else if (node->op_tok.type == TokenType::NOT) {
             code << "(double)(~(int32_t)(";
-            visit(node->right_node);
+            visit(node->operand_node);
             code << "))";
         }
         else if (node->op_tok.type == TokenType::INC || node->op_tok.type == TokenType::DEC) {
-            visit(node->right_node);
+            if (node->operand_node->get_type() == NodeType::OBJECT_PROP) {
+                std::shared_ptr<ObjectPropNode> temp = std::static_pointer_cast<ObjectPropNode>(node->operand_node);
+                code << "tachyon_internal::set_prop(tachyon_internal::decode_obj(";
+                visit(temp->obj);
+                code << "),\"" << temp->prop.val << "\",(";
+                visit(node->operand_node);
+                code << node->op_tok.val.at(0);
+                code << "1.0";
+                code << "))";
+            }
+            else if (node->operand_node->get_type() == NodeType::SUBSCRIPT) {
+                std::shared_ptr<SubscriptNode> temp = std::static_pointer_cast<SubscriptNode>(node->operand_node);
+                code << "tachyon_internal::set_subscript(";
+                visit(temp->base);
+                code << ",";
+                visit(temp->idx);
+                code << ",(";
+                visit(node->operand_node);
+                code << node->op_tok.val.at(0);
+                code << "1.0";
+                code << "))";
+            } else {
+            visit(node->operand_node);
             code << node->op_tok.val;
+            }
         }
     }
 
@@ -217,9 +240,9 @@ namespace tachyon {
                 std::shared_ptr<ObjectPropNode> temp = std::static_pointer_cast<ObjectPropNode>(node->left_node);
                 code << "tachyon_internal::set_prop(tachyon_internal::decode_obj(";
                 visit(temp->obj);
-                code << "),\"" << temp->prop.val << "\",";
+                code << "),\"" << temp->prop.val << "\",(";
                 visit(node->right_node);
-                code << ")";
+                code << "))";
             }
             else if (node->left_node->get_type() == NodeType::SUBSCRIPT) {
                 std::shared_ptr<SubscriptNode> temp = std::static_pointer_cast<SubscriptNode>(node->left_node);
@@ -227,9 +250,9 @@ namespace tachyon {
                 visit(temp->base);
                 code << ",";
                 visit(temp->idx);
-                code << ",";
+                code << ",(";
                 visit(node->right_node);
-                code << ")";
+                code << "))";
             }
             else {
                 visit(node->left_node);
@@ -238,12 +261,26 @@ namespace tachyon {
             }
         }
         else if (node->op_tok.type == TokenType::PLUS_EQ || node->op_tok.type == TokenType::MINUS_EQ || node->op_tok.type == TokenType::MUL_EQ
-            || node->op_tok.type == TokenType::DIV_EQ || node->op_tok.type == TokenType::MOD_EQ) {
+            || node->op_tok.type == TokenType::DIV_EQ) {
             if (node->left_node->get_type() == NodeType::OBJECT_PROP) {
                 std::shared_ptr<ObjectPropNode> temp = std::static_pointer_cast<ObjectPropNode>(node->left_node);
                 code << "tachyon_internal::set_prop(tachyon_internal::decode_obj(";
                 visit(temp->obj);
                 code << "),\"" << temp->prop.val << "\",tachyon_internal::get_prop(\"" << temp->prop.val << "\")";
+                code << node->op_tok.val.at(0);
+                code << "(";
+                visit(node->right_node);
+                code << "))";
+            }
+            else if(node->left_node->get_type() == NodeType::SUBSCRIPT) {
+                std::shared_ptr<SubscriptNode> temp = std::static_pointer_cast<SubscriptNode>(node->left_node);
+                code << "tachyon_internal::set_subscript(";
+                visit(temp->base);
+                code << ",";
+                visit(temp->idx);
+                code << ",(";
+                visit(node->left_node);
+                code << ")";
                 code << node->op_tok.val.at(0);
                 code << "(";
                 visit(node->right_node);
@@ -256,7 +293,7 @@ namespace tachyon {
                 visit(node->right_node);
                 code << ")";
             }
-        }
+        } 
         else if (node->op_tok.type == TokenType::AND_EQ || node->op_tok.type == TokenType::OR_EQ || node->op_tok.type == TokenType::XOR_EQ
             || node->op_tok.type == TokenType::LSH_EQ || node->op_tok.type == TokenType::RSH_EQ) {
             visit(node->left_node);
@@ -276,6 +313,20 @@ namespace tachyon {
             code << ")";
             code << node->op_tok.val;
             code << "(int32_t)(";
+            visit(node->right_node);
+            code << "))";
+        }
+        else if (node->op_tok.type == TokenType::EE || node->op_tok.type == TokenType::NE) {
+            visit(node->left_node);
+            code << node->op_tok.val;
+            visit(node->right_node);
+        }
+        else if (node->op_tok.type == TokenType::MOD) {
+            code << "std::fmod((";
+            visit(node->left_node);
+            code << ")";
+            code << ",";
+            code << "(";
             visit(node->right_node);
             code << "))";
         }

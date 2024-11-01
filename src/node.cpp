@@ -129,7 +129,7 @@ namespace tachyon {
 
     UnaryOpNode::UnaryOpNode(const Token& op_tok, const std::shared_ptr<Node>& right_node) {
         this->op_tok = op_tok;
-        this->right_node = right_node;
+        this->operand_node = right_node;
     }
 
     NodeType UnaryOpNode::get_type() const {
@@ -137,11 +137,11 @@ namespace tachyon {
     }
 
     std::string UnaryOpNode::to_string() const {
-        return "(UnaryOpNode " + this->op_tok.to_string() + " " + this->right_node->to_string() + ")";
+        return "(UnaryOpNode " + this->op_tok.to_string() + " " + this->operand_node->to_string() + ")";
     }
 
     double UnaryOpNode::get_double() const {
-        uint64_t right = right_node->get_double();
+        uint64_t right = operand_node->get_double();
         if(std::isnan(right)) {
             return NAN;
         } else if(op_tok.type == TokenType::PLUS) {

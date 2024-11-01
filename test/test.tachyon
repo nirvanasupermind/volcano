@@ -1,2 +1,3 @@
-var x = [5,5,4];
-println(x);
+var x = {"a": 2};
+x["a"]++;
+println(x["a"]);

@@ -153,6 +153,7 @@ namespace tachyon_internal {
     }
 }
 
+double Math = tachyon_internal::make_obj(new TACHYON_OBJ({}));
 double print = tachyon_internal::make_func(new TACHYON_FUNC([](const std::vector<double>& _args) -> double {
         double x = _args.at(0);
         if(tachyon_internal::is_obj(x)) {
@@ -181,16 +182,39 @@ double print = tachyon_internal::make_func(new TACHYON_FUNC([](const std::vector
             std::cout << x;
         }
     }));
-    
 
 double println = tachyon_internal::make_func(new TACHYON_FUNC([](const std::vector<double>& _args) -> double {
         double x = _args.at(0);
         (*tachyon_internal::decode_func(print))({x});
         std::cout << '\n';
     }));
-
+    
 // Tachyon standard library setup function
 void tachyon_stl_setup() {
+    tachyon_internal::set_prop(tachyon_internal::decode_obj(Math), "cos", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
+        return std::cos(_args.at(1));
+    })));
+
+    tachyon_internal::set_prop(tachyon_internal::decode_obj(Math), "sin", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
+        return std::sin(_args.at(1));
+    })));
+
+    tachyon_internal::set_prop(tachyon_internal::decode_obj(Math), "tan", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
+        return std::tan(_args.at(1));
+    })));
+
+    tachyon_internal::set_prop(tachyon_internal::decode_obj(Math), "acos", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
+        return std::acos(_args.at(1));
+    })));
+
+    tachyon_internal::set_prop(tachyon_internal::decode_obj(Math), "asin", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
+        return std::asin(_args.at(1));
+    })));
+
+    tachyon_internal::set_prop(tachyon_internal::decode_obj(Math), "atan", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
+        return std::atan(_args.at(1));
+    })));
+
     // tachyon_internal::all_objs.reserve(1000000);
     // Initialize any required standard library components here
     // Initialize any required standard library components here
