@@ -564,6 +564,26 @@ namespace tachyon {
         return std::make_shared<IncludeStmtNode>(IncludeStmtNode(path));
     }
 
+    // std::shared_ptr<Node> Parser::define_stmt() {
+    //     if (!(current_tok.type == TokenType::KEYWORD && current_tok.val == "define")) {
+    //         raise_error();
+    //     }
+    //     advance();
+    //     if (!(current_tok.type == TokenType::IDENTIFIER)) {
+    //         raise_error();
+    //     }
+    //     Token name = current_tok;
+    //     advance();
+    //     std::shared_ptr<Node> expr_node = expr();
+    //     advance();
+    //     if (current_tok.type != TokenType::SEMICOLON) {
+    //         raise_error();
+    //     }
+    //     advance();
+    //     return std::make_shared<DefineStmtNode>(DefineStmtNode(name, expr_node));
+    // }
+
+
     std::shared_ptr<Node> Parser::stmt() {
         if (current_tok.type == TokenType::KEYWORD && current_tok.val == "block") {
             return block_stmt();
@@ -598,6 +618,9 @@ namespace tachyon {
         else if (current_tok.type == TokenType::KEYWORD && current_tok.val == "include") {
             return include_stmt();
         }
+        // else if (current_tok.type == TokenType::KEYWORD && current_tok.val == "define") {
+        //     return define_stmt();
+        // }
         else {
             return expr_stmt();
         }

@@ -91,6 +91,9 @@ namespace tachyon {
             case NodeType::INCLUDE_STMT:
                 visit_include_stmt_node(std::static_pointer_cast<IncludeStmtNode>(node));
                 break;
+            // case NodeType::DEFINE_STMT:
+            //     visit_define_stmt_node(std::static_pointer_cast<DefineStmtNode>(node));
+            //     break;
             case NodeType::STMT_LIST:
                 visit_stmt_list_node(std::static_pointer_cast<StmtListNode>(node));
                 break;
@@ -407,6 +410,11 @@ namespace tachyon {
 
         code << transpiler.code.str();
     }
+
+    // void Transpiler::visit_define_stmt_node(const std::shared_ptr<DefineStmtNode>& node) {
+    //     code << "#define " << node->name.val << " ";
+    //     visit(node->expr_node);
+    // }
 
     void Transpiler::visit_stmt_list_node(const std::shared_ptr<StmtListNode>& node) {
         for (int i = 0; i < node->stmts.size(); i++) {

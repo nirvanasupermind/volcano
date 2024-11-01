@@ -427,6 +427,19 @@ namespace tachyon {
         return "(IncludeStmtNode " + path.to_string() + ")";
     }
 
+    // DefineStmtNode::DefineStmtNode(const Token& name, const std::shared_ptr<Node>& expr_node) {
+    //     this->name = name;
+    //     this->expr_node = expr_node;
+    // }
+
+    // NodeType DefineStmtNode::get_type() const {
+    //     return NodeType::DEFINE_STMT;
+    // }
+
+    // std::string DefineStmtNode::to_string() const {
+    //     return "(DefineStmtNode " + name.val + " " + expr_node->to_string() + ")";
+    // }
+
     StmtListNode::StmtListNode(const std::vector<std::shared_ptr<Node> >& stmts) {
         this->stmts = stmts;
     }

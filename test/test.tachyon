@@ -1,11 +1,2 @@
-var Complex = {
-    "add": afunc(self, other) {
-        return {"proto": Complex, "real": self.real + other.real, "imag": self.imag + other.imag};
-    }
-};
-
-var a = {"proto": Complex, "real": 1, "imag": 1};
-var b = {"proto": Complex, "real": 2, "imag": 3};
-var c = a.add(b);
-print(c["real"]);
-print(c["imag"]);
+var x = [5,5,4];
+println(x);

@@ -35,6 +35,7 @@ namespace tachyon {
         void visit_throw_stmt_node(const std::shared_ptr<ThrowStmtNode>& node);
         void visit_try_catch_stmt_node(const std::shared_ptr<TryCatchStmtNode>& node);
         void visit_include_stmt_node(const std::shared_ptr<IncludeStmtNode>& node);
+        // void visit_define_stmt_node(const std::shared_ptr<DefineStmtNode>& node);
         void visit_stmt_list_node(const std::shared_ptr<StmtListNode>& node);
     };
 }

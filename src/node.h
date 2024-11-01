@@ -31,6 +31,7 @@ namespace tachyon {
         THROW_STMT,
         TRY_CATCH_STMT,
         INCLUDE_STMT,
+        // DEFINE_STMT,
         STMT_LIST
     };
 
@@ -247,6 +248,15 @@ namespace tachyon {
         NodeType get_type() const;
         std::string to_string() const;
     };
+
+    // class DefineStmtNode: public Node {
+    // public:
+    //     Token name;
+    //     std::shared_ptr<Node> expr_node;
+    //     DefineStmtNode(const Token& name, const std::shared_ptr<Node>& expr_node);
+    //     NodeType get_type() const;
+    //     std::string to_string() const;
+    // };
 
     class StmtListNode: public Node {
     public:

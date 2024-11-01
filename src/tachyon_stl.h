@@ -12,7 +12,7 @@
 #define VEC_TAG 0x7ffd000000000000
 #define FUNC_TAG 0x7ffe000000000000
 #define OBJ_TAG 0x7fff000000000000
-#define PTR_MASK 0x1ffffffffffff
+#define PTR_MASK 0xffffffffffff
 #define TYPECHECK_MASK 0xffff000000000000
 
 // Namespace to encapsulate internals for Tachyon
@@ -39,7 +39,7 @@ namespace tachyon_internal {
 
     inline double make_obj(TACHYON_OBJ* obj) {
         all_ptrs.push_back(obj);
-        uint64_t u = ((uint64_t)obj) | FUNC_TAG;
+        uint64_t u = ((uint64_t)obj) | OBJ_TAG;
         return *(double*)(&u);
     }
 
@@ -63,18 +63,18 @@ namespace tachyon_internal {
         return (TACHYON_OBJ*)(ptr);
     }
 
-
     inline void free_all() {
-        // for (void* ptr : all_ptrs) {
-        //     free(ptr);
-        // }
-        // all_ptrs.clear();
+        for (void* ptr : all_ptrs) {
+            free(ptr);
+        }
+        all_ptrs.clear();
     }
 
 
     inline double get_prop(TACHYON_OBJ* obj, const std::string& key) {
+
         for (auto& pair : *obj) {
-            if (pair.first == key) return pair.second;
+           if (pair.first == key) return pair.second;
         }
 
         for (auto& pair : *obj) {
@@ -123,9 +123,6 @@ namespace tachyon_internal {
 
     inline bool is_obj(double d) {
         uint64_t u = *(uint64_t*)(&d);
-        std::cout << (u & TYPECHECK_MASK) << '\n';
-        std::cout << OBJ_TAG<< '\n';
-
         return (u & TYPECHECK_MASK) == OBJ_TAG;
     }
 
@@ -162,21 +159,36 @@ double print = tachyon_internal::make_func(new TACHYON_FUNC([](const std::vector
             TACHYON_OBJ* obj = tachyon_internal::decode_obj(x);
             if(tachyon_internal::has_prop(obj, "toString")) {
                 double temp = (*tachyon_internal::decode_func(tachyon_internal::get_prop(obj, "toString")))({x});
-                std::cout << *tachyon_internal::decode_str(temp) << '\n';
+                std::cout << *tachyon_internal::decode_str(temp);
             } else {
-                std::cout << obj << '\n';
+                std::cout << obj;
             }
         } else if(tachyon_internal::is_str(x)) {
             std::cout << *tachyon_internal::decode_str(x) << '\n';
         } else if(tachyon_internal::is_vec(x)) {
-            std::cout << tachyon_internal::decode_vec(x) << '\n';
+            std::vector<double> vec = *tachyon_internal::decode_vec(x);
+            std::cout << '[';
+            for(int i = 0; i < vec.size(); i++) {
+                (*tachyon_internal::decode_func(print))({vec.at(i)});
+                if(i != vec.size() - 1) {
+                    std::cout << ',';
+                }
+            }
+            std::cout << ']';
         } else if(tachyon_internal::is_func(x)) {
-            std::cout << tachyon_internal::decode_func(x) << '\n';
+            std::cout << tachyon_internal::decode_func(x);
         } else {
-            std::cout << x << '\n';
+            std::cout << x;
         }
     }));
     
+
+double println = tachyon_internal::make_func(new TACHYON_FUNC([](const std::vector<double>& _args) -> double {
+        double x = _args.at(0);
+        (*tachyon_internal::decode_func(print))({x});
+        std::cout << '\n';
+    }));
+
 // Tachyon standard library setup function
 void tachyon_stl_setup() {
     // tachyon_internal::all_objs.reserve(1000000);
