@@ -7,6 +7,8 @@
         "*.trasm": "asm-intel-x86-generic",
         "*.trexe": "plaintext",
         "*.tachyon": "plaintext",
-        "string": "cpp"
+        "string": "cpp",
+        "iosfwd": "cpp",
+        "vector": "cpp"
     }
 }

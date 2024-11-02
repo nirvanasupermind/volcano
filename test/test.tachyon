@@ -1,3 +1,2 @@
-println(Math.hypot(3,4));
-println(Math.gamma(5));
-println(StringUtils.back("abc"));
+println(VectorUtils.join([1,2,3]));
+println(VectorUtils.join([1,2,3], ","));
