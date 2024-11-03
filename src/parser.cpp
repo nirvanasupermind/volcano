@@ -24,7 +24,7 @@ namespace tachyon {
     // }
 
     void Parser::raise_error() {
-        throw std::runtime_error(filename + ":" + std::to_string(current_tok.line) + ": unexpected '" + (current_tok.val) + "'");
+        throw std::string(filename + ":" + std::to_string(current_tok.line) + ": unexpected '" + (current_tok.val) + "'");
     }
 
     std::shared_ptr<Node> Parser::parse() {

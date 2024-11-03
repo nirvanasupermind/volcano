@@ -255,7 +255,7 @@ namespace tachyon {
                 advance();
             }
             else {
-                throw std::runtime_error(filename + ":" + std::to_string(line) + ": " + "illegal character: '" + current_char + "'");
+                throw std::string(filename + ":" + std::to_string(line) + ": " + "illegal character: '" + current_char + "'");
             }
         }
         tokens.push_back(Token(line, TokenType::EOF_, "<eof>"));
@@ -267,13 +267,28 @@ namespace tachyon {
         int dot_count = 0;
         while (current_char != '\0' && (isdigit(current_char) || current_char == '.')) {
             if (current_char == '.') {
-                dot_count += 1;
+                if(dot_count == 1) {
+                    break;
+                }
+                dot_count++;
                 num_str += '.';
             }
             else {
                 num_str += current_char;
             }
             advance();
+        }
+        if(current_char == 'e') {
+            num_str += current_char;
+            advance();
+            if(current_char == '+' || current_char == '-') {
+                num_str += current_char;
+                advance();
+            }
+        while (current_char != '\0' && isdigit(current_char)) {
+            num_str += current_char;
+            advance();
+        }
         }
 
         return Token(line, TokenType::NUMBER, num_str);

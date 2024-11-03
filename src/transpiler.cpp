@@ -19,9 +19,6 @@ namespace tachyon {
         double d = node->get_double();
         if (!std::isnan(d)) {
             code << d;
-            if(d >= -9007199254740991.0 && d <= 9007199254740991.0 && std::fmod(d, 1.0) == 0.0) {
-                code << ".0";
-            }
         }
         else {
             switch (node->get_type()) {

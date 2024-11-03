@@ -5,6 +5,9 @@
 #include <functional>
 #include <thread>
 #include <utility>
+#include <sstream>
+#include <random>
+#include <cmath>
 
 #define TACHYON_OBJ std::vector<std::pair<std::string, double> >
 #define TACHYON_FUNC std::function<double(const std::vector<double>&)>
@@ -391,6 +394,15 @@ void tachyon_stl_setup() {
         return std::ceil(_args.at(1));
         })));
 
+    tachyon_internal::set_prop(tachyon_internal::decode_obj(Math), "random", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
+        static thread_local std::mt19937 generator(std::random_device{}());
+        static std::uniform_real_distribution<double> distribution(0.0, 1.0);
+        return distribution(generator);
+        })));
+
+    tachyon_internal::set_prop(tachyon_internal::decode_obj(Math), "PI", M_PI);
+
+    tachyon_internal::set_prop(tachyon_internal::decode_obj(Math), "E", M_E);
 
     tachyon_internal::set_prop(tachyon_internal::decode_obj(StringUtils), "front", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
         std::string* str = tachyon_internal::decode_str(_args.at(1));
@@ -520,6 +532,24 @@ void tachyon_stl_setup() {
         return tachyon_internal::make_str(new std::string(str->substr(pos, count)));
         })));
 
+    tachyon_internal::set_prop(tachyon_internal::decode_obj(StringUtils), "split", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
+        std::string* str = tachyon_internal::decode_str(_args.at(1));
+        std::string* sep = tachyon_internal::decode_str(_args.at(2));
+        std::vector<double> result;
+
+    auto start = 0U;
+    auto end = str->find(*sep);
+    while (end != std::string::npos)
+    {
+        result.push_back(tachyon_internal::make_str(new std::string(str->substr(start, end - start))));
+        start = end + sep->size();
+        end = str->find(*sep, start);
+    }
+
+        result.push_back(tachyon_internal::make_str(new std::string(str->substr(start, end))));
+    return tachyon_internal::make_vec(new std::vector<double>(result));
+        })));
+
 
     tachyon_internal::set_prop(tachyon_internal::decode_obj(VectorUtils), "size", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
         std::vector<double>* vec = tachyon_internal::decode_vec(_args.at(1));
@@ -558,18 +588,17 @@ void tachyon_stl_setup() {
         vec->clear();
         })));
 
-
     tachyon_internal::set_prop(tachyon_internal::decode_obj(VectorUtils), "join", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
         std::string sep = _args.size() == 2 ? "" : (*tachyon_internal::decode_str(_args.at(2)));
         std::vector<double>* vec = tachyon_internal::decode_vec(_args.at(1));
-        std::string result;
+        std::ostringstream result;
         for(int i = 0; i < vec->size(); i++) {
-            result += *tachyon_internal::decode_str(vec->at(i));
+            result << *tachyon_internal::decode_str(vec->at(i));
             if(i != vec->size() - 1) {
-                result += sep;
+                result << sep;
             }
         }
-        return tachyon_internal::make_str(new std::string(result));
+        return tachyon_internal::make_str(new std::string(result.str()));
         })));
 
 
