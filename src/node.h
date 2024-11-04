@@ -9,6 +9,7 @@
 namespace tachyon {
     enum class NodeType {
         NUMBER,
+        NULL_,
         STRING,
         VECTOR,
         OBJECT,
@@ -49,6 +50,13 @@ namespace tachyon {
         NodeType get_type() const;
         std::string to_string() const;
         double get_double() const;
+    };
+
+    class NullNode: public Node {
+    public:
+        NullNode();
+        NodeType get_type() const;
+        std::string to_string() const;
     };
 
     class StringNode: public Node {

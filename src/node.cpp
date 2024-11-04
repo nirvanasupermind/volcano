@@ -24,6 +24,18 @@ namespace tachyon {
         return std::stod(tok.val);
     }
 
+        
+    NullNode::NullNode() {
+    }
+
+    NodeType NullNode::get_type() const {
+        return NodeType::NULL_;
+    }
+
+    std::string NullNode::to_string() const {
+        return "(NullNode)";
+    }
+
    StringNode::StringNode(const Token& tok) {
         this->tok = tok;
     }

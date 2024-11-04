@@ -51,6 +51,10 @@ namespace tachyon {
             advance();
             return std::make_shared<NumberNode>(NumberNode(tok));
         }
+        else if (tok.type == TokenType::KEYWORD && tok.val == "null") {
+            advance();
+            return std::make_shared<NullNode>(NullNode());
+        }
         // else if (tok.type == TokenType::KEYWORD && (tok.val == "true" || tok.val == "false")) {
         //     advance();
         //     return std::make_shared<BoolNode>(BoolNode(tok));

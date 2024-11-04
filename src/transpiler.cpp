@@ -22,6 +22,9 @@ namespace tachyon {
         }
         else {
             switch (node->get_type()) {
+            case NodeType::NULL_:
+                visit_null_node(std::static_pointer_cast<NullNode>(node));
+                break;
             case NodeType::STRING:
                 visit_string_node(std::static_pointer_cast<StringNode>(node));
                 break;
@@ -108,6 +111,11 @@ namespace tachyon {
         code << "tachyon_internal::make_str(new std::string(\"" << node->tok.val << "\"))";
     }
 
+
+    void Transpiler::visit_null_node(const std::shared_ptr<NullNode>& node) {
+        code << "tachyon_internal::null";
+    }
+
     void Transpiler::visit_vector_node(const std::shared_ptr<VectorNode>& node) {
         code << "tachyon_internal::make_vec(new std::vector<double>({";
         for (int i = 0; i < node->elements.size(); i++) {
@@ -158,7 +166,7 @@ namespace tachyon {
             code << "double " << node->arg_names.at(i).val << "= _args.at(" << i << ");\n";
         }
         visit(node->body);
-        code << "}))";
+        code << "\nreturn tachyon_internal::null;\n}))";
     }
 
     void Transpiler::visit_identifier_node(const std::shared_ptr<IdentifierNode>& node) {
@@ -445,7 +453,7 @@ namespace tachyon {
             code << "double " << node->arg_names.at(i).val << "= _args.at(" << i << ");\n";
         }
         visit(node->body);
-        code << "}));";
+        code << "\nreturn tachyon_internal::null;\n}));";
     }
 
     void Transpiler::visit_throw_stmt_node(const std::shared_ptr<ThrowStmtNode>& node) {
