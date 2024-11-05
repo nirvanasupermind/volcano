@@ -1,15 +1,17 @@
 var t1 = ThreadUtils.makeThread(afunc () {
     for(var i = 0; i < 10; i++) {
+        print("Thread 1: ");
         println(i);
     }
 });
 
 var t2 = ThreadUtils.makeThread(afunc () {
     for(var i = 0; i < 10; i++) {
+        print("Thread 2: ");
         println(i);
     }
 });
 
 
-t1.join();
-t2.join();
+ThreadUtils.join(t1);
+ThreadUtils.join(t2);

@@ -47,10 +47,11 @@ namespace tachyon_internal {
         return *(double*)(&u);
     }
 
-inline double make_thread(std::unique_ptr<std::thread> th) {
-    uint64_t u = ((uint64_t)th.get()) | THREAD_TAG;
-    return *(double*)(&u); // Do not add to all_ptrs since std::unique_ptr will manage its lifecycle
-}
+    inline double make_thread(std::thread* th) {
+        all_ptrs.push_back(th);
+        uint64_t u = ((uint64_t)th) | THREAD_TAG;
+        return *(double*)(&u);
+    }
 
     inline double make_obj(TACHYON_OBJ* obj) {
         all_ptrs.push_back(obj);
@@ -79,10 +80,10 @@ inline double make_thread(std::unique_ptr<std::thread> th) {
         return (TACHYON_FUNC*)(ptr);
     }
 
-inline std::unique_ptr<std::thread>& decode_thread(double d) {
-    uint64_t ptr = (*(uint64_t*)(&d)) & PTR_MASK;
-    return *reinterpret_cast<std::unique_ptr<std::thread>*>(ptr);
-}
+    inline std::thread* decode_thread(double d) {
+        uint64_t ptr = (*(uint64_t*)(&d)) & PTR_MASK;
+        return (std::thread*)(ptr);
+    }
 
     inline TACHYON_OBJ* decode_obj(double d) {
         uint64_t ptr = (*(uint64_t*)(&d)) & PTR_MASK;
@@ -95,12 +96,12 @@ inline std::unique_ptr<std::thread>& decode_thread(double d) {
         return (void*)(ptr);
     }
 
-inline void free_all() {
-    for (void* ptr : all_ptrs) {
-        if (ptr) free(ptr);
+    inline void free_all() {
+        for (void* ptr : all_ptrs) {
+            if (ptr) free(ptr);
+        }
+        all_ptrs.clear();
     }
-    all_ptrs.clear();
-}
 
     inline double get_prop(TACHYON_OBJ* obj, const std::string& key) {
 
@@ -504,14 +505,14 @@ void tachyon_stl_setup() {
     tachyon_internal::set_prop(tachyon_internal::decode_obj(StringUtils), "popBack", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
         std::string* str = tachyon_internal::decode_str(_args.at(1));
         str->pop_back();
-    return tachyon_internal::null;
+        return tachyon_internal::null;
         })));
 
     tachyon_internal::set_prop(tachyon_internal::decode_obj(StringUtils), "append", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
         std::string* str = tachyon_internal::decode_str(_args.at(1));
         std::string* str2 = tachyon_internal::decode_str(_args.at(2));
         str->append(*str2);
-    return tachyon_internal::null;
+        return tachyon_internal::null;
         })));
 
     tachyon_internal::set_prop(tachyon_internal::decode_obj(StringUtils), "replace", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
@@ -520,7 +521,7 @@ void tachyon_stl_setup() {
         double count = _args.at(3);
         std::string* str2 = tachyon_internal::decode_str(_args.at(4));
         str->replace(pos, count, *str2);
-    return tachyon_internal::null;
+        return tachyon_internal::null;
         })));
 
     tachyon_internal::set_prop(tachyon_internal::decode_obj(StringUtils), "find", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
@@ -655,29 +656,29 @@ void tachyon_stl_setup() {
 
     tachyon_internal::set_prop(tachyon_internal::decode_obj(ThisThread), "yield", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
         std::this_thread::yield();
-    })));
+        })));
 
     tachyon_internal::set_prop(tachyon_internal::decode_obj(ThisThread), "getID", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
         return std::hash<std::thread::id>{}(std::this_thread::get_id());
-    })));
+        })));
 
     tachyon_internal::set_prop(tachyon_internal::decode_obj(ThisThread), "sleepFor", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
         std::this_thread::sleep_for(std::chrono::milliseconds((int)_args.at(1)));
         return tachyon_internal::null;
-    })));
+        })));
 
-    
+
     tachyon_internal::set_prop(tachyon_internal::decode_obj(ThreadUtils), "makeThread", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
         TACHYON_FUNC* func = tachyon_internal::decode_func(_args.at(1));
 
         // Create a lambda to wrap the function call, providing it with the expected arguments
         auto thread_func = [func]() {
             // Assuming the thread function can be called with an empty vector as the argument
-            (*func)(std::vector<double>{});
+            return (*func)(std::vector<double>{});
             };
 
         // Pass the lambda to std::thread and wrap it with make_thread
-        return tachyon_internal::make_thread(std::unique_ptr<std::thread>(new std::thread(thread_func)));
+        return tachyon_internal::make_thread(new std::thread(thread_func));
         })));
 
     // tachyon_internal::set_prop(tachyon_internal::decode_obj(ThreadUtils), "joinable", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
@@ -693,22 +694,22 @@ void tachyon_stl_setup() {
     tachyon_internal::set_prop(tachyon_internal::decode_obj(ThreadUtils), "hardwareConcurrency", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
         return std::thread::hardware_concurrency();
         })));
+ 
+    tachyon_internal::set_prop(tachyon_internal::decode_obj(ThreadUtils), "join", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
+        std::thread* thread = tachyon_internal::decode_thread(_args.at(1));
+        if (thread && thread->joinable()) {
+            thread->join();
+        }
+        return tachyon_internal::null;
+        })));
 
-tachyon_internal::set_prop(tachyon_internal::decode_obj(ThreadUtils), "join", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
-    auto& thread = tachyon_internal::decode_thread(_args.at(1));
-    if (thread && thread->joinable()) {
-        thread->join();
-    }
-    return tachyon_internal::null;
-})));
-   
-    // tachyon_internal::set_prop(tachyon_internal::decode_obj(ThreadUtils), "detach", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
-    //     std::unique_ptr<std::thread> thread = tachyon_internal::decode_thread(_args.at(1));
-    //     thread->detach();
-    //     return tachyon_internal::null;
-    //     })));
+    tachyon_internal::set_prop(tachyon_internal::decode_obj(ThreadUtils), "detach", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
+        std::thread* thread = tachyon_internal::decode_thread(_args.at(1));
+        thread->detach();
+        return tachyon_internal::null;
+        })));
 
-     
+
 
     // tachyon_internal::all_objs.reserve(1000000);
     // Initialize any required standard library components here
