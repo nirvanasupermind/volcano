@@ -1,14 +1,18 @@
 var t1 = ThreadUtils.makeThread(afunc () {
     for(var i = 0; i < 10; i++) {
-        print("Thread 1: ");
+        print("Thread ");
+        println(ThisThread.getID());
         println(i);
+        ThisThread.sleepFor(1000);
     }
 });
 
 var t2 = ThreadUtils.makeThread(afunc () {
     for(var i = 0; i < 10; i++) {
-        print("Thread 2: ");
+        print("Thread ");
+        println(ThisThread.getID());
         println(i);
+        ThisThread.sleepFor(990);
     }
 });
 

@@ -538,10 +538,7 @@ void tachyon_stl_setup() {
 
     tachyon_internal::set_prop(tachyon_internal::decode_obj(StringUtils), "substr", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
         std::string* str = tachyon_internal::decode_str(_args.at(1));
-        double pos = _args.at(2);
-        double count = _args.size() >= 3 ? _args.at(3) : std::string::npos;
-
-        return tachyon_internal::make_str(new std::string(str->substr(pos, count)));
+        return tachyon_internal::make_str(new std::string(str->substr(_args.at(2), _args.at(3))));
         })));
 
     tachyon_internal::set_prop(tachyon_internal::decode_obj(StringUtils), "compare", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
@@ -597,6 +594,11 @@ void tachyon_stl_setup() {
         return tachyon_internal::make_vec(new std::vector<double>(result));
         })));
 
+    tachyon_internal::set_prop(tachyon_internal::decode_obj(StringUtils), "eq", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
+        std::string* str = tachyon_internal::decode_str(_args.at(1));
+        std::string* str2 = tachyon_internal::decode_str(_args.at(2));
+        return (*str) == (*str2);
+        })));
 
     tachyon_internal::set_prop(tachyon_internal::decode_obj(VectorUtils), "size", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
         std::vector<double>* vec = tachyon_internal::decode_vec(_args.at(1));
@@ -617,22 +619,25 @@ void tachyon_stl_setup() {
     tachyon_internal::set_prop(tachyon_internal::decode_obj(VectorUtils), "pushBack", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
         std::vector<double>* vec = tachyon_internal::decode_vec(_args.at(1));
         vec->push_back(_args.at(2));
+        return tachyon_internal::null;
         })));
 
     tachyon_internal::set_prop(tachyon_internal::decode_obj(VectorUtils), "popBack", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
         std::vector<double>* vec = tachyon_internal::decode_vec(_args.at(1));
-
         vec->pop_back();
+        return tachyon_internal::null;
         })));
 
     tachyon_internal::set_prop(tachyon_internal::decode_obj(VectorUtils), "insert", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
         std::vector<double>* vec = tachyon_internal::decode_vec(_args.at(1));
         vec->insert(vec->begin() + (int)_args.at(2), _args.at(3));
+        return tachyon_internal::null;
         })));
 
     tachyon_internal::set_prop(tachyon_internal::decode_obj(VectorUtils), "clear", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
         std::vector<double>* vec = tachyon_internal::decode_vec(_args.at(1));
         vec->clear();
+        return tachyon_internal::null;
         })));
 
     tachyon_internal::set_prop(tachyon_internal::decode_obj(VectorUtils), "subvec", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
@@ -641,25 +646,53 @@ void tachyon_stl_setup() {
         })));
 
     tachyon_internal::set_prop(tachyon_internal::decode_obj(VectorUtils), "join", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
-        std::string sep = _args.size() == 2 ? "" : (*tachyon_internal::decode_str(_args.at(2)));
         std::vector<double>* vec = tachyon_internal::decode_vec(_args.at(1));
+        std::string* sep = tachyon_internal::decode_str(_args.at(2));
         std::ostringstream result;
         for (int i = 0; i < vec->size(); i++) {
             result << *tachyon_internal::decode_str(vec->at(i));
             if (i != vec->size() - 1) {
-                result << sep;
+                result << *sep;
             }
         }
+
         return tachyon_internal::make_str(new std::string(result.str()));
         })));
 
 
+    tachyon_internal::set_prop(tachyon_internal::decode_obj(VectorUtils), "transform", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
+        TACHYON_FUNC* func = tachyon_internal::decode_func(_args.at(2));
+        std::vector<double>* result = new std::vector<double>(*(tachyon_internal::decode_vec(_args.at(1))));
+        std::transform(result->begin(), result->end(), result->begin(), [func](double arg) -> double {
+            return (*func)({arg});
+        });
+        return tachyon_internal::make_vec(result);
+        })));
+
+
+    tachyon_internal::set_prop(tachyon_internal::decode_obj(VectorUtils), "accumulate", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
+        std::vector<double>* vec = tachyon_internal::decode_vec(_args.at(1));
+        TACHYON_FUNC* func = tachyon_internal::decode_func(_args.at(3));
+
+        return std::accumulate(vec->begin(), vec->end(), _args.at(2), [func](double a, double b) -> double {
+            return (*func)({a,b});
+        });
+        })));
+
+    tachyon_internal::set_prop(tachyon_internal::decode_obj(VectorUtils), "eq", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
+        std::vector<double>* vec = tachyon_internal::decode_vec(_args.at(1));
+        std::vector<double>* vec2 = tachyon_internal::decode_vec(_args.at(2));
+        return (*vec) == (*vec2);
+        })));
+
     tachyon_internal::set_prop(tachyon_internal::decode_obj(ThisThread), "yield", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
         std::this_thread::yield();
+        return tachyon_internal::null;
         })));
 
     tachyon_internal::set_prop(tachyon_internal::decode_obj(ThisThread), "getID", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
-        return std::hash<std::thread::id>{}(std::this_thread::get_id());
+        uint64_t id = std::hash<std::thread::id>{}(std::this_thread::get_id());
+        return tachyon_internal::make_str(new std::string(std::to_string(id)));
         })));
 
     tachyon_internal::set_prop(tachyon_internal::decode_obj(ThisThread), "sleepFor", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
@@ -681,15 +714,16 @@ void tachyon_stl_setup() {
         return tachyon_internal::make_thread(new std::thread(thread_func));
         })));
 
-    // tachyon_internal::set_prop(tachyon_internal::decode_obj(ThreadUtils), "joinable", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
-    //     std::unique_ptr<std::thread> thread = tachyon_internal::decode_thread(_args.at(1));
-    //     return thread->joinable();
-    //     })));
+    tachyon_internal::set_prop(tachyon_internal::decode_obj(ThreadUtils), "joinable", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
+        std::thread* thread = tachyon_internal::decode_thread(_args.at(1));
+        return thread->joinable();
+        })));
 
-    // tachyon_internal::set_prop(tachyon_internal::decode_obj(ThreadUtils), "getID", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
-    //     std::unique_ptr<std::thread> thread = tachyon_internal::decode_thread(_args.at(1));
-    //     return std::hash<std::thread::id>{}(thread->get_id());
-    //     })));
+    tachyon_internal::set_prop(tachyon_internal::decode_obj(ThreadUtils), "getID", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
+        std::thread* thread = tachyon_internal::decode_thread(_args.at(1));
+        uint64_t id = std::hash<std::thread::id>{}(std::this_thread::get_id());
+        return tachyon_internal::make_str(new std::string(std::to_string(id)));
+        })));
 
     tachyon_internal::set_prop(tachyon_internal::decode_obj(ThreadUtils), "hardwareConcurrency", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
         return std::thread::hardware_concurrency();

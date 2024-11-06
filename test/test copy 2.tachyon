@@ -11,5 +11,5 @@ var t2 = ThreadUtils.makeThread(afunc () {
 });
 
 
-t1.join();
-t2.join();
+ThreadUtils.join(t1);
+ThreadUtils.join(t2);
