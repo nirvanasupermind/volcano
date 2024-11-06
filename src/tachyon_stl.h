@@ -274,6 +274,11 @@ double println = tachyon_internal::make_func(new TACHYON_FUNC([](const std::vect
     return tachyon_internal::null;
     }));
 
+double getTimeMillis = tachyon_internal::make_func(new TACHYON_FUNC([](const std::vector<double>& _args) -> double {
+    auto now = std::chrono::system_clock::now();
+    auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch());
+    return ms.count();
+    }));
 
 // Tachyon standard library setup function
 void tachyon_stl_setup() {
@@ -697,6 +702,20 @@ void tachyon_stl_setup() {
 
     tachyon_internal::set_prop(tachyon_internal::decode_obj(ThisThread), "sleepFor", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
         std::this_thread::sleep_for(std::chrono::milliseconds((int)_args.at(1)));
+        return tachyon_internal::null;
+        })));
+
+
+    tachyon_internal::set_prop(tachyon_internal::decode_obj(ThisThread), "sleepUntil", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
+    double milliseconds_since_epoch = _args.at(1);
+
+
+    auto time_point = std::chrono::time_point<std::chrono::system_clock, std::chrono::milliseconds>(
+        std::chrono::milliseconds((long long)(milliseconds_since_epoch))
+    );
+
+        std::this_thread::sleep_until(time_point);
+
         return tachyon_internal::null;
         })));
 
