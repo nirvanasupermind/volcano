@@ -1,1 +1,2 @@
-println(getTimeMillis());
+var x = 5;
+x++;

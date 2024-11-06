@@ -3,7 +3,8 @@
     
 int main(){
 tachyon_stl_setup();
-(*tachyon_internal::decode_func(println))({(*tachyon_internal::decode_func(getTimeMillis))({})});
+double x=5;
+x++;
 
 tachyon_internal::free_all();
 return 0;

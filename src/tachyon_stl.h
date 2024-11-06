@@ -138,15 +138,12 @@ namespace tachyon_internal {
         return val;
     }
 
-
     inline double is_eq(double a, double b) {
         uint64_t a_u = *(uint64_t*)(&a);
         uint64_t b_u = *(uint64_t*)(&b);
 
         return a_u == b_u;
     }
-
-
 
     inline double is_ne(double a, double b) {
         uint64_t a_u = *(uint64_t*)(&a);

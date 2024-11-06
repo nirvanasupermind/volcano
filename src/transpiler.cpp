@@ -94,9 +94,9 @@ namespace tachyon {
             case NodeType::INCLUDE_STMT:
                 visit_include_stmt_node(std::static_pointer_cast<IncludeStmtNode>(node));
                 break;
-            // case NodeType::DEFINE_STMT:
-            //     visit_define_stmt_node(std::static_pointer_cast<DefineStmtNode>(node));
-            //     break;
+                // case NodeType::DEFINE_STMT:
+                //     visit_define_stmt_node(std::static_pointer_cast<DefineStmtNode>(node));
+                //     break;
             case NodeType::STMT_LIST:
                 visit_stmt_list_node(std::static_pointer_cast<StmtListNode>(node));
                 break;
@@ -131,15 +131,16 @@ namespace tachyon {
         code << "tachyon_internal::make_obj(new TACHYON_OBJ({";
         for (int i = 0; i < node->keys.size(); i++) {
             code << "{";
-            if(node->keys.at(i)->get_type() == NodeType::STRING) {
+            if (node->keys.at(i)->get_type() == NodeType::STRING) {
                 std::shared_ptr<StringNode> str_node = std::static_pointer_cast<StringNode>(node->keys.at(i));
-                code << "\"" << str_node->tok.val << "\"";      
-            } else {
+                code << "\"" << str_node->tok.val << "\"";
+            }
+            else {
                 code << "*tachyon_internal::decode_str(";
                 visit(node->keys.at(i));
                 code << ")";
             }
-            
+
             code << ",";
             visit(node->vals.at(i));
             if (i != node->keys.size() - 1) {
@@ -219,8 +220,7 @@ namespace tachyon {
                 visit(temp->obj);
                 code << "),\"" << temp->prop.val << "\",(";
                 visit(node->operand_node);
-                code << node->op_tok.val.at(0);
-                code << "1.0";
+                code << node->op_tok.val;
                 code << "))";
             }
             else if (node->operand_node->get_type() == NodeType::SUBSCRIPT) {
@@ -231,12 +231,12 @@ namespace tachyon {
                 visit(temp->idx);
                 code << ",(";
                 visit(node->operand_node);
-                code << node->op_tok.val.at(0);
-                code << "1.0";
+                code << node->op_tok.val;
                 code << "))";
-            } else {
-            visit(node->operand_node);
-            code << node->op_tok.val;
+            }
+            else {
+                visit(node->operand_node);
+                code << node->op_tok.val;
             }
         }
     }
@@ -280,7 +280,7 @@ namespace tachyon {
                 visit(node->right_node);
                 code << "))";
             }
-            else if(node->left_node->get_type() == NodeType::SUBSCRIPT) {
+            else if (node->left_node->get_type() == NodeType::SUBSCRIPT) {
                 std::shared_ptr<SubscriptNode> temp = std::static_pointer_cast<SubscriptNode>(node->left_node);
                 code << "tachyon_internal::set_subscript(";
                 visit(temp->base);
@@ -295,13 +295,13 @@ namespace tachyon {
                 code << "))";
             }
             else {
-                code << node->op_tok.val;
+                visit(node->left_node);
                 code << node->op_tok.val;
                 code << "(";
                 visit(node->right_node);
                 code << ")";
             }
-        } 
+        }
         else if (node->op_tok.type == TokenType::AND_EQ || node->op_tok.type == TokenType::OR_EQ || node->op_tok.type == TokenType::XOR_EQ
             || node->op_tok.type == TokenType::LSH_EQ || node->op_tok.type == TokenType::RSH_EQ) {
             visit(node->left_node);
@@ -342,7 +342,7 @@ namespace tachyon {
             code << "))";
         }
         else if (node->op_tok.type == TokenType::LT || node->op_tok.type == TokenType::LE
-        || node->op_tok.type == TokenType::GT || node->op_tok.type == TokenType::GE) {
+            || node->op_tok.type == TokenType::GT || node->op_tok.type == TokenType::GE) {
             code << "(double)((";
             visit(node->left_node);
             code << ")";
@@ -395,19 +395,21 @@ namespace tachyon {
     }
 
     void Transpiler::visit_if_stmt_node(const std::shared_ptr<IfStmtNode>& node) {
-        code << "if(";
-        visit(node->conds.at(0));
-        code << ")";
-        visit(node->bodies.at(0));
-        for (int i = 1; i < node->conds.size(); i++) {
-            code << "else if(";
-            visit(node->conds.at(i));
+        if (node->conds.at(0)->get_double() != 0.0) {
+            code << "if(";
+            visit(node->conds.at(0));
             code << ")";
-            visit(node->bodies.at(i));
-        }
-        if (node->else_body) {
-            code << "else";
-            visit(node->else_body);
+            visit(node->bodies.at(0));
+            for (int i = 1; i < node->conds.size(); i++) {
+                code << "else if(";
+                visit(node->conds.at(i));
+                code << ")";
+                visit(node->bodies.at(i));
+            }
+            if (node->else_body) {
+                code << "else";
+                visit(node->else_body);
+            }
         }
     }
 
@@ -421,10 +423,12 @@ namespace tachyon {
     // }
 
     void Transpiler::visit_while_stmt_node(const std::shared_ptr<WhileStmtNode>& node) {
-        code << "while(";
-        visit(node->cond);
-        code << ")";
-        visit(node->body);
+        if (node->cond->get_double() != 0.0) {
+            code << "while(";
+            visit(node->cond);
+            code << ")";
+            visit(node->body);
+        }
     }
 
     void Transpiler::visit_for_stmt_node(const std::shared_ptr<ForStmtNode>& node) {
@@ -465,8 +469,8 @@ namespace tachyon {
     void Transpiler::visit_try_catch_stmt_node(const std::shared_ptr<TryCatchStmtNode>& node) {
         code << "try";
         visit(node->try_body);
-        code << "catch(const std::exception& _err) {\ndouble " << node->error.val 
-        << "=tachyon_internal::make_str(new std::string(_err.what()));\n";
+        code << "catch(const std::exception& _err) {\ndouble " << node->error.val
+            << "=tachyon_internal::make_str(new std::string(_err.what()));\n";
         visit(node->catch_body);
         code << "\n}";
     }
