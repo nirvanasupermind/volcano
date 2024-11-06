@@ -1,0 +1,7 @@
+var start = getTimeMillis();
+var x = 0.0;
+for(var i = 0; i < 1000000; i++) {
+    x++;
+}
+var end = getTimeMillis();
+println(end - start);
