@@ -79,6 +79,12 @@ namespace tachyon {
             case NodeType::FOR_STMT:
                 visit_for_stmt_node(std::static_pointer_cast<ForStmtNode>(node));
                 break;
+            case NodeType::CONTINUE_STMT:
+                visit_continue_stmt_node(std::static_pointer_cast<ContinueStmtNode>(node));
+                break;
+            case NodeType::BREAK_STMT:
+                visit_break_stmt_node(std::static_pointer_cast<BreakStmtNode>(node));
+                break;
             case NodeType::RETURN_STMT:
                 visit_return_stmt_node(std::static_pointer_cast<ReturnStmtNode>(node));
                 break;
@@ -392,7 +398,6 @@ namespace tachyon {
             visit(node->right_node);
             code << "))";
         }
-
         else if (node->op_tok.type == TokenType::NE) {
             code << "tachyon_internal::is_ne((";
             visit(node->left_node);
@@ -506,6 +511,15 @@ namespace tachyon {
         code << "}";
     }
 
+
+
+    void Transpiler::visit_continue_stmt_node(const std::shared_ptr<ContinueStmtNode>& node) {
+        code << "continue;";
+    }
+
+    void Transpiler::visit_break_stmt_node(const std::shared_ptr<BreakStmtNode>& node) {
+        code << "break;";
+    }
 
     void Transpiler::visit_return_stmt_node(const std::shared_ptr<ReturnStmtNode>& node) {
         code << "return ";

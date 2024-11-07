@@ -28,6 +28,8 @@ namespace tachyon {
         WHILE_STMT,
         FOR_STMT,
         RETURN_STMT,
+        CONTINUE_STMT,
+        BREAK_STMT,
         FUNC_DEF_STMT,
         THROW_STMT,
         TRY_CATCH_STMT,
@@ -212,6 +214,22 @@ namespace tachyon {
         NodeType get_type() const;
         std::string to_string() const;
     };
+
+
+    class ContinueStmtNode: public Node {
+    public:
+        ContinueStmtNode();
+        NodeType get_type() const;
+        std::string to_string() const;
+    };
+
+    class BreakStmtNode: public Node {
+    public:
+        BreakStmtNode();
+        NodeType get_type() const;
+        std::string to_string() const;
+    };
+    
 
     class ReturnStmtNode: public Node {
     public:

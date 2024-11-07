@@ -1,8 +1,8 @@
-var x = {"val": 10};
-x.val &= 13;
-x.val %= 5;
-x.val /= 13;
-x["val"] &= 29;
-x["val"] %= 11;
-x["val"] -= 209;
-println(x.val);
+var x = 1;
+while(true) {
+    x *= 3;
+    if(x >= 10000) {
+        break;
+    }
+}
+println(x);

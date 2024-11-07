@@ -23,7 +23,6 @@ namespace tachyon {
     double NumberNode::get_double() const {
         return std::stod(tok.val);
     }
-
         
     NullNode::NullNode() {
     }
@@ -89,6 +88,7 @@ namespace tachyon {
         result += "))";
         return result;
     }
+
 
     IdentifierNode::IdentifierNode(const Token& tok) {
         this->tok = tok;
@@ -342,6 +342,29 @@ namespace tachyon {
 
     std::string ForStmtNode::to_string() const {
         return "(ForStmtNode " + init->to_string() + " " + cond->to_string()  + " " + update->to_string()  + " " + body->to_string() + ")";
+    }
+
+    ContinueStmtNode::ContinueStmtNode() {
+    }
+
+    NodeType ContinueStmtNode::get_type() const {
+        return NodeType::CONTINUE_STMT;
+    }
+
+    std::string ContinueStmtNode::to_string() const {
+        return "(ContinueStmtNode)";
+    }
+
+
+    BreakStmtNode::BreakStmtNode() {
+    }
+
+    NodeType BreakStmtNode::get_type() const {
+        return NodeType::BREAK_STMT;
+    }
+
+    std::string BreakStmtNode::to_string() const {
+        return "(BreakStmtNode)";
     }
 
     ReturnStmtNode::ReturnStmtNode(const std::shared_ptr<Node>& expr_node) {

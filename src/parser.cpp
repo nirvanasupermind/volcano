@@ -457,6 +457,32 @@ namespace tachyon {
         return std::make_shared<ForStmtNode>(ForStmtNode(init, cond, update, body));
     }
 
+    std::shared_ptr<Node> Parser::continue_stmt() {
+        if (!(current_tok.type == TokenType::KEYWORD && current_tok.val == "continue")) {
+            raise_error();
+        }
+        advance();
+        if (current_tok.type != TokenType::SEMICOLON) {
+            raise_error();
+        }
+        advance();
+        return std::make_shared<ContinueStmtNode>(ContinueStmtNode());
+    }
+
+
+    std::shared_ptr<Node> Parser::break_stmt() {
+        if (!(current_tok.type == TokenType::KEYWORD && current_tok.val == "break")) {
+            raise_error();
+        }
+        advance();
+        if (current_tok.type != TokenType::SEMICOLON) {
+            raise_error();
+        }
+        advance();
+        return std::make_shared<BreakStmtNode>(BreakStmtNode());
+    }
+
+
     std::shared_ptr<Node> Parser::return_stmt() {
         if (!(current_tok.type == TokenType::KEYWORD && current_tok.val == "return")) {
             raise_error();
@@ -606,6 +632,12 @@ namespace tachyon {
         }
         else if (current_tok.type == TokenType::KEYWORD && current_tok.val == "for") {
             return for_stmt();
+        }
+        else if (current_tok.type == TokenType::KEYWORD && current_tok.val == "continue") {
+            return continue_stmt();
+        }
+        else if (current_tok.type == TokenType::KEYWORD && current_tok.val == "break") {
+            return break_stmt();
         }
         else if (current_tok.type == TokenType::KEYWORD && current_tok.val == "return") {
             return return_stmt();
