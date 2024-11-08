@@ -226,8 +226,8 @@ namespace tachyon {
                 visit(temp->obj);
                 code << "),\"" << temp->prop.val << "\",(";
                 visit(node->operand_node);
-                code << node->op_tok.val;
-                code << "))";
+                code << node->op_tok.val.at(0);
+                code << "1.0))";
             }
             else if (node->operand_node->get_type() == NodeType::SUBSCRIPT) {
                 std::shared_ptr<SubscriptNode> temp = std::static_pointer_cast<SubscriptNode>(node->operand_node);
@@ -237,8 +237,8 @@ namespace tachyon {
                 visit(temp->idx);
                 code << ",(";
                 visit(node->operand_node);
-                code << node->op_tok.val;
-                code << "))";
+                code << node->op_tok.val.at(0);
+                code << "1.0))";
             }
             else {
                 visit(node->operand_node);

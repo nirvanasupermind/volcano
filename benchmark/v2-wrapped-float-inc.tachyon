@@ -1,0 +1,8 @@
+var start = getTimeMillis();
+var Wrapper = {};
+var x = {"val": 0, "proto": Wrapper};
+for(var i = 0; i < 1000000; i++) {
+    x.val++;
+}
+var end = getTimeMillis();
+println(end - start);
