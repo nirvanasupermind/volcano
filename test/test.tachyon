@@ -1,3 +1,9 @@
-var f = FStream.fromPath("../test/test.txt");
-f.write("Hello world!");
-f.close();
+var f = FStreamUtils.makeFStream("a/b.txt");
+FStreamUtils.open(f, "a/b.txt");
+FStreamUtils.write2(f, "Hello world!");
+FStreamUtils.close(f);
+
+
+// var f = FStream.fromPath("../test/test.txt");
+// f.write("Hello world!");
+// f.close();
