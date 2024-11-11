@@ -1,3 +1,4 @@
-var f = FileUtils.open("test/test.txt", "w");
-FileUtils.write(f, "Hello world!");
+var f = FileUtils.open("test/test.txt", "rw");
+FileUtils.puts(f, "hi");
+println(FileUtils.gets(f, 3));
 FileUtils.close(f);
