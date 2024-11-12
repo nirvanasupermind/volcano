@@ -18,7 +18,14 @@ namespace tachyon {
     void Transpiler::visit(const std::shared_ptr<Node>& node) {
         double d = node->get_double();
         if (!std::isnan(d)) {
-            code << d;
+        if(d == 0.0) {
+            code << "0.0";
+        } else {
+            std::ostringstream out;
+            out.precision(17 - std::floor(std::log10(std::abs(d))));
+            out << std::fixed << d;
+            code << out.str();
+        }
         }
         else {
             switch (node->get_type()) {
