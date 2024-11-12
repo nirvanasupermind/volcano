@@ -16,7 +16,7 @@ namespace tachyon {
 
     void Lexer::advance() {
         pos++;
-        current_char = pos < text.size() ? text.at(pos) : '\0';
+        current_char = pos < text.size() ? text[pos] : '\0';
         if (current_char == '\n') {
             line++;
         }

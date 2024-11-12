@@ -14,13 +14,13 @@ namespace tachyon {
     void Parser::advance() {
         tok_idx++;
         if (tok_idx < tokens.size()) {
-            current_tok = tokens.at(tok_idx);
+            current_tok = tokens[tok_idx];
         }
     }
 
     // void Parser::unadvance() {
     //     tok_idx--;
-    //     current_tok = tokens.at(tok_idx);
+    //     current_tok = tokens[tok_idx];
     // }
 
     void Parser::raise_error() {

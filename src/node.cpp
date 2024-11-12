@@ -433,7 +433,7 @@ namespace tachyon {
     }
 
     std::string SubscriptNode::to_string() const {
-        return "(IndexExprNode  " + base->to_string() + " " + idx->to_string() + ")";
+        return "(SubscriptNode  " + base->to_string() + " " + idx->to_string() + ")";
     }
 
     TryCatchStmtNode::TryCatchStmtNode(const std::shared_ptr<Node>& try_body, const Token& error, const std::shared_ptr<Node>& catch_body) {
