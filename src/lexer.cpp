@@ -117,9 +117,10 @@ namespace tachyon {
                     tokens.push_back(Token(line, TokenType::AND_EQ, "&="));
                     advance();
                 }
-                // else if(current_char == '&') {
-                //     tokens.push_back(Token(line, TokenType::LOGICAL_AND, "&&"));
-                // }
+                else if(current_char == '&') {
+                    tokens.push_back(Token(line, TokenType::LOGICAL_AND, "&&"));
+                    advance();
+                }
                 else {
                     tokens.push_back(Token(old_line, TokenType::AND, "&"));
                 }
@@ -131,9 +132,10 @@ namespace tachyon {
                     tokens.push_back(Token(line, TokenType::OR_EQ, "|="));
                     advance();
                 }
-                // else if(current_char == '|') {
-                //     tokens.push_back(Token(line, TokenType::LOGICAL_OR, "||"));
-                // }
+                else if(current_char == '|') {
+                    tokens.push_back(Token(line, TokenType::LOGICAL_OR, "||"));
+                    advance();
+                }
                 else {
                     tokens.push_back(Token(old_line, TokenType::OR, "|"));
                 }
@@ -161,15 +163,15 @@ namespace tachyon {
                 }
             }
             else if (current_char == '!') {
-                // int old_line = line;
+                int old_line = line;
                 advance();
                 if (current_char == '=') {
                     tokens.push_back(Token(line, TokenType::NE, "!="));
                     advance();
                 }
-                // else {
-                //     tokens.push_back(Token(old_line, TokenType::LOGICAL_NOT, "!"));
-                // }
+                else {
+                    tokens.push_back(Token(old_line, TokenType::LOGICAL_NOT, "!"));
+                }
             }
             else if (current_char == '<') {
                 int old_line = line;

@@ -62,15 +62,15 @@ namespace tachyon {
         case TokenType::RSH:
             result += "RSH:";
             break;
-        // case TokenType::LOGICAL_NOT:
-        //     result += "LOGICAL_NOT:";
-        //     break;
-        // case TokenType::LOGICAL_AND:
-        //     result += "LOGICAL_OR:";
-        //     break;
-        // case TokenType::LOGICAL_OR:
-        //     result += "LOGICAL_OR:";
-        //     break;
+        case TokenType::LOGICAL_NOT:
+            result += "LOGICAL_NOT:";
+            break;
+        case TokenType::LOGICAL_AND:
+            result += "LOGICAL_OR:";
+            break;
+        case TokenType::LOGICAL_OR:
+            result += "LOGICAL_OR:";
+            break;
         case TokenType::EE:
             result += "EE:";
             break;

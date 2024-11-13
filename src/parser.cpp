@@ -33,7 +33,8 @@ namespace tachyon {
 
     std::shared_ptr<Node> Parser::factor() {
         Token tok = current_tok;
-        if (tok.type == TokenType::PLUS || tok.type == TokenType::MINUS || tok.type == TokenType::NOT
+        if (tok.type == TokenType::PLUS || tok.type == TokenType::MINUS  || tok.type == TokenType::LOGICAL_NOT
+        || tok.type == TokenType::NOT
             || (tok.type == TokenType::KEYWORD && tok.val == "clone")) {
             advance();
             return std::make_shared<UnaryOpNode>(UnaryOpNode(tok, expr()));
@@ -271,16 +272,16 @@ namespace tachyon {
         return bin_op([this]() {return this->xor_expr(); }, { TokenType::OR });
     }
 
-    // std::shared_ptr<Node> Parser::logical_and_expr() {
-    //     return bin_op([this]() {return this->or_expr(); }, { TokenType::LOGICAL_AND });
-    // }
+    std::shared_ptr<Node> Parser::logical_and_expr() {
+        return bin_op([this]() {return this->or_expr(); }, { TokenType::LOGICAL_AND });
+    }
 
-    // std::shared_ptr<Node> Parser::logical_or_expr() {
-    //     return bin_op([this]() {return this->logical_or_expr(); }, { TokenType::LOGICAL_OR });
-    // }
+    std::shared_ptr<Node> Parser::logical_or_expr() {
+        return bin_op([this]() {return this->logical_and_expr(); }, { TokenType::LOGICAL_OR });
+    }
 
     std::shared_ptr<Node> Parser::assign_expr() {
-        return bin_op([this]() {return this->or_expr(); }, { TokenType::EQ, TokenType::PLUS_EQ, TokenType::MINUS_EQ,
+        return bin_op([this]() {return this->logical_or_expr(); }, { TokenType::EQ, TokenType::PLUS_EQ, TokenType::MINUS_EQ,
         TokenType::MUL_EQ, TokenType::DIV_EQ, TokenType::MOD_EQ,
         TokenType::AND_EQ, TokenType::OR_EQ, TokenType::XOR_EQ,
         TokenType::LSH_EQ, TokenType::RSH_EQ });

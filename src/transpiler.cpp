@@ -221,6 +221,11 @@ namespace tachyon {
             visit(node->operand_node);
             code << ")";
         }
+        else if (node->op_tok.type == TokenType::LOGICAL_NOT) {
+            code << "!(";
+            visit(node->operand_node);
+            code << ")";
+        }
         else if (node->op_tok.type == TokenType::NOT) {
             code << "(double)(~(int32_t)(";
             visit(node->operand_node);

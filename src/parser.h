@@ -31,8 +31,8 @@ namespace tachyon {
         std::shared_ptr<Node> and_expr();
         std::shared_ptr<Node> xor_expr();
         std::shared_ptr<Node> or_expr();
-        // std::shared_ptr<Node> logical_and_expr();
-        // std::shared_ptr<Node> logical_or_expr();
+        std::shared_ptr<Node> logical_and_expr();
+        std::shared_ptr<Node> logical_or_expr();
         std::shared_ptr<Node> assign_expr();
         std::shared_ptr<Node> bin_op(const std::function<std::shared_ptr<Node>()>& func, const std::vector<TokenType>& ops);
         std::shared_ptr<Node> expr();
