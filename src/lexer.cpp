@@ -320,7 +320,7 @@ namespace tachyon {
             || identifier_str == "if" || identifier_str == "elif" || identifier_str == "else" || identifier_str == "while"
             || identifier_str == "for" || identifier_str == "return" || identifier_str == "func" || identifier_str == "afunc"
             || identifier_str == "throw" || identifier_str == "try" || identifier_str == "catch"
-            || identifier_str == "include" /* || identifier_str == "define" */) {
+            || identifier_str == "include" || identifier_str == "continue" || identifier_str == "break" /* || identifier_str == "define" */) {
             return Token(line, TokenType::KEYWORD, identifier_str);
         }
         else {

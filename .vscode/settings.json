@@ -1,0 +1,16 @@
+{
+    "files.associations": {
+        "*.punylisp": "lisp",
+        "*.eris": "plaintext",
+        "*.bnf": "bnf",
+        "*.csv": "plaintext",
+        "*.trasm": "asm-intel-x86-generic",
+        "*.trexe": "plaintext",
+        "*.tachyon": "plaintext",
+        "__split_buffer": "cpp",
+        "deque": "cpp",
+        "list": "cpp",
+        "string": "cpp",
+        "vector": "cpp"
+    }
+}
