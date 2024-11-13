@@ -763,6 +763,10 @@ void tachyon_stl_setup() {
         })));
 
 
+    tachyon_internal::set_prop(tachyon_internal::decode_obj(StringUtils), "copy", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
+        return tachyon_internal::make_str(new std::string(*tachyon_internal::decode_str(_args[1])));
+        })));
+
     tachyon_internal::set_prop(tachyon_internal::decode_obj(VectorUtils), "size", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
         std::vector<double>* vec = tachyon_internal::decode_vec(_args[1]);
         return vec->size();
@@ -875,6 +879,10 @@ void tachyon_stl_setup() {
         }
 
         return tachyon_internal::make_vec(result);
+        })));
+
+    tachyon_internal::set_prop(tachyon_internal::decode_obj(VectorUtils), "copy", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
+        return tachyon_internal::make_vec(new std::vector<double>(*tachyon_internal::decode_vec(_args[1])));
         })));
 
     tachyon_internal::set_prop(tachyon_internal::decode_obj(ThisThread), "yield", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
