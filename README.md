@@ -2,7 +2,7 @@
 
 **Version 2.0.0**
 
-Tachyon is a lightweight dynamic programming language that supports full multithreading and prototype-based object-oriented programming. Eris is transpiled to C++11 using tagged unions to handle dynamic typing, and can interact with C++ code.
+Tachyon is a performant dynamic prototype-based programming language. This repository provides the implementation as a transpiler to C++. It combines the expressiveness offered by dynamic prototype-based OOP with high performance and support for native multithreading, in order to be fit for tasks such as numerical computation.
 
 
 Reference document: [REFERENCE.MD]
