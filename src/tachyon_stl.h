@@ -885,6 +885,13 @@ void tachyon_stl_setup() {
         return tachyon_internal::make_vec(new std::vector<double>(*tachyon_internal::decode_vec(_args[1])));
         })));
 
+
+    tachyon_internal::set_prop(tachyon_internal::decode_obj(VectorUtils), "reserve", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
+        std::vector<double>* vec = tachyon_internal::decode_vec(_args[1]);  
+        vec->reserve(_args[2]);
+        return tachyon_internal::null;
+        })));
+
     tachyon_internal::set_prop(tachyon_internal::decode_obj(ThisThread), "yield", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
         std::this_thread::yield();
         return tachyon_internal::null;

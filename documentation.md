@@ -90,12 +90,15 @@ var b = 5e-1;
 A string represents a mutable character sequence. Strings can have their individual characters accessed and set using the subscript expression.
 
 ```
-var a = "Hello world":
-a[0]; // "H"
+var a = "Hello world";
 ```
 
 ## 3.3 Vector 
+Vectors are dynamic sequences of values. The elements of a vector are stored contiguously and the vector is expanded as needed automatically. Reallocations are expensive in terms of performance so the `VectorUtils.reserve` function can be used to reduce reallocations if the number of elements is known beforehand. 
+
 ## 3.4 Function
+
+
 ## 3.5 Thread
 ## 3.6 File
 ## 3.7 Object
