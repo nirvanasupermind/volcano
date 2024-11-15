@@ -65,8 +65,8 @@ Comments are two forward slashes (`//`) followed by any sequence of characters. 
 // comment
 ```
 
-## 3 Values and Types
-Tachyon is a dynamically-typed programming language so variables do not have types, only values do, and there are no type annotations. The eight basic types of value are as follows: number, string, vector, function, thread, file, object, and null. Unlike traditional prototype-based programming languages such as Self or Io, Tachyon does not make all values objects as this is a bottleneck on performance. All-values are first-class values and can be stored in object properties, variables, vectors and passed as function parameters.
+# 3 Values and Types
+Tachyon is a dynamically-typed programming language so variables do not have types, only values do, and there are no type annotations. The eight basic types of value are as follows: number, string, vector, function, thread, file, object, and null. Unlike traditional prototype-based programming languages such as Self or Io, Tachyon does not make all values objects as this is a bottleneck on performance. All-values are first-class values and can be stored in object members, variables, vectors and passed as function parameters.
 ## 3.1 Number
 A number represents an IEEE-754 double-precision floating-point number. There is no distiction between integer and floating-point types to avoid expensive type-checking during arithmetic operations, and due to the internal "NaN-boxing" representation used in the C++ transpiler implementation. Booleans are not a type, again to avoid expensive typechecking and type conversion. Tachyon simply uses the number 0 for false and the number 1 for true, as in C prior to C99.
 
@@ -107,7 +107,7 @@ var add = afunc (x, y) {
 ```
 
 ## 3.5 Thread
-A thread represents a single thread of execution in a program. In the standard library, the `ThreadUtils` object provides functions to create files and perform operations on them. Threads are created using the `ThreadUtils.makeThread`function. Threads start start executing immediately after the associated thread object created (pending any OS scheduling delays), starting at the function passed to `ThreadUtils.makeThread`. The return value of the function is ignored.
+A thread represents a single thread of execution in a program. In the standard library, the `ThreadUtils` object provides functions to create files and perform operations on them. Threads are created using the `ThreadUtils.makeThread` function. Threads start start executing immediately after the associated thread object created (pending any OS scheduling delays), starting at the function passed to `ThreadUtils.makeThread`. The return value of the function is ignored.
 
 ```
 var t = ThreadUtils.makeThread(afunc () {
@@ -117,13 +117,31 @@ var t = ThreadUtils.makeThread(afunc () {
 ```
 
 ## 3.6 File
-A file represents an input/output stream that operates on files.  In the standard library, the `FileUtils` object provides functions to create files and perform operations on them.
+A file represents an input/output stream that operates on files. In the standard library, the `FileUtils` object provides functions to create files and perform operations on them. Files are created using the `FileUtils.open`function which accepts a file path and file access mode, both of which are strings.
+
+
+```
+var f = FileUtils.open("fileName.txt", "w");
+```
 
 ## 3.7 Object
-## 3.8 Null
-# 4 Execution Context
-## 4.1 Variables
+An object is a dictionary that stores a collection of key-value pairs (called members). The key must be a string. Objects in Tachyon can serve both as dictionaries and as a mechanism for prototype-based object-oriented programming. Objects are mutable so the members of an object can be modified, and new members can be added. Members can be retrieved both using the subscript expression (`obj["prop]"`) or, as syntactic sugar, the C-style dot syntax (`obj.prop`). The dot syntax does not support keys that are not identifiers.
+
+Objects can optionally inherit from a prototype object, which  is stored in the `proto` member. If an object has a prototype, it will automatically inherit all the members of its prototype. 
+
+```
+var obj = {"x": 2, "y": 3};
+var derivedObj = {"proto": obj, "y": 4};
+println(derivedObj.x); // 2
+println(derivedObj.y); // 4
+println(derivedObj["y"]); // 4
+```
+
+# 4 Scope
+The scope of a variable is the region of the program where the variable can be defined and accessible. Outside fo the scope, the variable is inaccessible. New scopes are created inside block statements and function definition statements.
+
 # 5 Statements
+## 5.1 
 # 6 Expressions
 # 7 The Standard Library
 ## 7.1 Global Functions
