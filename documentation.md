@@ -37,9 +37,7 @@ Tachyon supports number, string, vector and object literals.
 {"a": 1, "b": 2}; // object literal
 ```
 
-Number literals support the standard decimal notation and scientific E notation of the form `<mantissa>e<exponent>`.
-
-String literals are delimited by quotation marks. Tachyon supports the following escape sequences for characters in string literals:
+Number literals support the standard decimal notation and scientific E notation of the form `<mantissa>e<exponent>`. String literals are delimited by quotation marks. Tachyon supports the following escape sequences for characters in string literals:
 
 * `\'`- single quote (ASCII byte `0x27`)
 * `\"`- double quote (ASCII byte `0x22`)
@@ -55,10 +53,7 @@ String literals are delimited by quotation marks. Tachyon supports the following
 * `\<1-3 octal digits>` - octal value
 * `\x<hexadecimal digits>` - hexadecimal value
 
-
-Vector literals are a comma-separated list of elements delimited by square brackets.
-
-Object literals are a comma-separated list of key-value pairs delimited by square brackets, with the key and value being separated by a colon.
+Vector literals are a comma-separated list of elements delimited by square brackets. Object literals are a comma-separated list of key-value pairs delimited by square brackets, with the key and value being separated by a colon.
 
 ## 2.6 Whitespace
 The characters of space, newline and horizontal tab (correesponding to bytes `0x20`, `0x0A`and `0x09` in ASCII respectively) are treated as whitespace and ignored by the transpiler.
@@ -71,36 +66,59 @@ Comments are two forward slashes (`//`) followed by any sequence of characters. 
 ```
 
 ## 3 Values and Types
-Tachyon is a dynamically-typed programming language so variables do not have types, only values do, and there are no type annotations. The eight basic types of value are as follows: number, string, vector, function, thread, file, object, and null. Unlike traditional prototype-based programming languages such as Self or Io, Tachyon does not make all values objects as this is a bottleneck on performance.
-
+Tachyon is a dynamically-typed programming language so variables do not have types, only values do, and there are no type annotations. The eight basic types of value are as follows: number, string, vector, function, thread, file, object, and null. Unlike traditional prototype-based programming languages such as Self or Io, Tachyon does not make all values objects as this is a bottleneck on performance. All-values are first-class values and can be stored in object properties, variables, vectors and passed as function parameters.
 ## 3.1 Number
-A number represents an IEEE-754 double-precision floating-point number.
-
-There is no distiction between integer and floating-point types to avoid expensive type-checking during arithmetic operations, and due to the internal "NaN-boxing" representation used in the C++ transpiler implementation. Thus, all numbers are floating-point.
-
-Booleans are not a type, again to avoid expensive typechecking and type conversion. Tachyon simply uses the number 0 for false and the number 1 for true, as in C prior to C99.
+A number represents an IEEE-754 double-precision floating-point number. There is no distiction between integer and floating-point types to avoid expensive type-checking during arithmetic operations, and due to the internal "NaN-boxing" representation used in the C++ transpiler implementation. Booleans are not a type, again to avoid expensive typechecking and type conversion. Tachyon simply uses the number 0 for false and the number 1 for true, as in C prior to C99.
 
 ```
 var a = 0.123;
 var b = 5e-1;
 ```
 
-
 ## 3.2 String
 A string represents a mutable character sequence. Strings can have their individual characters accessed and set using the subscript expression.
+In the standard library, the `StringUtils` object provides functions to perform operations on strings.
 
 ```
 var a = "Hello world";
 ```
 
 ## 3.3 Vector 
-Vectors are dynamic sequences of values. The elements of a vector are stored contiguously and the vector is expanded as needed automatically. Reallocations are expensive in terms of performance so the `VectorUtils.reserve` function can be used to reduce reallocations if the number of elements is known beforehand. 
+A vector represents a dynamic arrays of values. Vectors can have their individual characters accessed and set using the subscript expression. In the standard library, the `VectorUtils` object provides functions to perform operations on vectors. The elements of a vector are stored contiguously in memory and the vector is expanded as needed automatically. Reallocations are expensive in terms of performance so the `VectorUtils.reserve` function can be used to reduce reallocations if the number of elements is known beforehand.
+
+```
+var a = [1, 2, 3];
+var b = [12, null];
+```
 
 ## 3.4 Function
+A function is a reusable piece of code that can be called, and can optionally take arguments and return values. Named functions can be declared with the function definition statement:
+```
+func add(x, y) {
+    return x + y;
+}
+```
 
+Anonymous functions can be declared with the anonymous function expression:
+```
+var add = afunc (x, y) {
+    return x + y;
+};
+```
 
 ## 3.5 Thread
+A thread represents a single thread of execution in a program. In the standard library, the `ThreadUtils` object provides functions to create files and perform operations on them. Threads are created using the `ThreadUtils.makeThread`function. Threads start start executing immediately after the associated thread object created (pending any OS scheduling delays), starting at the function passed to `ThreadUtils.makeThread`. The return value of the function is ignored.
+
+```
+var t = ThreadUtils.makeThread(afunc () {
+    println("Hello world!");
+});
+
+```
+
 ## 3.6 File
+A file represents an input/output stream that operates on files.  In the standard library, the `FileUtils` object provides functions to create files and perform operations on them.
+
 ## 3.7 Object
 ## 3.8 Null
 # 4 Execution Context
