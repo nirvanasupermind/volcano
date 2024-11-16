@@ -26,7 +26,7 @@ namespace tachyon {
         std::vector<Token> tokens;
 
         while (current_char != '\0') {
-            if (current_char == ' ' || current_char == '\n' || current_char == '\t') {
+            if (current_char == ' ' || current_char == '\n' || current_char == '\t' || current_char == '\r' || current_char == '\f' || current_char == '\b') {
                 advance();
             }
             else if (isdigit(current_char)) {

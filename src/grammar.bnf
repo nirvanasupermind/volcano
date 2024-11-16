@@ -1,4 +1,0 @@
-<number> ::= <NUMBER>
-<null> ::= "null"
-<string> ::= <STRING>
-<vector> ::= "[" |

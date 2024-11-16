@@ -141,6 +141,8 @@ println(derivedObj["y"]); // 4
 
 # 4 Statements
 ## 4.1 Expression Statement
+
+
 The expression statement is an expression followed by a semicolon. The value of the expression is discarded aside from potential errors.
 ```
 5;
@@ -172,34 +174,19 @@ block {
 
 
 ## 4.3 If Statement
-The if statement executes the body if the condition is true.
-```
-var result = 0;
-if(2 == 2) {
-    result = 1;
-}
-```
-Additionally, the else clause can be added which executes if the condition is false:
-```
-if(2 + 2 == 4) {
-    println("2 + 2 is 4");
-} else {
-    println("2 + 2 is not 4");
-}
-```
-Finally, any amount of additional elif clauses can be added:
+The if statement executes the body if the condition is true. Optionally, an `else` clause can be added, which executes if the condition is false, and zero or more `elif` clauses, which execute if the condition is true and none of the above clauses were executed.
 ```
 if(2 + 2 == 4) {
     println("2 + 2 is 4");
 } elif(2 + 2 == 5) {
-    println("2 + 2 is 5");    
+    println("2 + 2 is 5"); 
 } else {
     println("2 + 2 is not 4");
 }
 ```
 
-## 4.4 While Statement
-The while statement repeatedly executes the body until the condition is false. `while(true)`is used to create an infinite loop.
+## 4.4 While statement
+The while statement repeatedly executes the body as long as the condition is true. `while(true)` can be used to create an infinite loop.
 ```
 var x = 0;
 while (x < 10) {
@@ -207,8 +194,28 @@ while (x < 10) {
 }
 ```
 
+## 4.5 For statement
+The for statement repeatedly executes the body and the update expression as long as the condition is true. Additionally, the initialization statement (such as `var x = 0`in the example) is executed once before everything else.
+```
+var sum = 0;
+for(var i = 0; i < 10; i++) {
+    sum += i;
+}
+```
+
+
+## 4.6 Continue statement
+The continue statement jumps to the next iteration in a loop, skipping the following statements.
+
+## 4.7 Break statement
+The break statement unconditionally terminates execution of a loop.
+
+
+
 
 # 5 Expressions
+
+
 
 # 6 The Standard Library
 ## 6.1 Global Functions
