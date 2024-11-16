@@ -1,3 +1,4 @@
+block {}
 println((3 < 5) && (4 > 6));
 println((3 < 5) || (4 < 6));
 println(9 || 7);

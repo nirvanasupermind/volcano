@@ -1,3 +1,5 @@
+# Tachyon 2.0 Reference Manual
+
 # 1 Introduction
 Tachyon is a performant dynamic prototype-based programming language. It combines the expressiveness offered by dynamic prototype-based OOP with high performance and support for native multithreading, in order to be fit for tasks such as numerical computation.
 
@@ -53,7 +55,7 @@ Number literals support the standard decimal notation and scientific E notation 
 * `\<1-3 octal digits>` - octal value
 * `\x<hexadecimal digits>` - hexadecimal value
 
-Vector literals are a comma-separated list of elements delimited by square brackets. Object literals are a comma-separated list of key-value pairs delimited by square brackets, with the key and value being separated by a colon.
+Vector literals are a comma-separated list of elements delimited by square brackets. Object literals are a comma-separated list of key-value pairs delimited by curly brackets, with the key and value separated from each other by a colon.
 
 ## 2.6 Whitespace
 The characters of space, newline and horizontal tab (correesponding to bytes `0x20`, `0x0A`and `0x09` in ASCII respectively) are treated as whitespace and ignored by the transpiler.
@@ -137,17 +139,72 @@ println(derivedObj.y); // 4
 println(derivedObj["y"]); // 4
 ```
 
-# 4 Scope
-The scope of a variable is the region of the program where the variable can be defined and accessible. Outside fo the scope, the variable is inaccessible. New scopes are created inside block statements and function definition statements.
+# 4 Statements
+## 4.1 Expression Statement
+The expression statement is an expression followed by a semicolon. The value of the expression is discarded aside from potential errors.
+```
+5;
+```
 
-# 5 Statements
-## 5.1 
-# 6 Expressions
-# 7 The Standard Library
-## 7.1 Global Functions
-## 7.2 The Math Object
-## 7.3 The StringUtils Object
-## 7.4 The VectorUtils Object
-## 7.5 The ThisThread Object
-## 7.6 The ThreadUtils Object
-## 7.7 The FileUtils Object
+
+## 4.2 Variable Definition Statement
+The variable definiion statement is used to define mutable variables. Global variables exist from their definition to the end of execution. Local variables exist from their definition to the end of the block which they were defined in. 
+
+```
+var x = 5;
+```
+
+
+## 4.2 Constant Definition Statement
+The constant definiion statement is used to define immutable constants. Global constants exist from their definition to the end of execution. Local constants exist from their definition to the end of the block which they were defined in. Trying to modify a constant after it was defined results in an error.
+
+```
+const x = 5;
+```
+
+## 4.3 Block Statement
+The block statement is a group of zero or more statements put inside their own scope. Unlike in most C-like languages, the block statement requires `block` keyword to disambiguate from object literals.
+```
+block {
+    var x = 5;
+}
+```
+
+
+## 4.3 If Statement
+The if statement executes the body if the condition is true.
+```
+var result = 0;
+if(2 == 2) {
+    result = 1;
+}
+```
+Additionally, the else clause can be added which executes if the condition is false:
+```
+if(2 == 2) {
+    result = 1;
+} else {
+    result = 2;
+}
+```
+Finally, additional elifclauses can be added:
+```
+if(2 == 2) {
+    result = 1;
+} elif(3 == 9) {
+    result = 2;
+} else {
+    result = 3;
+}
+```
+
+# 5 Expressions
+
+# 6 The Standard Library
+## 6.1 Global Functions
+## 6.2 The Math Object
+## 6.3 The StringUtils Object
+## 6.4 The VectorUtils Object
+## 6.5 The ThisThread Object
+## 6.6 The ThreadUtils Object
+## 6.7 The FileUtils Object
