@@ -181,22 +181,32 @@ if(2 == 2) {
 ```
 Additionally, the else clause can be added which executes if the condition is false:
 ```
-if(2 == 2) {
-    result = 1;
+if(2 + 2 == 4) {
+    println("2 + 2 is 4");
 } else {
-    result = 2;
+    println("2 + 2 is not 4");
 }
 ```
-Finally, additional elifclauses can be added:
+Finally, any amount of additional elif clauses can be added:
 ```
-if(2 == 2) {
-    result = 1;
-} elif(3 == 9) {
-    result = 2;
+if(2 + 2 == 4) {
+    println("2 + 2 is 4");
+} elif(2 + 2 == 5) {
+    println("2 + 2 is 5");    
 } else {
-    result = 3;
+    println("2 + 2 is not 4");
 }
 ```
+
+## 4.4 While Statement
+The while statement repeatedly executes the body until the condition is false. `while(true)`is used to create an infinite loop.
+```
+var x = 0;
+while (x < 10) {
+    x++;
+}
+```
+
 
 # 5 Expressions
 
