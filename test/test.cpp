@@ -3,9 +3,8 @@
     
 int main(){
 tachyon_stl_setup();
-double x=1.00000000000000000;
-x&&=(0.0);
-(*tachyon_internal::decode_func(println))({x});
+(*tachyon_internal::decode_func(println))({5.00000000000000000});
+(*tachyon_internal::decode_func(println))({18446744073709551616.000000});
 
 tachyon_internal::free_all();
 return 0;

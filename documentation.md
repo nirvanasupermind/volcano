@@ -140,16 +140,14 @@ println(derivedObj["y"]); // 4
 ```
 
 # 4 Statements
-## 4.1 Expression Statement
-
-
+## 4.1 Expression statement
 The expression statement is an expression followed by a semicolon. The value of the expression is discarded aside from potential errors.
 ```
 5;
 ```
 
 
-## 4.2 Variable Definition Statement
+## 4.2 Variable definition statement
 The variable definiion statement is used to define mutable variables. Global variables exist from their definition to the end of execution. Local variables exist from their definition to the end of the block which they were defined in. 
 
 ```
@@ -157,14 +155,14 @@ var x = 5;
 ```
 
 
-## 4.2 Constant Definition Statement
+## 4.2 Constant definition statement
 The constant definiion statement is used to define immutable constants. Global constants exist from their definition to the end of execution. Local constants exist from their definition to the end of the block which they were defined in. Trying to modify a constant after it was defined results in an error.
 
 ```
 const x = 5;
 ```
 
-## 4.3 Block Statement
+## 4.3 Block statement
 The block statement is a group of zero or more statements put inside their own scope. Unlike in most C-like languages, the block statement requires `block` keyword to disambiguate from object literals.
 ```
 block {
@@ -173,7 +171,7 @@ block {
 ```
 
 
-## 4.3 If Statement
+## 4.3 If statement
 The if statement executes the body if the condition is true. Optionally, an `else` clause can be added, which executes if the condition is false, and zero or more `elif` clauses, which execute if the condition is true and none of the above clauses were executed.
 ```
 if(2 + 2 == 4) {
@@ -209,11 +207,66 @@ The continue statement jumps to the next iteration in a loop, skipping the follo
 
 ## 4.7 Break statement
 The break statement unconditionally terminates execution of a loop.
+```
+var x = 0;
+while (true) {
+    x++;
+    if(x >= 10) {
+        break;
+    }
+}
+```
+
+## 4.8 Function definition statement
+The function definition statement defines a new function.
+```
+func successor(x) {
+    return x + 1;
+}
+```
 
 
+## 4.9 Throw statement
+Throws an error. Only strings can be thrown.
+```
+throw "sample error";
+```
+
+## 4.10 Try-catch statement
+Executes the try clause if no errors are encountered, otherwise executes the catch clause. The error message as a string is also stored in a variable specified in the catch clause.
+
+```
+try  {
+    throw "sample error";
+} catch(e) {
+    println(e); // prints "sample error"
+}
+```
+
+
+## 4.11 Include statement
+Includes the contents of another Tachyon program file.
+
+```
+include "filename.tachyon";
+```
 
 
 # 5 Expressions
+
+## 5.1 Unary Operators
+Tachyon supports the unary operators `+` (unary plus), `-` (unary minus), `~` (bitwise NOT), and `!` (logical NOT). Unary plus has no effect. Additioanll there is the in-place operator `++`for incrementing a variable, vector element or object property by 1, and `--` for decrementing.
+
+## 5.2 Binary Operators
+For binary operators, tachyon supports:
+* the arithmetic operators `+` (add), `-` (subtract), `*` (multiply),  `/` (divide), and `%`(modulo)
+* the bitwise operators `&` (bitwise AND), `|`(bitwise OR), `^`(bitwise XOR), `<<` (left-shift) and `>>`(right-shift)–these convert the numeric arguments from float64 to int32 and back
+* the logical operators `&&` (logical AND) and `|`(bitwise OR)-always returns 0 (false) or 1 (true)
+* the equality operators `==`(equals) and `!=`(not equals)–for non-numeric values these compare by reference, and `StringUtils.eq`and `VectorUtils.eq`can be used for ocomparison of strings and vectors by content
+* the relational operators `<` (less than), `<=` (less than or equal), `>` (greater than), and  `>=`(greater than or equal)
+* the assignment operator `=`, which sets the value of a variable, string character, vector element or object property–the return value is the new value
+* the compound assignment operators `+=`, `-=`, `*=`, `/=`, `%=`, `&=`, `|=`, which set the value of a variable, vector element or object property to the application of the operator with the current value and the second argument (for a concrete example, `x *= 2`is just a syntactic sugar for `x = x * 2`)–the return value is the new value
+
 
 
 

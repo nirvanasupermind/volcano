@@ -1,3 +1,2 @@
-var x = 1;
-x &&= 0;
-println(x);
+println(5 % -3);
+println(-5 % 3);

@@ -55,3 +55,5 @@ period = ws, ".", ws;
 comma = ws, ",", ws;
 colon = ws, ":", ws;
 semicolon = ws, ";", ws;
+unary op = (plus | minus), expr;
+unary op = (plus | minus), expr;

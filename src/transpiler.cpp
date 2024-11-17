@@ -535,7 +535,11 @@ namespace tachyon {
 
     void Transpiler::visit_return_stmt_node(const std::shared_ptr<ReturnStmtNode>& node) {
         code << "return ";
+        if(node->expr_node) {
         visit(node->expr_node);
+        } else {
+            code << "tachyon_internal::null";
+        }
         code << ";";
     }
 

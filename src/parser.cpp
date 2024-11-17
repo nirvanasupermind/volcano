@@ -489,14 +489,17 @@ namespace tachyon {
             raise_error();
         }
         advance();
-
-        std::shared_ptr<Node> res = expr();
+        std::shared_ptr<Node> res;
+        if (current_tok.type != TokenType::SEMICOLON) {        
+        res = expr();
         if (current_tok.type != TokenType::SEMICOLON) {
             raise_error();
+        }
         }
         advance();
         return std::make_shared<ReturnStmtNode>(ReturnStmtNode(res));
     }
+
 
     std::shared_ptr<Node> Parser::func_def_stmt() {
         if (!(current_tok.type == TokenType::KEYWORD && current_tok.val == "func")) {
