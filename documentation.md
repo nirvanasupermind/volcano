@@ -55,7 +55,7 @@ Number literals support the standard decimal notation and scientific E notation 
 * `\<1-3 octal digits>` - octal value
 * `\x<hexadecimal digits>` - hexadecimal value
 
-Vector literals are a comma-separated list of elements delimited by square brackets. Object literals are a comma-separated list of key-value pairs delimited by curly brackets, with the key and value separated from each other by a colon.
+Vector literals are a comma-separated list of elements delimited by square brackets. Object literals are a comma-separated list of key-value pairs delimited by curly brackets, with the key and value separated from each other by a colon. The vector and object literal syntax are for the most part compliant with the JSON notation as well.
 
 ## 2.6 Whitespace
 The characters of space, newline and horizontal tab (correesponding to bytes `0x20`, `0x0A`and `0x09` in ASCII respectively) are treated as whitespace and ignored by the transpiler.
@@ -255,7 +255,7 @@ include "filename.tachyon";
 # 5 Expressions
 
 ## 5.1 Unary Operators
-Tachyon supports the unary operators `+` (unary plus), `-` (unary minus), `~` (bitwise NOT), and `!` (logical NOT). Unary plus has no effect. Additioanll there is the in-place operator `++`for incrementing a variable, vector element or object property by 1, and `--` for decrementing.
+Tachyon supports the unary operators `+` (unary plus), `-` (unary minus), `~` (bitwise NOT), and `!` (logical NOT). Unary plus has no effect. Unary NOT converts the numeric argument from float64 to int32 and back. Additioanll there is the in-place operator `++`for incrementing a variable, vector element or object property by 1, and `--` for decrementing.
 
 ## 5.2 Binary Operators
 For binary operators, tachyon supports:
@@ -265,9 +265,7 @@ For binary operators, tachyon supports:
 * the equality operators `==`(equals) and `!=`(not equals)–for non-numeric values these compare by reference, and `StringUtils.eq`and `VectorUtils.eq`can be used for ocomparison of strings and vectors by content
 * the relational operators `<` (less than), `<=` (less than or equal), `>` (greater than), and  `>=`(greater than or equal)
 * the assignment operator `=`, which sets the value of a variable, string character, vector element or object property–the return value is the new value
-* the compound assignment operators `+=`, `-=`, `*=`, `/=`, `%=`, `&=`, `|=`, which set the value of a variable, vector element or object property to the application of the operator with the current value and the second argument (for a concrete example, `x *= 2`is just a syntactic sugar for `x = x * 2`)–the return value is the new value
-
-
+* the compound assignment operators `+=`, `-=`, `*=`, `/=`, `%=`, `&=`, and `|=`, which set the value of a variable, vector element or object property to the application of the operator with the current value and the second argument (for a concrete example, `x *= 2`is just a syntactic sugar for `x = x * 2`)–the return value is the new value
 
 
 # 6 The Standard Library
