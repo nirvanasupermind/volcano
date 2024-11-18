@@ -1,2 +1,4 @@
-println(5 % -3);
-println(-5 % 3);
+println("Hello\nworld");
+println("Hello \"world\"");
+println(StringUtils.fromCodePoint(97));
+println(StringUtils.toCodePoint("and what?"));

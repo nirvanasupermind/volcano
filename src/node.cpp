@@ -410,16 +410,16 @@ namespace tachyon {
         return "(ThrowStmtNode " + expr_node->to_string() + ")";
     }
 
-    ObjectPropNode::ObjectPropNode(const std::shared_ptr<Node>& obj, const Token& prop) {
+    ObjectMemberNode::ObjectMemberNode(const std::shared_ptr<Node>& obj, const Token& prop) {
         this->obj = obj;
         this->prop = prop;
     }
 
-    NodeType ObjectPropNode::get_type() const {
-        return NodeType::OBJECT_PROP;
+    NodeType ObjectMemberNode::get_type() const {
+        return NodeType::OBJECT_MEMBER;
     }
 
-    std::string ObjectPropNode::to_string() const {
+    std::string ObjectMemberNode::to_string() const {
         return "(ObjectPropNode  " + obj->to_string() + " " + prop.to_string() + ")";
     }
 

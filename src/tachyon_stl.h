@@ -767,6 +767,14 @@ void tachyon_stl_setup() {
         return tachyon_internal::make_str(new std::string(*tachyon_internal::decode_str(_args[1])));
         })));
 
+        tachyon_internal::set_member(tachyon_internal::decode_obj(StringUtils), "fromCodePoint", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
+        return tachyon_internal::make_str(new std::string(1, (char)_args[1]));
+        })));
+
+        tachyon_internal::set_member(tachyon_internal::decode_obj(StringUtils), "toCodePoint", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
+        return (double)(tachyon_internal::decode_str(_args[1])->front());
+        })));
+
     tachyon_internal::set_member(tachyon_internal::decode_obj(VectorUtils), "size", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
         std::vector<double>* vec = tachyon_internal::decode_vec(_args[1]);
         return vec->size();

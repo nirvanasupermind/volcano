@@ -3,8 +3,10 @@
     
 int main(){
 tachyon_stl_setup();
-(*tachyon_internal::decode_func(println))({5.00000000000000000});
-(*tachyon_internal::decode_func(println))({18446744073709551616.000000});
+(*tachyon_internal::decode_func(println))({tachyon_internal::make_str(new std::string("Hello\nworld"))});
+(*tachyon_internal::decode_func(println))({tachyon_internal::make_str(new std::string("Hello \"world\""))});
+(*tachyon_internal::decode_func(println))({(*tachyon_internal::decode_func(tachyon_internal::get_member(tachyon_internal::decode_obj(StringUtils),"fromCodePoint")))({StringUtils,97.0000000000000000})});
+(*tachyon_internal::decode_func(println))({(*tachyon_internal::decode_func(tachyon_internal::get_member(tachyon_internal::decode_obj(StringUtils),"toCodePoint")))({StringUtils,tachyon_internal::make_str(new std::string("and what?"))})});
 
 tachyon_internal::free_all();
 return 0;

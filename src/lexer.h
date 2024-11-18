@@ -3,9 +3,18 @@
 
 #include <string>
 #include <vector>
+#include <unordered_map>
 #include "token.h"
 
 namespace tachyon {
+    // std::unordered_map<char, char> escapes{
+    //     {'n', '\n'},
+    //     {'t', '\t'},
+    //     {'r', '\r'},
+    //     {'0', '\0'},
+    //     {'"', '\"'},
+    // };
+
     class Lexer {
     public:
         std::string filename;

@@ -50,8 +50,8 @@ namespace tachyon {
             case NodeType::CALL_EXPR:
                 visit_call_expr_node(std::static_pointer_cast<CallExprNode>(node));
                 break;
-            case NodeType::OBJECT_PROP:
-                visit_object_prop_node(std::static_pointer_cast<ObjectPropNode>(node));
+            case NodeType::OBJECT_MEMBER:
+                visit_object_prop_node(std::static_pointer_cast<ObjectMemberNode>(node));
                 break;
             case NodeType::SUBSCRIPT:
                 visit_subscript_node(std::static_pointer_cast<SubscriptNode>(node));
@@ -191,8 +191,8 @@ namespace tachyon {
         code << "(*tachyon_internal::decode_func(";
         visit(node->callee);
         code << "))({";
-        if (node->callee->get_type() == NodeType::OBJECT_PROP) {
-            visit(std::static_pointer_cast<ObjectPropNode>(node->callee)->obj);
+        if (node->callee->get_type() == NodeType::OBJECT_MEMBER) {
+            visit(std::static_pointer_cast<ObjectMemberNode>(node->callee)->obj);
             if (!node->args.empty()) {
                 code << ",";
             }
@@ -206,8 +206,8 @@ namespace tachyon {
         code << "})";
     }
 
-    void Transpiler::visit_object_prop_node(const std::shared_ptr<ObjectPropNode>& node) {
-        code << "tachyon_internal::get_prop(tachyon_internal::decode_obj(";
+    void Transpiler::visit_object_prop_node(const std::shared_ptr<ObjectMemberNode>& node) {
+        code << "tachyon_internal::get_member(tachyon_internal::decode_obj(";
         visit(node->obj);
         code << "),\"" << node->prop.val << "\")";
     }
@@ -232,9 +232,9 @@ namespace tachyon {
             code << "))";
         }
         else if (node->op_tok.type == TokenType::INC || node->op_tok.type == TokenType::DEC) {
-            if (node->operand_node->get_type() == NodeType::OBJECT_PROP) {
-                std::shared_ptr<ObjectPropNode> temp = std::static_pointer_cast<ObjectPropNode>(node->operand_node);
-                code << "tachyon_internal::set_prop(tachyon_internal::decode_obj(";
+            if (node->operand_node->get_type() == NodeType::OBJECT_MEMBER) {
+                std::shared_ptr<ObjectMemberNode> temp = std::static_pointer_cast<ObjectMemberNode>(node->operand_node);
+                code << "tachyon_internal::set_member(tachyon_internal::decode_obj(";
                 visit(temp->obj);
                 code << "),\"" << temp->prop.val << "\",(";
                 visit(node->operand_node);
@@ -261,10 +261,10 @@ namespace tachyon {
 
     void Transpiler::visit_bin_op_node(const std::shared_ptr<BinOpNode>& node) {
         if (node->op_tok.type == TokenType::EQ) {
-            // (*tachyon_internal::decode_func(tachyon_internal::get_prop(tachyon_internal::decode_obj(obj),"set")))({obj,key,val});
-            if (node->left_node->get_type() == NodeType::OBJECT_PROP) {
-                std::shared_ptr<ObjectPropNode> temp = std::static_pointer_cast<ObjectPropNode>(node->left_node);
-                code << "tachyon_internal::set_prop(tachyon_internal::decode_obj(";
+            // (*tachyon_internal::decode_func(tachyon_internal::get_member(tachyon_internal::decode_obj(obj),"set")))({obj,key,val});
+            if (node->left_node->get_type() == NodeType::OBJECT_MEMBER) {
+                std::shared_ptr<ObjectMemberNode> temp = std::static_pointer_cast<ObjectMemberNode>(node->left_node);
+                code << "tachyon_internal::set_member(tachyon_internal::decode_obj(";
                 visit(temp->obj);
                 code << "),\"" << temp->prop.val << "\",(";
                 visit(node->right_node);
@@ -288,9 +288,9 @@ namespace tachyon {
         }
         else if (node->op_tok.type == TokenType::PLUS_EQ || node->op_tok.type == TokenType::MINUS_EQ || node->op_tok.type == TokenType::MUL_EQ
             || node->op_tok.type == TokenType::DIV_EQ) {
-            if (node->left_node->get_type() == NodeType::OBJECT_PROP) {
-                std::shared_ptr<ObjectPropNode> temp = std::static_pointer_cast<ObjectPropNode>(node->left_node);
-                code << "tachyon_internal::set_prop(tachyon_internal::decode_obj(";
+            if (node->left_node->get_type() == NodeType::OBJECT_MEMBER) {
+                std::shared_ptr<ObjectMemberNode> temp = std::static_pointer_cast<ObjectMemberNode>(node->left_node);
+                code << "tachyon_internal::set_member(tachyon_internal::decode_obj(";
                 visit(temp->obj);
                 code << "),\"" << temp->prop.val << "\",";
                 visit(node->left_node);
@@ -322,9 +322,9 @@ namespace tachyon {
             }
         }
                 else if (node->op_tok.type == TokenType::MOD_EQ) {
-            if (node->left_node->get_type() == NodeType::OBJECT_PROP) {
-                std::shared_ptr<ObjectPropNode> temp = std::static_pointer_cast<ObjectPropNode>(node->left_node);
-                code << "tachyon_internal::set_prop(tachyon_internal::decode_obj(";
+            if (node->left_node->get_type() == NodeType::OBJECT_MEMBER) {
+                std::shared_ptr<ObjectMemberNode> temp = std::static_pointer_cast<ObjectMemberNode>(node->left_node);
+                code << "tachyon_internal::set_member(tachyon_internal::decode_obj(";
                 visit(temp->obj);
                 code << "),\"" << temp->prop.val << "\",std::fmod(";
                 visit(node->left_node);
@@ -355,9 +355,9 @@ namespace tachyon {
         }
         else if (node->op_tok.type == TokenType::AND_EQ || node->op_tok.type == TokenType::OR_EQ || node->op_tok.type == TokenType::XOR_EQ
             || node->op_tok.type == TokenType::LSH_EQ || node->op_tok.type == TokenType::RSH_EQ) {
-            if (node->left_node->get_type() == NodeType::OBJECT_PROP) {
-                std::shared_ptr<ObjectPropNode> temp = std::static_pointer_cast<ObjectPropNode>(node->left_node);
-                code << "tachyon_internal::set_prop(tachyon_internal::decode_obj(";
+            if (node->left_node->get_type() == NodeType::OBJECT_MEMBER) {
+                std::shared_ptr<ObjectMemberNode> temp = std::static_pointer_cast<ObjectMemberNode>(node->left_node);
+                code << "tachyon_internal::set_member(tachyon_internal::decode_obj(";
                 visit(temp->obj);
                 code << "),\"" << temp->prop.val << "\",(int32_t)(";
                 visit(node->left_node);

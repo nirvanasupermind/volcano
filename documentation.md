@@ -28,18 +28,16 @@ These are the remaining non-literal tokens:
 ```
 
 ## 2.5 Literals
-Tachyon supports number, string, vector and object literals.
+Tachyon supports number and string literals.
 
 
 ```
 13.5; // number literal
 1.35e+1; // number literal (scientific E notation)
 "string"; // string literal
-[1, 2, 3]; // vector literal
-{"a": 1, "b": 2}; // object literal
 ```
 
-Number literals support the standard decimal notation and scientific E notation of the form `<mantissa>e<exponent>`. String literals are delimited by quotation marks. Tachyon supports the following escape sequences for characters in string literals:
+Number literals support the standard decimal notation and scientific E notation of the form `<mantissa>e<exponent>` with a value of  mantissa*10^exponent. An  optional +/- sign is allowed for the exponent. String literals are delimited by quotation marks. Tachyon supports the following escape sequences for characters in string literals:
 
 * `\'`- single quote (ASCII byte `0x27`)
 * `\"`- double quote (ASCII byte `0x22`)
@@ -55,10 +53,8 @@ Number literals support the standard decimal notation and scientific E notation 
 * `\<1-3 octal digits>` - octal value
 * `\x<hexadecimal digits>` - hexadecimal value
 
-Vector literals are a comma-separated list of elements delimited by square brackets. Object literals are a comma-separated list of key-value pairs delimited by curly brackets, with the key and value separated from each other by a colon. The vector and object literal syntax are for the most part compliant with the JSON notation as well.
-
 ## 2.6 Whitespace
-The characters of space, newline and horizontal tab (correesponding to bytes `0x20`, `0x0A`and `0x09` in ASCII respectively) are treated as whitespace and ignored by the transpiler.
+The characters of space, newline and horizontal tab (corresponding to bytes `0x20`, `0x0A`and `0x09` in ASCII respectively) are treated as whitespace and ignored by the transpiler.
 
 ## 2.7 Comments
 Comments are two forward slashes (`//`) followed by any sequence of characters. A newline terminates a comment. Comments are ignored by the transpiler and are typically used to annotate code.
@@ -268,6 +264,7 @@ For binary operators, tachyon supports:
 * the compound assignment operators `+=`, `-=`, `*=`, `/=`, `%=`, `&=`, and `|=`, which set the value of a variable, vector element or object property to the application of the operator with the current value and the second argument (for a concrete example, `x *= 2`is just a syntactic sugar for `x = x * 2`)–the return value is the new value
 
 
+## 5.3 
 # 6 The Standard Library
 ## 6.1 Global Functions
 ## 6.2 The Math Object

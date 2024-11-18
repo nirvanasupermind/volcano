@@ -1,0 +1,1 @@
+Vector literals are a comma-separated list of elements delimited by square brackets. Object literals are a comma-separated list of key-value pairs delimited by curly brackets, with the key and value separated from each other by a colon. The vector and object literal syntax are for the most part compliant with the JSON notation as well.
