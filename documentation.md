@@ -272,7 +272,7 @@ Creates a new vector. The syntax is a comma-separated list of the elements enclo
 ```
 
 ## 5.4 Object expression
-Crates a new object. The syntax is a comma-separated list of key-value pairs enclosed by curly brackets, with the key and value separated from each other by a colon. Oject and vector expression syntax is almost always compatible with JSON, Although no concerted effort to comply to the JSON standard was made.
+Crates a new object. The syntax is a comma-separated list of key-value pairs enclosed by curly brackets, with the key and value separated from each other by a colon. Oject and vector expression syntax is almost always compatible with JSON, although no concerted effort to comply to the JSON standard was made.
 
 ```
 {"position: {"x": 9, "y": 7, "z:" 12}}
