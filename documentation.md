@@ -288,7 +288,7 @@ afunc(x) {
 ```
 
 
-## 5.5 Call expression
+## 5.6 Call expression
 The call expression is used to call a function.
 
 ```
@@ -296,7 +296,7 @@ add(4, 5)
 ```
 
 
-## 5.5 Object member expression
+## 5.7 Object member expression
 Accesses a member of an object. This is a syntatic notation for the subscript notation, for example `a.b`is essentially a syntactic sugar for `a["b"]`.
 
 ```
@@ -304,7 +304,7 @@ Math.pow
 ```
 
 
-## 5.6 Subscript expression
+## 5.8 Subscript expression
 Accesses a character at the provided index from a string, an element at the provied index from a vector, or member at the provided key from an object.
 
 ```
@@ -374,9 +374,11 @@ Returns the natural logarithm of  `a`.
 Returns the base-10 logarithm or common logarithm of  `a`.
 
 `Math.log2(a)`
+
 Returns the base-2 logarithm of  `a`.
 
 `Math.log1p(a)`
+
 Returns the natural logarithm of  `a`.
 
 
