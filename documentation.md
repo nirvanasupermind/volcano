@@ -304,7 +304,7 @@ Math.pow
 ```
 
 
-## 5.5 Subscript expression
+## 5.6 Subscript expression
 Accesses a character at the provided index from a string, an element at the provied index from a vector, or member at the provided key from an object.
 
 ```
@@ -327,39 +327,50 @@ Returns a type ID depending on the type of `val`:
 
 
 `getTimeMillis()`
+
 Returns the number of milliseconds since the UNIX epoch (January 1, 1970 12:00 AM UTC).
 
 `input()`
+
 Reads a string from standard input.
 
 `print(val)`
+
 Prints a string representation of `val` (as according to `StringUtils.repr`) to standard output.
 
 `println(val)`
+
 Prints a string representation of `val` as according to (`StringUtils.repr`) and a newline to standard output.
 
-`pexitProgram(code)`
+`exitProgram(code)`
+
 Exits the program with exict code number `code`.
 
 ## 6.2 The Math Object
 The `Math` object includes several member functions that compute comomn mathematical operations, as well as members defining common mathematical consontants.
 
 `Math.abs(a)`
+
 Returns the absolute value of `a`.
 
 `Math.exp(a)`
+
 Returns the base-e exponential function of `a`.
 
 `Math.exp2(a)`
+
 Returns the base-2 exponential function of `a`.
 
 `Math.expm1(a)`
+
 Returns the base-e exponential function of `a` minus one.
 
 `Math.log(a)`
+
 Returns the natural logarithm of  `a`.
 
 `Math.log10(a)`
+
 Returns the base-10 logarithm or common logarithm of  `a`.
 
 `Math.log2(a)`
