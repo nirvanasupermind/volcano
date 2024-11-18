@@ -64,7 +64,8 @@ Comments are two forward slashes (`//`) followed by any sequence of characters. 
 ```
 
 # 3 Values and Types
-Tachyon is a dynamically-typed programming language so variables do not have types, only values do, and there are no type annotations. The eight basic types of value are as follows: number, string, vector, function, thread, file, object, and null. Unlike traditional prototype-based programming languages such as Self or Io, Tachyon does not make all values objects as this is a bottleneck on performance. All-values are first-class values and can be stored in object members, variables, vectors and passed as function parameters.
+Tachyon is a dynamically-typed programming language so variables do not have types, only values do, and there are no type annotations. The eight basic types of value are as follows: number, string, vector, function, thread, file, object, and null. Unlike traditional prototype-based programming languages such as Self or Io, Tachyon does not make all values objects as this is a bottleneck on performance. All-values are first-class values and can be stored in object members, variables, vectors and passed as function parameters. Numbers are allocated on the stack, while all other values are allocated on the heap.
+
 ## 3.1 Number
 A number represents an IEEE-754 double-precision floating-point number. There is no distiction between integer and floating-point types to avoid expensive type-checking during arithmetic operations, and due to the internal "NaN-boxing" representation used in the C++ transpiler implementation. Booleans are not a type, again to avoid expensive typechecking and type conversion. Tachyon simply uses the number 0 for false and the number 1 for true, as in C prior to C99.
 
@@ -123,7 +124,7 @@ var f = FileUtils.open("fileName.txt", "w");
 ```
 
 ## 3.7 Object
-An object is a dictionary that stores a collection of key-value pairs (called members). The key must be a string. Objects in Tachyon can serve both as dictionaries and as a mechanism for prototype-based object-oriented programming. Objects are mutable so the members of an object can be modified, and new members can be added. Members can be retrieved both using the subscript expression (`obj["prop]"`) or, as syntactic sugar, the C-style dot syntax (`obj.prop`). The dot syntax does not support keys that are not identifiers.
+An object is a dictionary that stores a collection of key-value pairs (called members). The key must be a string. Objects in Tachyon are versatile in that they can serve as dictionaries, namespaces and as a mechanism for prototype-based object-oriented programming. Objects are mutable so the members of an object can be modified, and new members can be added. Members can be retrieved both using the subscript expression (`obj["prop]"`) or, as syntactic sugar, the C-style dot syntax (`obj.prop`). The dot syntax does not support keys that are not identifiers.
 
 Objects can optionally inherit from a prototype object, which  is stored in the `proto` member. If an object has a prototype, it will automatically inherit all the members of its prototype. 
 
@@ -250,11 +251,11 @@ include "filename.tachyon";
 
 # 5 Expressions
 
-## 5.1 Unary Operators
+## 5.1 Unary operators
 Tachyon supports the unary operators `+` (unary plus), `-` (unary minus), `~` (bitwise NOT), and `!` (logical NOT). Unary plus has no effect. Unary NOT converts the numeric argument from float64 to int32 and back. Additioanll there is the in-place operator `++`for incrementing a variable, vector element or object property by 1, and `--` for decrementing.
 
-## 5.2 Binary Operators
-For binary operators, tachyon supports:
+## 5.2 Binary operators
+For binary operators, Tachyon supports:
 * the arithmetic operators `+` (add), `-` (subtract), `*` (multiply),  `/` (divide), and `%`(modulo)
 * the bitwise operators `&` (bitwise AND), `|`(bitwise OR), `^`(bitwise XOR), `<<` (left-shift) and `>>`(right-shift)–these convert the numeric arguments from float64 to int32 and back
 * the logical operators `&&` (logical AND) and `|`(bitwise OR)-always returns 0 (false) or 1 (true)
@@ -263,10 +264,59 @@ For binary operators, tachyon supports:
 * the assignment operator `=`, which sets the value of a variable, string character, vector element or object property–the return value is the new value
 * the compound assignment operators `+=`, `-=`, `*=`, `/=`, `%=`, `&=`, and `|=`, which set the value of a variable, vector element or object property to the application of the operator with the current value and the second argument (for a concrete example, `x *= 2`is just a syntactic sugar for `x = x * 2`)–the return value is the new value
 
+## 5.3 Vector expression
+Creates a new vector. The syntax is a comma-separated list of the elements enclosed by square brackets.
+```
+[1, 2, 3]
+[[3, "b"], [4, "g"]]
+```
 
-## 5.3 
+## 5.4 Object expression
+Crates a new object. The syntax is a comma-separated list of key-value pairs enclosed by curly brackets, with the key and value separated from each other by a colon. Oject and vector expression syntax is almost always compatible with JSON, Although no concerted effort to comply to the =JSON standard was made.
+
+```
+{"position: {"x": 9, "y": 7, "z:" 12}}
+```
+
+## 5.5 Anonymous function expression
+The anonymous function expression defines an anonymous function. It has similar syntax to the function definition statement.
+
+```
+afunc(x) {
+    return x + 1;
+}
+```
+
+
+## 5.5 Call expression
+The call expression is used to call a function.
+
+```
+add(4, 5)
+```
+
+
+## 5.5 Object member expression
+Accesses a member of an object. This is a syntatic notation for the subscript notation, for example `a.b`is essentially a syntactic sugar for `a["b"]`.
+
+```
+Math.pow
+```
+
+
+## 5.5 Subscript expression
+Accesses a character at the provided index from a string, an element at the provied index from a vector, or member at the provided key from an object.
+
+```
+vec[0];
+obj["key"];
+```
+
 # 6 The Standard Library
 ## 6.1 Global Functions
+
+
+
 ## 6.2 The Math Object
 ## 6.3 The StringUtils Object
 ## 6.4 The VectorUtils Object
