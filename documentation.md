@@ -252,7 +252,7 @@ include "filename.tachyon";
 # 5 Expressions
 
 ## 5.1 Unary operators
-Tachyon supports the unary operators `+` (unary plus), `-` (unary minus), `~` (bitwise NOT), and `!` (logical NOT). Unary plus has no effect. Unary NOT converts the numeric argument from float64 to int32 and back. Additioanll there is the in-place operator `++`for incrementing a variable, vector element or object property by 1, and `--` for decrementing.
+Tachyon supports the unary operators `+` (unary plus), `-` (unary minus), `~` (bitwise NOT), and `!` (logical NOT). Unary plus has no effect. Unary NOT converts the numeric argument from float64 to int32 and back. Additionally there is the in-place operator `++`for incrementing a variable, vector element or object property by 1, and `--` for decrementing.
 
 ## 5.2 Binary operators
 For binary operators, Tachyon supports:
@@ -314,10 +314,63 @@ obj["key"];
 
 # 6 The Standard Library
 ## 6.1 Global Functions
+`typeOf(val)`
+Returns a type ID depending on the type of `val`:
+* 0 if `val`is a number
+* 1 if `val`is a string
+* 2 if `val`is a vector
+* 3 if `val`is a function
+* 4 if `val`is a thread
+* 5 if `val`is a file
+* 6 if `val`is an object
+* 7 if `val`is `null`
 
 
+`getTimeMillis()`
+Returns the number of milliseconds since the UNIX epoch (January 1, 1970 12:00 AM UTC).
+
+`input()`
+Reads a string from standard input.
+
+`print(val)`
+Prints a string representation of `val` (as according to `StringUtils.repr`) to standard output.
+
+`println(val)`
+Prints a string representation of `val` as according to (`StringUtils.repr`) and a newline to standard output.
+
+`pexitProgram(code)`
+Exits the program with exict code number `code`.
 
 ## 6.2 The Math Object
+The `Math` object includes several member functions that compute comomn mathematical operations, as well as members defining common mathematical consontants.
+
+`Math.abs(a)`
+Returns the absolute value of `a`.
+
+`Math.exp(a)`
+Returns the base-e exponential function of `a`.
+
+`Math.exp2(a)`
+Returns the base-2 exponential function of `a`.
+
+`Math.expm1(a)`
+Returns the base-e exponential function of `a` minus one.
+
+`Math.log(a)`
+Returns the natural logarithm of  `a`.
+
+`Math.log10(a)`
+Returns the base-10 logarithm or common logarithm of  `a`.
+
+`Math.log2(a)`
+Returns the base-2 logarithm of  `a`.
+
+`Math.log1p(a)`
+Returns the natural logarithm of  `a`.
+
+
+
+
 ## 6.3 The StringUtils Object
 ## 6.4 The VectorUtils Object
 ## 6.5 The ThisThread Object

@@ -266,14 +266,14 @@ double typeOf = tachyon_internal::make_func(new TACHYON_FUNC([](const std::vecto
     else if (tachyon_internal::is_file(x)) {
         return 5.0;
     }
-    else if (tachyon_internal::is_thread(x)) {
+    else if (tachyon_internal::is_obj(x)) {
         return 6.0;
     }
-    else if (x == tachyon_internal::null) {
+    else if (tachyon_internal::is_eq(x, tachyon_internal::null)) {
         return 7.0;
     }
     else {
-        return 7.0;
+        return 0.0;
     }
     }));
 
@@ -291,22 +291,22 @@ double input = tachyon_internal::make_func(new TACHYON_FUNC([](const std::vector
     }));
 
 double print = tachyon_internal::make_func(new TACHYON_FUNC([](const std::vector<double>& _args) -> double {
-    double x = _args[0];
-    if (tachyon_internal::is_obj(x)) {
-        TACHYON_OBJ* obj = tachyon_internal::decode_obj(x);
+    double val = _args[0];
+    if (tachyon_internal::is_obj(val)) {
+        TACHYON_OBJ* obj = tachyon_internal::decode_obj(val);
         if (tachyon_internal::has_member(obj, "toString")) {
-            double temp = (*tachyon_internal::decode_func(tachyon_internal::get_member(obj, "toString")))({ x });
+            double temp = (*tachyon_internal::decode_func(tachyon_internal::get_member(obj, "toString")))({ val });
             std::cout << "object at " << *tachyon_internal::decode_str(temp);
         }
         else {
             std::cout << obj;
         }
     }
-    else if (tachyon_internal::is_str(x)) {
-        std::cout << *tachyon_internal::decode_str(x);
+    else if (tachyon_internal::is_str(val)) {
+        std::cout << *tachyon_internal::decode_str(val);
     }
-    else if (tachyon_internal::is_vec(x)) {
-        std::vector<double> vec = *tachyon_internal::decode_vec(x);
+    else if (tachyon_internal::is_vec(val)) {
+        std::vector<double> vec = *tachyon_internal::decode_vec(val);
         std::cout << '[';
         for (int i = 0; i < vec.size(); i++) {
             (*tachyon_internal::decode_func(print))({ vec[i] });
@@ -316,27 +316,27 @@ double print = tachyon_internal::make_func(new TACHYON_FUNC([](const std::vector
         }
         std::cout << ']';
     }
-    else if (tachyon_internal::is_func(x)) {
-        std::cout << "function at " << tachyon_internal::decode_func(x);
+    else if (tachyon_internal::is_func(val)) {
+        std::cout << "function at " << tachyon_internal::decode_func(val);
     }
-    else if (tachyon_internal::is_thread(x)) {
-        std::cout << "thread at " << tachyon_internal::decode_thread(x);
+    else if (tachyon_internal::is_thread(val)) {
+        std::cout << "thread at " << tachyon_internal::decode_thread(val);
     }
-    else if (tachyon_internal::is_file(x)) {
-        std::cout << "file at " << tachyon_internal::decode_file(x);
+    else if (tachyon_internal::is_file(val)) {
+        std::cout << "file at " << tachyon_internal::decode_file(val);
     }
-    else if (x == tachyon_internal::null) {
+    else if (val == tachyon_internal::null) {
         std::cout << "null";
     }
     else {
-        std::cout << x;
+        std::cout << val;
     }
     return tachyon_internal::null;
     }));
 
 double println = tachyon_internal::make_func(new TACHYON_FUNC([](const std::vector<double>& _args) -> double {
-    double x = _args[0];
-    (*tachyon_internal::decode_func(print))({ x });
+    double val = _args[0];
+    (*tachyon_internal::decode_func(print))({ val });
     std::cout << '\n';
     return tachyon_internal::null;
     }));
