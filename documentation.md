@@ -295,6 +295,17 @@ The call expression is used to call a function.
 add(4, 5)
 ```
 
+Calling an object member function will add the object as the automatic first argument (but only if it is actually done using the object member expression or subscript expression syntax). This is so that member functions can access the object with an initial "self" (or any other name) argument. Example:
+
+```
+var MyObject = {
+    "getID": afunc(self) {
+        return self.id();
+    }
+};
+var x = {"proto": MyObject "id": 5};
+println(x.getID()); // implicit first argument, makes it like x.getID(x) and the self argument will be x
+```
 
 ## 5.7 Object member expression
 Accesses a member of an object. This is a syntatic notation for the subscript notation, for example `a.b`is essentially a syntactic sugar for `a["b"]`.
@@ -349,39 +360,177 @@ Exits the program with exict code number `code`.
 ## 6.2 The Math Object
 The `Math` object includes several member functions that compute comomn mathematical operations, as well as members defining common mathematical consontants.
 
-`Math.abs(a)`
+`Math.abs(self, a)`
 
 Returns the absolute value of `a`.
 
-`Math.exp(a)`
+`Math.exp(self, a)`
 
 Returns the base-e exponential function of `a`.
 
-`Math.exp2(a)`
+`Math.exp2(self, a)`
 
 Returns the base-2 exponential function of `a`.
 
-`Math.expm1(a)`
+`Math.expm1(self, a)`
+Returns the base-e exponential function of `a`, minus one (e^a - 1). This function is more precise than using the expression `Math.exp(a) - 1`if a is near zero.
 
-Returns the base-e exponential function of `a` minus one.
-
-`Math.log(a)`
+`Math.log(self, a)`
 
 Returns the natural logarithm of  `a`.
 
-`Math.log10(a)`
+`Math.log10(self, a)`
 
 Returns the base-10 logarithm or common logarithm of  `a`.
 
-`Math.log2(a)`
+`Math.log2(self, a)`
 
 Returns the base-2 logarithm of  `a`.
 
-`Math.log1p(a)`
+`Math.log1p(self, a)`
 
-Returns the natural logarithm of  `a`.
+Returns the natural logarithm of  `a + 1` (log(a + 1)). This function is more precise than using the expression `Math.log(a + 1)`if a is near zero.
+
+`Math.pow(self, a, b)`
+
+Returns `a` raised to the power of `b`.
+
+`Math.sqrt(self, a)`
+
+Returns the square root of `a`.
+
+`Math.cbrt(self, a)`
+
+Returns the cube root of `a`.
+
+`Math.hypot(self, a)`
+
+Returns the square root of the sum of the squares of `a` and `b` (√(a^2 + b^2)).
+
+`Math.cos(self, a)`
+
+Returns the cosine of `a`.
+
+`Math.sin(self, a)`
+
+Returns the sine of `a`.
+
+`Math.tan(self, a)`
+
+Returns the tangent of `a`.
+
+`Math.acos(self, a)`
+
+Returns the inverse cosine of `a`.
+
+`Math.asin(self, a)`
+
+Returns the inverse sine of `a`.
+
+`Math.atan(self, a)`
+
+Returns the inverse tangent of `a`.
+
+`Math.atan2(self, a, b)`
+
+Returns the inverse tangent of `b/a`.
+
+`Math.cosh(self, a)`
+
+Returns the hyperbolic cosine of `a`.
+
+`Math.sinh(self, a)`
+
+Returns the hyperbolic sine of `a`.
+
+`Math.cosh(self, a)`
+
+Returns the hyperbolic cosine of `a`.
+
+`Math.acosh(self, a)`
+
+Returns the inverse hyperbolic cosine of `a`.
+
+`Math.asinh(self, a)`
+
+Returns the inverse hyperbolic sine of `a`.
+
+`Math.atanh(self, a)`
+
+Returns the inverse hyperbolic tangent of `a`.
+
+`Math.erf(self, a)`
+
+Returns the error function of `a`.
+
+`Math.erfc(self, a)`
+
+Returns the complementary error function of `a`.
+
+`Math.gamma(self, a)`
+
+Returns the gamma function of `a`. For integer values of `a`, this is equal to the factorial of `(a-1)`.
 
 
+`Math.lgamma(self, a)`
+
+Returns the natural logarithm of the gamma function of `a`.
+
+
+`Math.ceil(self, a)`
+
+Returns the ceiling function of `a`, or the smallest integer greater than `a`.
+
+
+`Math.floor(self, a)`
+
+Returns the floor function of `a`, or the largest integer less than `a`.
+
+
+`Math.trunc(self, a)`
+
+Returns the truncation of `a`, or the nearest integer that is less is magnitude than `a`.  Acts like ceiling for negative a and floor for positive a.
+
+
+`Math.round(self, a)`
+
+Returns the round function of `a`, or the nearest integer to `a`.  Halfway cases are rounded away from zero, so `Math.round(1.5)` is 2 and `Math.round(-1.5)`is -2.
+
+
+`Math.isFinite(self, a)`
+
+Returns 1 if `a` is finite and 0 if `a` is infinite.
+
+
+`Math.isInf(self, a)`
+
+Returns 1 if `a` is infinite and 0 if `a` is finite.
+
+`Math.isNaN(self, a)`
+
+Returns 1 if `a` is a floating-point NaN value or is non-numeric, and 0 otherwise.
+
+`Math.random(self, a)`
+
+Returns a pseudo-random number between 0 and 1.
+
+`Math.INFINITY`
+
+Is set to the floating-point positive infinity value.
+
+
+`Math.NAN`
+
+Is set to a floating-point quiet not-a-number (QNaN) value.
+
+`Math.E`
+
+Is set to the closest possible approximation to e, the base of natural logarithms.
+
+
+`Math.PI`
+
+Is set to the closest possible approximation to pi, the ratio of the circumference of a circle to its diameter.
 
 
 ## 6.3 The StringUtils Object

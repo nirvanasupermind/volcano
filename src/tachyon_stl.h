@@ -480,23 +480,6 @@ void tachyon_stl_setup() {
         })));
 
 
-    tachyon_internal::set_member(tachyon_internal::decode_obj(Math), "gamma", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
-        return std::tgamma(_args[1]);
-        })));
-
-
-    tachyon_internal::set_member(tachyon_internal::decode_obj(Math), "lgamma", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
-        return std::lgamma(_args[1]);
-        })));
-
-    tachyon_internal::set_member(tachyon_internal::decode_obj(Math), "ceil", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
-        return std::ceil(_args[1]);
-        })));
-
-    tachyon_internal::set_member(tachyon_internal::decode_obj(Math), "floor", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
-        return std::floor(_args[1]);
-        })));
-
     tachyon_internal::set_member(tachyon_internal::decode_obj(Math), "trunc", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
         return std::trunc(_args[1]);
         })));
@@ -505,20 +488,16 @@ void tachyon_stl_setup() {
         return std::round(_args[1]);
         })));
 
-    tachyon_internal::set_member(tachyon_internal::decode_obj(Math), "isfinite", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
+    tachyon_internal::set_member(tachyon_internal::decode_obj(Math), "isFinite", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
         return std::isfinite(_args[1]);
         })));
 
-    tachyon_internal::set_member(tachyon_internal::decode_obj(Math), "isinf", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
+    tachyon_internal::set_member(tachyon_internal::decode_obj(Math), "isInf", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
         return std::isinf(_args[1]);
         })));
 
-    tachyon_internal::set_member(tachyon_internal::decode_obj(Math), "isnan", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
+    tachyon_internal::set_member(tachyon_internal::decode_obj(Math), "isNaN", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
         return std::isnan(_args[1]);
-        })));
-
-    tachyon_internal::set_member(tachyon_internal::decode_obj(Math), "ceil", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
-        return std::ceil(_args[1]);
         })));
 
     tachyon_internal::set_member(tachyon_internal::decode_obj(Math), "random", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
@@ -528,6 +507,8 @@ void tachyon_stl_setup() {
         })));
 
 
+    tachyon_internal::set_member(tachyon_internal::decode_obj(Math), "INFINITY", INFINITY);
+    tachyon_internal::set_member(tachyon_internal::decode_obj(Math), "NAN", NAN);
     tachyon_internal::set_member(tachyon_internal::decode_obj(Math), "E", 2.71828182845904523536028747135266250);
     tachyon_internal::set_member(tachyon_internal::decode_obj(Math), "PI", 3.14159265358979323846264338327950288);
 
