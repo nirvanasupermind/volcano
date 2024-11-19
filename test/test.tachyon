@@ -1,4 +1,1 @@
-println("Hello\nworld");
-println("Hello \"world\"");
-println(StringUtils.fromCodePoint(97));
-println(StringUtils.toCodePoint("and what?"));
+println(StringUtils.repr([1,2,3]));

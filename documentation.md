@@ -336,6 +336,8 @@ Returns a type ID depending on the type of `val`:
 * 6 if `val`is an object
 * 7 if `val`is `null`
 
+`hasMember(obj, member)`
+Returns if object `obj` has a member with the name of `member`.
 
 `getTimeMillis()`
 
@@ -358,7 +360,7 @@ Prints a string representation of `val` as according to (`StringUtils.repr`) and
 Exits the program with exict code number `code`.
 
 ## 6.2 The Math Object
-The `Math` object includes several member functions that compute comomn mathematical operations, as well as members defining common mathematical consontants.
+The `Math` object includes member functions that compute common mathematical operations, as well as members defining common mathematical consontants.
 
 `Math.abs(self, a)`
 
@@ -516,24 +518,144 @@ Returns a pseudo-random number between 0 and 1.
 
 `Math.INFINITY`
 
-Is set to the floating-point positive infinity value.
+`Math.INFINITY` is the floating-point positive infinity value.
 
 
 `Math.NAN`
 
-Is set to a floating-point quiet not-a-number (QNaN) value.
+`Math.NAN`is a floating-point quiet not-a-number (QNaN) value.
 
 `Math.E`
 
-Is set to the closest possible approximation to e, the base of natural logarithms.
+`Math.E` is the closest possible approximation to e, the base of natural logarithms.
 
 
 `Math.PI`
 
-Is set to the closest possible approximation to pi, the ratio of the circumference of a circle to its diameter.
+`Math.PI`is closest possible approximation to pi, the ratio of the circumference of a circle to its diameter.
 
 
 ## 6.3 The StringUtils Object
+The `StringUtils` object includes member functions that implement string operations.
+
+`StringUtils.front(self, str)`
+
+Returns the first character in `str`.
+
+
+`StringUtils.back(self, str)`
+
+Returns the last character in `str`.
+
+
+`StringUtils.empty(self, str)`
+
+Returns if `str`is empty.
+
+
+`StringUtils.size(self, str)`
+
+Returns the number of characters in `str`.
+
+`StringUtils.clear(self, str)`
+
+Clears the contents of `str`, resulting in it becoming an empty string.
+
+
+`StringUtils.insert(self, idx, str2)`
+
+Inserts string `str2` at the index `idx`in `str`.
+
+
+`StringUtils.erase(self, idx, count)`
+
+Removes `count` (or `StringUtils.size(str) - idx` if it is less) characters from `str` starting at position `idx`.
+
+
+
+`StringUtils.popBack(self, str)`
+
+Removes the last character of `str`. If `str` is empty, the behavior is undefined.
+
+
+`StringUtils.append(self, str, str2)`
+
+Appends `str2`to `str`. 
+
+`StringUtils.replace(self, idx, count, str)`
+
+Replaces the characters in `str` from indices `idx` to `idx + count - 1` (or `StringUtils.size(str) - 1` if it is less) with `str2`.
+
+`StringUtils.find(self, str, str2)`
+
+Returns the index of the first occurrence of `str2`in `str`. If `str2`is not contained within `str`, returns `null`.
+
+`StringUtils.rfind(self, str, str2)`
+
+Returns the index of the last occurrence of `str2`in `str`. If `str2`is not contained within `str`, returns `null`.
+
+`StringUtils.substr(self, str, idx, count)`
+
+Returns a substring of `str` containing the characters at indices `idx` to `idx + count`.
+
+`StringUtils.compare(self, str, str2)`
+
+Compares `str` with `str2` lexicographically, returning -1 if `str`is less than `str2`, 0 if they are equal by content, and 1 if `str`is greater than `str2`.
+
+`StringUtils.split(self, str, sep)`
+
+Returns a vector that splits up `str`into substrings separated by `sep`. For example `StringUtils.split("1|2|3", "|")` returns `[1, 2, 3]`. Using the empty string as a  separator results in being split up into each individual character.
+
+`StringUtils.eq(self, str, str2)`
+
+Returns if `str` and `str2` are equal by content (`str == str2` compares by reference).
+
+`StringUtils.concat(self, str, str2)`
+
+Returns the concatenation of `str`and `str2`. Also see `VectorUtils.join`.
+
+`StringUtils.repeat(self, str, n)`
+
+Returns `str` repeated `n` times. For example, `StringUtils.repeat("abc", 3)` returns `"abcabcabc"`.
+
+`StringUtils.repr(self, val)`
+
+Returns a string representation of `val`:
+
+* If `val`is a number, then returns a decimal or scientific notation representation of `val`.
+
+* If `val`is an object and does not have a `toString` member function, then returns `"object at [address of val]"`.
+
+* If `val`is an object and has a `toString` member function, then returns `val.toString()`.
+
+* If `val`is a vector, then returns a string containing a representation of each element of `vector`, with each element separated by commas, and everything enclosed in square brackets.
+
+* If `val`is a function, then returns `"function at [address of val]"`.
+
+* If `val`is a thread, then returns `"thread at [address of val]"`.
+
+* If `val`is a file, then returns `"file at [address of val]"`.
+
+
+`StringUtils.toNumber(self, str)`
+
+Converts a string representation of a number `str` to a number.
+
+`StringUtils.copy(self, str)`
+
+Returns a new copy of `str`.
+
+
+`StringUtils.fromCodePoint(self, code)`
+
+Converts the character code point `code` to a string.
+
+
+`StringUtils.toCodePoint(self, str)`
+
+Returns the code point of the first character in `str`.
+
+
 ## 6.4 The VectorUtils Object
 ## 6.5 The ThisThread Object
 ## 6.6 The ThreadUtils Object

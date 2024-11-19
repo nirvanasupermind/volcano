@@ -278,6 +278,10 @@ double typeOf = tachyon_internal::make_func(new TACHYON_FUNC([](const std::vecto
     }));
 
 
+double hasMember = tachyon_internal::make_func(new TACHYON_FUNC([](const std::vector<double>& _args) -> double {
+    return     tachyon_internal::has_member(tachyon_internal::decode_obj(_args[0]), *tachyon_internal::decode_str(_args[1]));
+    }));
+
 double getTimeMillis = tachyon_internal::make_func(new TACHYON_FUNC([](const std::vector<double>& _args) -> double {
     auto now = std::chrono::system_clock::now();
     auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch());
@@ -333,7 +337,7 @@ double print = tachyon_internal::make_func(new TACHYON_FUNC([](const std::vector
     }
     return tachyon_internal::null;
     }));
-
+    
 double println = tachyon_internal::make_func(new TACHYON_FUNC([](const std::vector<double>& _args) -> double {
     double val = _args[0];
     (*tachyon_internal::decode_func(print))({ val });
@@ -548,8 +552,8 @@ void tachyon_stl_setup() {
 
     tachyon_internal::set_member(tachyon_internal::decode_obj(StringUtils), "erase", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
         std::string* str = tachyon_internal::decode_str(_args[1]);
-        double idx = _args[1];
-        double count = _args[2];
+        double idx = _args[2];
+        double count = _args[3];
         str->erase(idx, count);
         return tachyon_internal::null;
         })));
@@ -579,13 +583,15 @@ void tachyon_stl_setup() {
     tachyon_internal::set_member(tachyon_internal::decode_obj(StringUtils), "find", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
         std::string* str = tachyon_internal::decode_str(_args[1]);
         std::string* str2 = tachyon_internal::decode_str(_args[2]);
-        return str->find(*str2);
+        double result = str->find(*str2);
+        return (result == std::string::npos ? tachyon_internal::null : result);
         })));
 
     tachyon_internal::set_member(tachyon_internal::decode_obj(StringUtils), "rfind", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
         std::string* str = tachyon_internal::decode_str(_args[1]);
         std::string* str2 = tachyon_internal::decode_str(_args[2]);
-        return str->rfind(*str2);
+        double result = str->find(*str2);
+        return (result == std::string::npos ? tachyon_internal::null : result);
         })));
 
     tachyon_internal::set_member(tachyon_internal::decode_obj(StringUtils), "substr", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
@@ -619,14 +625,6 @@ void tachyon_stl_setup() {
         std::string* str2 = tachyon_internal::decode_str(_args[2]);
 
         return str->find(*str2) != std::string::npos;
-        })));
-
-    tachyon_internal::set_member(tachyon_internal::decode_obj(StringUtils), "substr", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
-        std::string* str = tachyon_internal::decode_str(_args[1]);
-        double pos = _args[2];
-        double count = _args.size() >= 4 ? _args[3] : std::string::npos;
-
-        return tachyon_internal::make_str(new std::string(str->substr(pos, count)));
         })));
 
     tachyon_internal::set_member(tachyon_internal::decode_obj(StringUtils), "split", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
@@ -684,11 +682,11 @@ void tachyon_stl_setup() {
 
 
     tachyon_internal::set_member(tachyon_internal::decode_obj(StringUtils), "repr", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
-        double x = _args[0];
-        if (tachyon_internal::is_obj(x)) {
-            TACHYON_OBJ* obj = tachyon_internal::decode_obj(x);
+        double val = _args[0];
+        if (tachyon_internal::is_obj(val)) {
+            TACHYON_OBJ* obj = tachyon_internal::decode_obj(val);
             if (tachyon_internal::has_member(obj, "toString")) {
-                return (*tachyon_internal::decode_func(tachyon_internal::get_member(obj, "toString")))({ x });
+                return (*tachyon_internal::decode_func(tachyon_internal::get_member(obj, "toString")))({ val });
             }
             else {
                 std::ostringstream oss;
@@ -696,15 +694,16 @@ void tachyon_stl_setup() {
                 return tachyon_internal::make_str(new std::string(oss.str()));
             }
         }
-        else if (tachyon_internal::is_str(x)) {
-            return x;
+        else if (tachyon_internal::is_str(val)) {
+            return val;
         }
-        else if (tachyon_internal::is_vec(x)) {
-            std::vector<double> vec = *tachyon_internal::decode_vec(x);
+        else if (tachyon_internal::is_vec(val)) {
+            std::vector<double> vec = *tachyon_internal::decode_vec(val);
             std::ostringstream oss;
             oss << '[';
             for (int i = 0; i < vec.size(); i++) {
-                (*tachyon_internal::decode_func(print))({ vec[i] });
+                TACHYON_FUNC* func = tachyon_internal::decode_func(tachyon_internal::get_member(tachyon_internal::decode_obj(StringUtils), "repr"));
+                oss << *(tachyon_internal::decode_str)((*func)({ StringUtils, vec.at(i) }));
                 if (i != vec.size() - 1) {
                     oss << ',';
                 }
@@ -712,27 +711,27 @@ void tachyon_stl_setup() {
             oss << ']';
             return  tachyon_internal::make_str(new std::string(oss.str()));
         }
-        else if (tachyon_internal::is_func(x)) {
+        else if (tachyon_internal::is_func(val)) {
             std::ostringstream oss;
-            oss << "function at " << tachyon_internal::decode_func(x);
+            oss << "function at " << tachyon_internal::decode_func(val);
             return tachyon_internal::make_str(new std::string(oss.str()));
         }
-        else if (tachyon_internal::is_thread(x)) {
+        else if (tachyon_internal::is_thread(val)) {
             std::ostringstream oss;
-            oss << "thread at " << tachyon_internal::decode_thread(x);
+            oss << "thread at " << tachyon_internal::decode_thread(val);
             return tachyon_internal::make_str(new std::string(oss.str()));
         }
-        else if (tachyon_internal::is_file(x)) {
+        else if (tachyon_internal::is_file(val)) {
             std::ostringstream oss;
-            oss << "file at " << tachyon_internal::decode_file(x);
+            oss << "file at " << tachyon_internal::decode_file(val);
             return tachyon_internal::make_str(new std::string(oss.str()));
         }
-        else if (x == tachyon_internal::null) {
+        else if (val == tachyon_internal::null) {
             return tachyon_internal::make_str(new std::string("null"));
         }
         else {
             std::ostringstream oss;
-            oss << tachyon_internal::decode_file(x);
+            oss << tachyon_internal::decode_file(val);
             return tachyon_internal::make_str(new std::string(oss.str()));
         }
         return tachyon_internal::null;
