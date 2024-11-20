@@ -763,7 +763,7 @@ The `FileUtils` object includes member functions that implement file input and o
 
 `FileUtils.open(self, filename, mode)`
 
-Opens a file with the path `filename` using the mode `mode` and returns an associated file stream for performing  file input and output operations.
+Opens a file with the path `filename` using the mode `mode` and returns an associated file stream for performing file input and output operations.
 
 The file access flags used in the `mode` argument are the following:
 * `"r":` Open for reading. The file must exist.
@@ -784,7 +784,17 @@ Closes the file currently associated with `stream`, then opens the file with pat
 Closes the file stream `stream`.
 
 
-`FileUtils.close(self, stream)`
+`FileUtils.flush(self, stream)`
 
-Closes the file stream `stream`.
+Used to flush the output buffer of the file stream `stream`, ensuring that all buffered data is written to the underlying file or device.
 
+If `stream` is an input stream or an update streams on which input was the last operation, the behavior is undefined.
+
+
+`FileUtils.getc(self, stream)`
+
+Reads the next character from the file stream `stream`.
+
+`FileUtils.gets(self, stream, count)`
+
+Reads at most `count - 1` character sfrom the file stream `stream`, returning them all as a string.
