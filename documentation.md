@@ -64,7 +64,7 @@ Comments are two forward slashes (`//`) followed by any sequence of characters. 
 ```
 
 # 3 Values and Types
-Tachyon is a dynamically-typed programming language so variables do not have types, only values do, and there are no type annotations. The eight basic types of value are as follows: number, string, vector, function, thread, file, object, and null. Unlike traditional prototype-based programming languages such as Self or Io, Tachyon does not make all values objects as this is a bottleneck on performance. All-values are first-class values and can be stored in object members, variables, vectors and passed as function parameters. Numbers are allocated on the stack, while all other values are allocated on the heap.
+Tachyon is a dynamically-typed programming language so variables do not have types, only values do, and there are no type annotations. The eight basic types of value are as follows: number, string, vector, function, thread, file stream, object, and null. Unlike traditional prototype-based programming languages such as Self or Io, Tachyon does not make all values objects as this is a bottleneck on performance. All-values are first-class values and can be stored in object members, variables, vectors and passed as function parameters. Numbers are allocated on the stack, while all other values are allocated on the heap.
 
 ## 3.1 Number
 A number represents an IEEE-754 double-precision floating-point number. There is no distiction between integer and floating-point types to avoid expensive type-checking during arithmetic operations, and due to the internal "NaN-boxing" representation used in the C++ transpiler implementation. Booleans are not a type, again to avoid expensive typechecking and type conversion. Tachyon simply uses the number 0 for false and the number 1 for true, as in C prior to C99.
@@ -106,7 +106,7 @@ var add = afunc (x, y) {
 ```
 
 ## 3.5 Thread
-A thread represents a single thread of execution in a program. In the standard library, the `ThreadUtils` object provides functions to create files and perform operations on them. Threads are created using the `ThreadUtils.makeThread` function. Threads start start executing immediately after the associated thread object created (pending any OS scheduling delays), starting at the function passed to `ThreadUtils.makeThread`. The return value of the function is ignored.
+A thread represents a single thread of execution in a program. In the standard library, the `ThreadUtils` object provides functions to create threads and perform operations on them. Threads are created using the `ThreadUtils.makeThread` function.
 
 ```
 var t = ThreadUtils.makeThread(afunc () {
@@ -115,8 +115,8 @@ var t = ThreadUtils.makeThread(afunc () {
 
 ```
 
-## 3.6 File
-A file represents an input/output stream that operates on files. In the standard library, the `FileUtils` object provides functions to create files and perform operations on them. Files are created using the `FileUtils.open`function which accepts a file path and file access mode, both of which are strings.
+## 3.6 File Stream
+A file stream represents an input/output stream that operates on files. In the standard library, the `FileUtils` object provides functions to create file streams and perform operations on them. File streams are created using the `FileUtils.open`function which accepts a file path and file access mode, both of which are strings.
 
 
 ```
@@ -332,7 +332,7 @@ Returns a type ID depending on the type of `val`:
 * 2 if `val`is a vector
 * 3 if `val`is a function
 * 4 if `val`is a thread
-* 5 if `val`is a file
+* 5 if `val`is a file stream
 * 6 if `val`is an object
 * 7 if `val`is `null`
 
@@ -620,21 +620,13 @@ Returns `str` repeated `n` times. For example, `StringUtils.repeat("abc", 3)` re
 `StringUtils.repr(self, val)`
 
 Returns a string representation of `val`:
-
 * If `val`is a number, then returns a decimal or scientific notation representation of `val`.
-
 * If `val`is an object and does not have a `toString` member function, then returns `"object at [address of val]"`.
-
 * If `val`is an object and has a `toString` member function, then returns `val.toString()`.
-
 * If `val`is a vector, then returns a string containing a representation of each element of `vector`, with each element separated by commas, and everything enclosed in square brackets.
-
 * If `val`is a function, then returns `"function at [address of val]"`.
-
 * If `val`is a thread, then returns `"thread at [address of val]"`.
-
-* If `val`is a file, then returns `"file at [address of val]"`.
-
+* If `val`is a file stream, then returns `"file stream at [address of val]"`.
 
 `StringUtils.toNumber(self, str)`
 
@@ -643,7 +635,6 @@ Converts a string representation of a number `str` to a number.
 `StringUtils.copy(self, str)`
 
 Returns a new copy of `str`.
-
 
 `StringUtils.fromCodePoint(self, code)`
 
@@ -656,8 +647,7 @@ Returns the code point of the first character in `str`.
 
 
 ## 6.4 The VectorUtils Object
-
-
+The `VectorUtils` object includes member functions that implement vector operations.
 
 `VectorUtils.size(self, vec)`
 
@@ -675,21 +665,17 @@ Returns the last element of `vec`.
 
 Appends the element `elem` to the end of `vec`.
 
-
 `VectorUtils.popBack(self, vec)`
 
 Removes the last character of `vec`. If `vec` is empty, the behavior is undefined.
-
 
 `VectorUtils.insert(self, vec, idx, val)`
 
 Inserts a copy of `val`before index `īdx` in `vec`.
 
-
 `VectorUtils.subvec(self, vec, idx, count)`
 
 Returns a subvector of `vec` with the elements corresponding to the indices `idx` to `idx.count-1`(or `vec.size()-1`if it is less).
-
 
 `VectorUtils.join(self, vec, sep)`
 
@@ -699,22 +685,13 @@ Joins a vector of strings into one string with each element separated by `sep`. 
 
 Returns a new vector which is populated with the result of applying `func` to each element of `vec`.
 
-
-
-`VectorUtils.accumulate(self, vec, func, init)`
+`VectorUtils.accumulate(self, vec, init, func)`
 
 Eecutes the binary function `func` on the initial value and each element of the vector, in order, passing on the return value from the preceding calculation. Returns the final result after reaching the end of the vector. For example, if the vector was all-numbers and `func` added the two arguments, then this would result in the sum of all the elements in the vector and `init`.
-
 
 `VectorUtils.eq(self, vec, vec2)`
 
 Eecutes the binary function `func` on the initial value and each element of the vector, in order, passing on the return value from the preceding calculation. Returns the final result after reaching the end of the vector. For example, if the vector was all-numbers and `func` added the two arguments, then this would result in the sum of all the elements in the vector and `init`.
-
-
-
-`VectorUtils.eq(self, vec, vec2)`
-
-Returns if `vec` and `vec` are equal by content (`str == str2` compares by reference).
 
 `VectorUtils.concat(self, vec, vec2)`
 
@@ -724,7 +701,6 @@ Returns the concatenation of `vec`and `vec2`.
 
 Returns `vec` repeated `n` times.
 
-
 `VectorUtils.capacity(self, vec)`
 
 Returns the number of elements that `vec` has currently allocated memory far.
@@ -732,9 +708,83 @@ Returns the number of elements that `vec` has currently allocated memory far.
 
 `VectorUtils.reserve(self, vec, newCap)`
 
-Increases the capacity of `vec` to a value greater than or equal to `newCap`.
+Increases the capacity of `vec` to a value greater than or equal to `newCap`. Does not change the vector's size.
 
 
 ## 6.5 The ThisThread Object
+The `ThisThread` object includes member functions that access this thread.
+
+`ThisThread.yield(self)`
+
+Hints to the implementation to reschedule thread execution.
+
+`ThisThread.getID(self)`
+
+Returns the ID of the current thread as a string.
+
+`ThisThread.sleepFor(self, ms)`
+
+Makes the current thread sleep for at least the specified number of milliseconds.
+
+
+`ThisThread.sleepUntil(self, sleepTime)`
+
+Makes the current thread sleep until the specified time `sleepTime`, which should be specified as a UNIX timestamp in milliseconds, has been reached.
+
 ## 6.6 The ThreadUtils Object
-## 6.7 The FileUtils Object
+The `ThreadUtils` object includes member functions that implement thread operations.
+
+`ThreadUtils.makeThread(self, func)`
+
+Creates a new thread. It will start executing immediately after being created (pending any OS scheduling delays), starting at the function `func`. The return value of `func`is ignored.
+
+`ThreadUtils.joinable(self), thread`
+
+Returns if the thread `thread` identifies an active thread of execution.
+
+`ThreadUtils.getID(self, thread)`
+
+Returns the ID of the thread `thread` as a string.
+
+`ThreadUtils.hardwareConcurrecy(self)`
+
+Returns the number of concurrent threads that the implementation supports. If the value isn't computable or well-defined, 
+
+`ThreadUtils.join(self, thread)`
+
+Blocks the current thread until the thread `thread` finishes executing.
+
+`ThreadUtils.detach(self, thread)`
+
+Detaches the actual OS thread from the thread `thread`, allowing it to continue execution independently. Once detached, the OS thread will run in the background, and `thread` becomes non-joinable, meaning you cannot join it later.
+
+## 6.7 The FileUtils Object 
+The `FileUtils` object includes member functions that implement file input and output operations.
+
+`FileUtils.open(self, filename, mode)`
+
+Opens a file with the path `filename` using the mode `mode` and returns an associated file stream for performing  file input and output operations.
+
+The file access flags used in the `mode` argument are the following:
+* `"r":` Open for reading. The file must exist.
+* `"w"`: Open for writing. Creates a new file or truncates an existing file to zero length.
+* `"a"`: Open for appending. Creates a new file if it doesn't exist.
+* `"r+"`: Open for reading and writing. The file must exist.
+* `"w+"`: Open for reading and writing. Creates a new file or truncates an existing file.
+* `"a+"`: Open for reading and appending. Creates a new file if it doesn't exist.
+* `"b`": Can optionally be specified to open in binary mode.
+
+
+`FileUtils.reopen(self, filename, mode, stream)`
+
+Closes the file currently associated with `stream`, then opens the file with path `filename` using `mode` and associates this file to `stream`. 
+
+`FileUtils.close(self, stream)`
+
+Closes the file stream `stream`.
+
+
+`FileUtils.close(self, stream)`
+
+Closes the file stream `stream`.
+

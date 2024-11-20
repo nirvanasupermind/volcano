@@ -20,7 +20,7 @@
 #define VEC_TAG 0x7ffd000000000000
 #define FUNC_TAG 0x7ffe000000000000
 #define THREAD_TAG 0x7fff000000000000
-#define FILE_TAG 0xfffc00000000000
+#define file_stream_TAG 0xfffc00000000000
 #define OBJ_TAG 0xfffd000000000000
 #define NULL_TAG 0xfffe000000000000
 #define PTR_MASK 0xfffffffffff
@@ -57,9 +57,9 @@ namespace tachyon_internal {
         return *(double*)(&u);
     }
 
-    inline double make_file(FILE* f) {
+    inline double make_file_stream(FILE* f) {
         // all_ptrs.push_back(f);
-        uint64_t u = ((uint64_t)f) | FILE_TAG;
+        uint64_t u = ((uint64_t)f) | file_stream_TAG;
         return *(double*)(&u);
     }
 
@@ -96,7 +96,7 @@ namespace tachyon_internal {
         return (std::thread*)(ptr);
     }
 
-    inline FILE* decode_file(double d) {
+    inline FILE* decode_file_stream(double d) {
         uint64_t ptr = (*(uint64_t*)(&d)) & PTR_MASK;
         return (FILE*)(ptr);
     }
@@ -117,7 +117,7 @@ namespace tachyon_internal {
         }
 
         all_ptrs.clear();
-        // // Close all file streams
+        // // Close all file_stream streams
         // for (std::fstream* fstream : all_fstreams) {
         //     if (fstream->is_open()) {
         //         fstream->close();
@@ -197,9 +197,9 @@ namespace tachyon_internal {
         return (u & TYPECHECK_MASK) == THREAD_TAG;
     }
 
-    inline bool is_file(double d) {
+    inline bool is_file_stream(double d) {
         uint64_t u = *(uint64_t*)(&d);
-        return (u & TYPECHECK_MASK) == FILE_TAG;
+        return (u & TYPECHECK_MASK) == file_stream_TAG;
     }
 
     inline bool is_obj(double d) {
@@ -263,7 +263,7 @@ double typeOf = tachyon_internal::make_func(new TACHYON_FUNC([](const std::vecto
     else if (tachyon_internal::is_thread(x)) {
         return 4.0;
     }
-    else if (tachyon_internal::is_file(x)) {
+    else if (tachyon_internal::is_file_stream(x)) {
         return 5.0;
     }
     else if (tachyon_internal::is_obj(x)) {
@@ -326,8 +326,8 @@ double print = tachyon_internal::make_func(new TACHYON_FUNC([](const std::vector
     else if (tachyon_internal::is_thread(val)) {
         std::cout << "thread at " << tachyon_internal::decode_thread(val);
     }
-    else if (tachyon_internal::is_file(val)) {
-        std::cout << "file at " << tachyon_internal::decode_file(val);
+    else if (tachyon_internal::is_file_stream(val)) {
+        std::cout << "file stream at " << tachyon_internal::decode_file_stream(val);
     }
     else if (val == tachyon_internal::null) {
         std::cout << "null";
@@ -721,9 +721,9 @@ void tachyon_stl_setup() {
             oss << "thread at " << tachyon_internal::decode_thread(val);
             return tachyon_internal::make_str(new std::string(oss.str()));
         }
-        else if (tachyon_internal::is_file(val)) {
+        else if (tachyon_internal::is_file_stream(val)) {
             std::ostringstream oss;
-            oss << "file at " << tachyon_internal::decode_file(val);
+            oss << "file_stream at " << tachyon_internal::decode_file_stream(val);
             return tachyon_internal::make_str(new std::string(oss.str()));
         }
         else if (val == tachyon_internal::null) {
@@ -731,7 +731,7 @@ void tachyon_stl_setup() {
         }
         else {
             std::ostringstream oss;
-            oss << tachyon_internal::decode_file(val);
+            oss << tachyon_internal::decode_file_stream(val);
             return tachyon_internal::make_str(new std::string(oss.str()));
         }
         return tachyon_internal::null;
@@ -831,7 +831,7 @@ void tachyon_stl_setup() {
 
         return std::accumulate(vec->begin(), vec->end(), _args[2], [func](double a, double b) -> double {
             return (*func)({ a,b });
-            }, _args[4]);
+            });
         })));
 
 
@@ -957,114 +957,107 @@ void tachyon_stl_setup() {
         })));
 
 
-    tachyon_internal::set_member(tachyon_internal::decode_obj(ThisThread), "getID", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
-        uint64_t id = std::hash<std::thread::id>{}(std::this_thread::get_id());
-        return tachyon_internal::make_str(new std::string(std::to_string(id)));
-        })));
-
-
     tachyon_internal::set_member(tachyon_internal::decode_obj(FileUtils), "open", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
-        return tachyon_internal::make_file(fopen(tachyon_internal::decode_str(_args[1])->c_str(), tachyon_internal::decode_str(_args[2])->c_str()));
+        return tachyon_internal::make_file_stream(fopen(tachyon_internal::decode_str(_args[1])->c_str(), tachyon_internal::decode_str(_args[2])->c_str()));
         })));
 
     tachyon_internal::set_member(tachyon_internal::decode_obj(FileUtils), "reopen", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
-        FILE* file = tachyon_internal::decode_file(_args[1]);
-        freopen(tachyon_internal::decode_str(_args[1])->c_str(), tachyon_internal::decode_str(_args[2])->c_str(), file);
+        FILE* file_stream = tachyon_internal::decode_file_stream(_args[3]);
+        freopen(tachyon_internal::decode_str(_args[1])->c_str(), tachyon_internal::decode_str(_args[2])->c_str(), file_stream);
         return tachyon_internal::null;
         })));
 
     tachyon_internal::set_member(tachyon_internal::decode_obj(FileUtils), "close", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
-        FILE* file = tachyon_internal::decode_file(_args[1]);
-        fclose(file);
+        FILE* file_stream = tachyon_internal::decode_file_stream(_args[1]);
+        fclose(file_stream);
         return tachyon_internal::null;
         })));
 
-
     tachyon_internal::set_member(tachyon_internal::decode_obj(FileUtils), "flush", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
-        FILE* file = tachyon_internal::decode_file(_args[1]);
-        fflush(file);
+        FILE* file_stream = tachyon_internal::decode_file_stream(_args[1]);
+        fflush(file_stream);
         return tachyon_internal::null;
         })));
 
     tachyon_internal::set_member(tachyon_internal::decode_obj(FileUtils), "getc", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
-        FILE* file = tachyon_internal::decode_file(_args[1]);
-        return tachyon_internal::make_str(new std::string(1, fgetc(file)));
+        FILE* file_stream = tachyon_internal::decode_file_stream(_args[1]);
+        return tachyon_internal::make_str(new std::string(1, fgetc(file_stream)));
         })));
 
     tachyon_internal::set_member(tachyon_internal::decode_obj(FileUtils), "gets", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
-        FILE* file = tachyon_internal::decode_file(_args[1]);
+        FILE* file_stream = tachyon_internal::decode_file_stream(_args[1]);
         char* str;
-        return tachyon_internal::make_str(new std::string(fgets(str, _args[2], file)));
+        return tachyon_internal::make_str(new std::string(fgets(str, _args[2], file_stream)));
         })));
 
     tachyon_internal::set_member(tachyon_internal::decode_obj(FileUtils), "puts", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
-        FILE* file = tachyon_internal::decode_file(_args[1]);
-        fputs(tachyon_internal::decode_str(_args[2])->c_str(), file);
+        FILE* file_stream = tachyon_internal::decode_file_stream(_args[1]);
+        fputs(tachyon_internal::decode_str(_args[2])->c_str(), file_stream);
         return tachyon_internal::null;
         })));
 
 
     tachyon_internal::set_member(tachyon_internal::decode_obj(FileUtils), "tell", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
-        FILE* file = tachyon_internal::decode_file(_args[1]);
-        return ftell(file);
+        FILE* file_stream = tachyon_internal::decode_file_stream(_args[1]);
+        return ftell(file_stream);
         })));
 
 
 
     tachyon_internal::set_member(tachyon_internal::decode_obj(FileUtils), "seek", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
-        FILE* file = tachyon_internal::decode_file(_args[1]);
-        fseek(file, _args[2], _args[3]);
+        FILE* file_stream = tachyon_internal::decode_file_stream(_args[1]);
+        fseek(file_stream, _args[2], _args[3]);
         return tachyon_internal::null;
         })));
 
 
     tachyon_internal::set_member(tachyon_internal::decode_obj(FileUtils), "rewind", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
-        FILE* file = tachyon_internal::decode_file(_args[1]);
-        rewind(file);
+        FILE* file_stream = tachyon_internal::decode_file_stream(_args[1]);
+        rewind(file_stream);
         return tachyon_internal::null;
         })));
 
 
     tachyon_internal::set_member(tachyon_internal::decode_obj(FileUtils), "clearErr", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
-        FILE* file = tachyon_internal::decode_file(_args[1]);
-        clearerr(file);
+        FILE* file_stream = tachyon_internal::decode_file_stream(_args[1]);
+        clearerr(file_stream);
         return tachyon_internal::null;
         })));
 
 
     tachyon_internal::set_member(tachyon_internal::decode_obj(FileUtils), "eof", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
-        FILE* file = tachyon_internal::decode_file(_args[1]);
-        return feof(file);
+        FILE* file_stream = tachyon_internal::decode_file_stream(_args[1]);
+        return feof(file_stream);
         })));
 
         tachyon_internal::set_member(tachyon_internal::decode_obj(FileUtils), "error", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
-        FILE* file = tachyon_internal::decode_file(_args[1]);
-        return ferror(file);
+        FILE* file_stream = tachyon_internal::decode_file_stream(_args[1]);
+        return ferror(file_stream);
         })));
         
 
         tachyon_internal::set_member(tachyon_internal::decode_obj(FileUtils), "remove", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
-        FILE* file = tachyon_internal::decode_file(_args[1]);
+        FILE* file_stream = tachyon_internal::decode_file_stream(_args[1]);
         remove(tachyon_internal::decode_str(_args[1])->c_str());
         return tachyon_internal::null;
         })));
 
 
         tachyon_internal::set_member(tachyon_internal::decode_obj(FileUtils), "rename", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
-        FILE* file = tachyon_internal::decode_file(_args[1]);
+        FILE* file_stream = tachyon_internal::decode_file_stream(_args[1]);
         rename(tachyon_internal::decode_str(_args[1])->c_str(),tachyon_internal::decode_str(_args[2])->c_str() );
         return tachyon_internal::null;
         })));
 
         tachyon_internal::set_member(tachyon_internal::decode_obj(FileUtils), "tmpFile", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
-        return tachyon_internal::make_file(tmpfile());
+        return tachyon_internal::make_file_stream(tmpfile());
         })));
         
     // tachyon_internal::set_member(tachyon_internal::decode_obj(FStreamUtils), "makeFStream", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
-    //     std::fstream f(*(tachyon_internal::decode_str(_args[1]))); // Open a file named "sample.txt" for writing
+    //     std::fstream f(*(tachyon_internal::decode_str(_args[1]))); // Open a file_stream named "sample.txt" for writing
 
-    //     if (!f.is_open()) { // Check if the file opened successfully
-    //         std::cerr << "Unable to open file"; // Handle the error if the file couldn't be opened
+    //     if (!f.is_open()) { // Check if the file_stream opened successfully
+    //         std::cerr << "Unable to open file_stream"; // Handle the error if the file_stream couldn't be opened
     //     }
 
     //     return tachyon_internal::make_fstream(new std::fstream(f));
