@@ -564,13 +564,12 @@ Clears the contents of `str`, resulting in it becoming an empty string.
 
 `StringUtils.insert(self, idx, str2)`
 
-Inserts string `str2` at the index `idx`in `str`.
+Inserts string `str2` at the index `idx` in `str`.
 
 
 `StringUtils.erase(self, idx, count)`
 
 Removes `count` (or `StringUtils.size(str) - idx` if it is less) characters from `str` starting at position `idx`.
-
 
 
 `StringUtils.popBack(self, str)`
@@ -657,6 +656,85 @@ Returns the code point of the first character in `str`.
 
 
 ## 6.4 The VectorUtils Object
+
+
+
+`VectorUtils.size(self, vec)`
+
+Returns the number of elements in `vec`.
+
+`VectorUtils.front(self, vec)`
+
+Returns the first element of `vec`.
+
+`VectorUtils.back(self, vec)`
+
+Returns the last element of `vec`.
+
+`VectorUtils.pushBack(self, vec, elem)`
+
+Appends the element `elem` to the end of `vec`.
+
+
+`VectorUtils.popBack(self, vec)`
+
+Removes the last character of `vec`. If `vec` is empty, the behavior is undefined.
+
+
+`VectorUtils.insert(self, vec, idx, val)`
+
+Inserts a copy of `val`before index `īdx` in `vec`.
+
+
+`VectorUtils.subvec(self, vec, idx, count)`
+
+Returns a subvector of `vec` with the elements corresponding to the indices `idx` to `idx.count-1`(or `vec.size()-1`if it is less).
+
+
+`VectorUtils.join(self, vec, sep)`
+
+Joins a vector of strings into one string with each element separated by `sep`. For example, `VectorUtils.join(["a","b","c"],"|")`is `"abc"`.
+
+`VectorUtils.transform(self, vec, func)`
+
+Returns a new vector which is populated with the result of applying `func` to each element of `vec`.
+
+
+
+`VectorUtils.accumulate(self, vec, func, init)`
+
+Eecutes the binary function `func` on the initial value and each element of the vector, in order, passing on the return value from the preceding calculation. Returns the final result after reaching the end of the vector. For example, if the vector was all-numbers and `func` added the two arguments, then this would result in the sum of all the elements in the vector and `init`.
+
+
+`VectorUtils.eq(self, vec, vec2)`
+
+Eecutes the binary function `func` on the initial value and each element of the vector, in order, passing on the return value from the preceding calculation. Returns the final result after reaching the end of the vector. For example, if the vector was all-numbers and `func` added the two arguments, then this would result in the sum of all the elements in the vector and `init`.
+
+
+
+`VectorUtils.eq(self, vec, vec2)`
+
+Returns if `vec` and `vec` are equal by content (`str == str2` compares by reference).
+
+`VectorUtils.concat(self, vec, vec2)`
+
+Returns the concatenation of `vec`and `vec2`.
+
+`VectorUtils.repeat(self, vec, n)`
+
+Returns `vec` repeated `n` times.
+
+
+`VectorUtils.capacity(self, vec)`
+
+Returns the number of elements that `vec` has currently allocated memory far.
+
+
+`VectorUtils.reserve(self, vec, newCap)`
+
+Increases the capacity of `vec` to a value greater than or equal to `newCap`.
+
+
 ## 6.5 The ThisThread Object
 ## 6.6 The ThreadUtils Object
 ## 6.7 The FileUtils Object

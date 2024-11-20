@@ -831,7 +831,7 @@ void tachyon_stl_setup() {
 
         return std::accumulate(vec->begin(), vec->end(), _args[2], [func](double a, double b) -> double {
             return (*func)({ a,b });
-            });
+            }, _args[4]);
         })));
 
 
@@ -871,6 +871,11 @@ void tachyon_stl_setup() {
 
     tachyon_internal::set_member(tachyon_internal::decode_obj(VectorUtils), "copy", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
         return tachyon_internal::make_vec(new std::vector<double>(*tachyon_internal::decode_vec(_args[1])));
+        })));
+
+    tachyon_internal::set_member(tachyon_internal::decode_obj(VectorUtils), "capacity", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
+        std::vector<double>* vec = tachyon_internal::decode_vec(_args[1]);  
+        return vec->capacity();
         })));
 
     tachyon_internal::set_member(tachyon_internal::decode_obj(VectorUtils), "reserve", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
