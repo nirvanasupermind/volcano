@@ -798,3 +798,15 @@ Reads the next character from the file stream `stream`.
 `FileUtils.gets(self, stream, count)`
 
 Reads at most `count - 1` character sfrom the file stream `stream`, returning them all as a string.
+
+`FileUtils.puts(self, stream, str)`
+
+Writes every character in `str` to the output stream `stream`.
+
+`FileUtils.tell(self, stream, count)`
+
+Returns the file position indicator for the file stream `stream`.
+
+`FileUtils.gets(self, stream, count)`
+
+Sets the position indicator for the file stream `stream` to `offset`. This places the position in the file at e
