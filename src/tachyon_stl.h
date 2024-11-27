@@ -996,12 +996,10 @@ void tachyon_stl_setup() {
         return tachyon_internal::null;
         })));
 
-
     tachyon_internal::set_member(tachyon_internal::decode_obj(FileUtils), "tell", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
         FILE* file_stream = tachyon_internal::decode_file_stream(_args[1]);
         return ftell(file_stream);
         })));
-
 
 
     tachyon_internal::set_member(tachyon_internal::decode_obj(FileUtils), "seek", tachyon_internal::make_func(new TACHYON_FUNC([=](const std::vector<double>& _args) -> double {
